@@ -2,6 +2,7 @@ import { useIdea, type Step } from '@/context/IdeaContext';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
+import DecomposeModule from '@/components/decompose/DecomposeModule';
 import DiscoverModule from '@/components/discover/DiscoverModule';
 import AnalyzeModule from '@/components/analyze/AnalyzeModule';
 import SetupModule from '@/components/setup/SetupModule';
