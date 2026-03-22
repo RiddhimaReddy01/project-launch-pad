@@ -14,7 +14,125 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      experiments: {
+        Row: {
+          assets_data: Json | null
+          created_at: string
+          guide_data: Json | null
+          id: string
+          idea_id: string
+          method_id: string
+          method_name: string
+          metrics: Json | null
+          notes: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assets_data?: Json | null
+          created_at?: string
+          guide_data?: Json | null
+          id?: string
+          idea_id: string
+          method_id: string
+          method_name: string
+          metrics?: Json | null
+          notes?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assets_data?: Json | null
+          created_at?: string
+          guide_data?: Json | null
+          id?: string
+          idea_id?: string
+          method_id?: string
+          method_name?: string
+          metrics?: Json | null
+          notes?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "experiments_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "saved_ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_ideas: {
+        Row: {
+          analysis_data: Json | null
+          created_at: string
+          current_step: string | null
+          discover_data: Json | null
+          id: string
+          idea_text: string
+          setup_data: Json | null
+          updated_at: string
+          user_id: string
+          validate_data: Json | null
+        }
+        Insert: {
+          analysis_data?: Json | null
+          created_at?: string
+          current_step?: string | null
+          discover_data?: Json | null
+          id?: string
+          idea_text: string
+          setup_data?: Json | null
+          updated_at?: string
+          user_id: string
+          validate_data?: Json | null
+        }
+        Update: {
+          analysis_data?: Json | null
+          created_at?: string
+          current_step?: string | null
+          discover_data?: Json | null
+          id?: string
+          idea_text?: string
+          setup_data?: Json | null
+          updated_at?: string
+          user_id?: string
+          validate_data?: Json | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
