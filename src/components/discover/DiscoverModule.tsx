@@ -2,13 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useIdea } from '@/context/IdeaContext';
 import { discoverInsights, type DiscoverResult } from '@/lib/discover';
 import DiscoverInsightCard from './DiscoverInsightCard';
-import SynthesisPanel from './SynthesisPanel';
 import DiscoverLoading from './DiscoverLoading';
 
 type Status = 'idle' | 'loading' | 'done' | 'error';
 
 const TYPE_TABS = [
-  { key: 'all', label: 'All', icon: '📊' },
   { key: 'pain_point', label: 'Pain Points', icon: '🔴' },
   { key: 'workaround', label: 'Workarounds', icon: '🔄' },
   { key: 'demand_signal', label: 'Demand Signals', icon: '📈' },
@@ -20,9 +18,8 @@ export default function DiscoverModule() {
   const [status, setStatus] = useState<Status>('idle');
   const [result, setResult] = useState<DiscoverResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState<string | null>(null);
   const [cached, setCached] = useState(false);
-  const [highlightKeyword, setHighlightKeyword] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const hasRun = useRef(false);
 
@@ -37,6 +34,15 @@ export default function DiscoverModule() {
       runDiscover();
     }
   }, [decomposeResult]);
+
+  // Auto-select first non-empty tab when results arrive
+  useEffect(() => {
+    if (result && !filter) {
+      const counts = getCounts(result);
+      const first = TYPE_TABS.find(t => (counts[t.key] || 0) > 0);
+      if (first) setFilter(first.key);
+    }
+  }, [result]);
 
   const runDiscover = async () => {
     if (!decomposeResult) return;
@@ -67,22 +73,18 @@ export default function DiscoverModule() {
 
   if (!decomposeResult) return null;
 
+  function getCounts(r: DiscoverResult) {
+    const c: Record<string, number> = {};
+    r.insights.forEach(i => { c[i.type] = (c[i.type] || 0) + 1; });
+    return c;
+  }
+
+  const counts = result ? getCounts(result) : {};
+  const visibleTabs = TYPE_TABS.filter(t => (counts[t.key] || 0) > 0);
+
   const filtered = result?.insights.filter(
-    (i) => filter === 'all' || i.type === filter
+    (i) => filter === null || i.type === filter
   ) ?? [];
-
-  // Count per type
-  const counts: Record<string, number> = { all: result?.insights.length ?? 0 };
-  result?.insights.forEach(i => {
-    counts[i.type] = (counts[i.type] || 0) + 1;
-  });
-
-  // Check if insight matches highlight keyword
-  const isHighlighted = (insight: any) => {
-    if (!highlightKeyword) return false;
-    const text = `${insight.title} ${insight.description} ${insight.tags.join(' ')}`.toLowerCase();
-    return text.includes(highlightKeyword.toLowerCase());
-  };
 
   return (
     <div ref={containerRef} className="scroll-reveal">
@@ -181,84 +183,72 @@ export default function DiscoverModule() {
       {/* Results */}
       {status === 'done' && result && (
         <>
-          {/* Category tabs with counts */}
-          <div
-            className="flex gap-1 mb-8 overflow-x-auto pb-1"
-            style={{ scrollbarWidth: 'none' }}
-          >
-            {TYPE_TABS.map((tab) => {
-              const isActive = filter === tab.key;
-              const count = counts[tab.key] || 0;
-              return (
-                <button
-                  key={tab.key}
-                  onClick={() => setFilter(tab.key)}
-                  className="flex items-center gap-1.5 rounded-[10px] px-4 py-2 transition-all duration-200 whitespace-nowrap"
-                  style={{
-                    fontSize: 12,
-                    fontFamily: "'Inter', sans-serif",
-                    fontWeight: isActive ? 400 : 300,
-                    backgroundColor: isActive ? 'var(--accent-purple)' : 'var(--surface-input)',
-                    color: isActive ? '#fff' : 'var(--text-secondary)',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <span style={{ fontSize: 13 }}>{tab.icon}</span>
-                  {tab.label}
-                  <span
-                    className="rounded-full px-1.5 py-0.5"
+          {/* Category tabs — only non-empty */}
+          {visibleTabs.length > 1 && (
+            <div
+              className="flex gap-1 mb-8 overflow-x-auto pb-1"
+              style={{ scrollbarWidth: 'none' }}
+            >
+              {visibleTabs.map((tab) => {
+                const isActive = filter === tab.key;
+                const count = counts[tab.key] || 0;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setFilter(tab.key)}
+                    className="flex items-center gap-1.5 rounded-[10px] px-4 py-2 transition-all duration-200 whitespace-nowrap"
                     style={{
-                      fontSize: 10,
-                      fontWeight: 400,
-                      backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : 'var(--divider-light)',
-                      color: isActive ? '#fff' : 'var(--text-muted)',
-                      minWidth: 18,
-                      textAlign: 'center',
+                      fontSize: 12,
+                      fontFamily: "'Inter', sans-serif",
+                      fontWeight: isActive ? 400 : 300,
+                      backgroundColor: isActive ? 'var(--accent-purple)' : 'var(--surface-input)',
+                      color: isActive ? '#fff' : 'var(--text-secondary)',
+                      border: 'none',
+                      cursor: 'pointer',
                     }}
                   >
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* 2-column layout */}
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* LEFT — Insights feed */}
-            <div className="flex-1 min-w-0 flex flex-col gap-4">
-              {filtered.map((insight, i) => (
-                <div
-                  key={i}
-                  className="scroll-reveal"
-                  style={{ animationDelay: `${i * 60}ms` }}
-                  ref={(el) => {
-                    if (el) setTimeout(() => el.classList.add('visible'), 80 + i * 60);
-                  }}
-                >
-                  <DiscoverInsightCard
-                    insight={insight}
-                    isHighlighted={isHighlighted(insight)}
-                  />
-                </div>
-              ))}
-              {filtered.length === 0 && (
-                <div className="text-center py-16">
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}>
-                    No insights match this filter
-                  </p>
-                </div>
-              )}
+                    <span style={{ fontSize: 13 }}>{tab.icon}</span>
+                    {tab.label}
+                    <span
+                      className="rounded-full px-1.5 py-0.5"
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 400,
+                        backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : 'var(--divider-light)',
+                        color: isActive ? '#fff' : 'var(--text-muted)',
+                        minWidth: 18,
+                        textAlign: 'center',
+                      }}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
+          )}
 
-            {/* RIGHT — Synthesis panel */}
-            <div className="lg:w-[320px] flex-shrink-0">
-              <SynthesisPanel
-                synthesis={result.synthesis}
-                onHighlightInsight={setHighlightKeyword}
-              />
-            </div>
+          {/* Full-width insights feed */}
+          <div className="flex flex-col gap-4">
+            {filtered.map((insight, i) => (
+              <div
+                key={i}
+                className="scroll-reveal"
+                style={{ animationDelay: `${i * 60}ms` }}
+                ref={(el) => {
+                  if (el) setTimeout(() => el.classList.add('visible'), 80 + i * 60);
+                }}
+              >
+                <DiscoverInsightCard insight={insight} />
+              </div>
+            ))}
+            {filtered.length === 0 && (
+              <div className="text-center py-16">
+                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}>
+                  No insights match this filter
+                </p>
+              </div>
+            )}
           </div>
         </>
       )}
