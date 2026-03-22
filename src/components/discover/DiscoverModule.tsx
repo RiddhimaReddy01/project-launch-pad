@@ -7,12 +7,12 @@ import DiscoverLoading from './DiscoverLoading';
 
 type Status = 'idle' | 'loading' | 'done' | 'error';
 
-const TYPE_FILTERS = [
-  { key: 'all', label: 'All Insights' },
-  { key: 'pain_point', label: 'Pain Points' },
-  { key: 'workaround', label: 'Workarounds' },
-  { key: 'demand_signal', label: 'Demand Signals' },
-  { key: 'expectation', label: 'Expectations' },
+const TYPE_TABS = [
+  { key: 'all', label: 'All', icon: '📊' },
+  { key: 'pain_point', label: 'Pain Points', icon: '🔴' },
+  { key: 'workaround', label: 'Workarounds', icon: '🔄' },
+  { key: 'demand_signal', label: 'Demand Signals', icon: '📈' },
+  { key: 'expectation', label: 'Expectations', icon: '💎' },
 ] as const;
 
 export default function DiscoverModule() {
@@ -22,6 +22,7 @@ export default function DiscoverModule() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState('all');
   const [cached, setCached] = useState(false);
+  const [highlightKeyword, setHighlightKeyword] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const hasRun = useRef(false);
 
@@ -30,7 +31,6 @@ export default function DiscoverModule() {
     if (el) requestAnimationFrame(() => el.classList.add('visible'));
   }, []);
 
-  // Auto-run when decompose result is available
   useEffect(() => {
     if (decomposeResult && !hasRun.current) {
       hasRun.current = true;
@@ -40,7 +40,6 @@ export default function DiscoverModule() {
 
   const runDiscover = async () => {
     if (!decomposeResult) return;
-
     setError(null);
     setStatus('loading');
     setCached(false);
@@ -56,12 +55,7 @@ export default function DiscoverModule() {
         target_customers: decomposeResult.stage2.target_customers,
         price_tier: decomposeResult.stage2.price_tier,
       });
-
-      // If it returned instantly, it was cached
-      if (Date.now() - startTime < 1000) {
-        setCached(true);
-      }
-
+      if (Date.now() - startTime < 1000) setCached(true);
       setResult(data);
       setContextDiscover(data);
       setStatus('done');
@@ -77,61 +71,79 @@ export default function DiscoverModule() {
     (i) => filter === 'all' || i.type === filter
   ) ?? [];
 
-  const locationStr = decomposeResult.stage1.location.city
-    ? `${decomposeResult.stage1.location.city}, ${decomposeResult.stage1.location.state}`
-    : '';
+  // Count per type
+  const counts: Record<string, number> = { all: result?.insights.length ?? 0 };
+  result?.insights.forEach(i => {
+    counts[i.type] = (counts[i.type] || 0) + 1;
+  });
+
+  // Check if insight matches highlight keyword
+  const isHighlighted = (insight: any) => {
+    if (!highlightKeyword) return false;
+    const text = `${insight.title} ${insight.description} ${insight.tags.join(' ')}`.toLowerCase();
+    return text.includes(highlightKeyword.toLowerCase());
+  };
 
   return (
     <div ref={containerRef} className="scroll-reveal">
-      {/* Top bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-          <p className="font-heading" style={{ fontSize: 24 }}>
-            {decomposeResult.stage1.business_type}
-            {locationStr && (
-              <span style={{ fontSize: 16, fontWeight: 300, fontFamily: "'Inter', sans-serif", color: 'var(--text-muted)', marginLeft: 8 }}>
-                — {locationStr}
+      {/* Section header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <p style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 20,
+              fontWeight: 400,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.01em',
+            }}>
+              Market Intelligence
+            </p>
+            {result && (
+              <p style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 12,
+                fontWeight: 300,
+                color: 'var(--text-muted)',
+                marginTop: 4,
+              }}>
+                {result.source_summary.total_signals} signals from {result.source_summary.reddit_count} Reddit · {result.source_summary.google_count} Google · {result.source_summary.yelp_count} Yelp
+              </p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-3">
+            {cached && (
+              <span
+                className="rounded-full px-3 py-1"
+                style={{
+                  fontSize: 11,
+                  fontFamily: "'Inter', sans-serif",
+                  backgroundColor: 'rgba(45,139,117,0.08)',
+                  color: 'var(--accent-teal)',
+                }}
+              >
+                ⚡ Cached
               </span>
             )}
-          </p>
-          {result && (
-            <p className="font-caption mt-1" style={{ fontSize: 12 }}>
-              {result.source_summary.total_signals} signals from {result.source_summary.reddit_count} Reddit + {result.source_summary.google_count} Google + {result.source_summary.yelp_count} Yelp sources
-            </p>
-          )}
-        </div>
-
-        <div className="flex items-center gap-3">
-          {cached && (
-            <span
-              className="rounded-full px-3 py-1"
-              style={{
-                fontSize: 11,
-                fontFamily: "'Inter', sans-serif",
-                backgroundColor: 'rgba(45,139,117,0.08)',
-                color: 'var(--accent-teal)',
-              }}
-            >
-              ⚡ Cached result
-            </span>
-          )}
-          {status === 'done' && (
-            <button
-              onClick={() => { hasRun.current = false; runDiscover(); }}
-              className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
-              style={{
-                fontSize: 13,
-                fontFamily: "'Inter', sans-serif",
-                fontWeight: 300,
-                backgroundColor: 'var(--surface-input)',
-                color: 'var(--text-secondary)',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              Re-run Discovery
-            </button>
-          )}
+            {status === 'done' && (
+              <button
+                onClick={() => { hasRun.current = false; runDiscover(); }}
+                className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
+                style={{
+                  fontSize: 12,
+                  fontFamily: "'Inter', sans-serif",
+                  fontWeight: 300,
+                  backgroundColor: 'var(--surface-input)',
+                  color: 'var(--text-secondary)',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                ↻ Re-run
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -169,15 +181,19 @@ export default function DiscoverModule() {
       {/* Results */}
       {status === 'done' && result && (
         <>
-          {/* Filter pills */}
-          <div className="flex flex-wrap gap-2 mb-8">
-            {TYPE_FILTERS.map((f) => {
-              const isActive = filter === f.key;
+          {/* Category tabs with counts */}
+          <div
+            className="flex gap-1 mb-8 overflow-x-auto pb-1"
+            style={{ scrollbarWidth: 'none' }}
+          >
+            {TYPE_TABS.map((tab) => {
+              const isActive = filter === tab.key;
+              const count = counts[tab.key] || 0;
               return (
                 <button
-                  key={f.key}
-                  onClick={() => setFilter(f.key)}
-                  className="rounded-full px-4 py-1.5 transition-all duration-200"
+                  key={tab.key}
+                  onClick={() => setFilter(tab.key)}
+                  className="flex items-center gap-1.5 rounded-[10px] px-4 py-2 transition-all duration-200 whitespace-nowrap"
                   style={{
                     fontSize: 12,
                     fontFamily: "'Inter', sans-serif",
@@ -188,7 +204,21 @@ export default function DiscoverModule() {
                     cursor: 'pointer',
                   }}
                 >
-                  {f.label}
+                  <span style={{ fontSize: 13 }}>{tab.icon}</span>
+                  {tab.label}
+                  <span
+                    className="rounded-full px-1.5 py-0.5"
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 400,
+                      backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : 'var(--divider-light)',
+                      color: isActive ? '#fff' : 'var(--text-muted)',
+                      minWidth: 18,
+                      textAlign: 'center',
+                    }}
+                  >
+                    {count}
+                  </span>
                 </button>
               );
             })}
@@ -207,12 +237,15 @@ export default function DiscoverModule() {
                     if (el) setTimeout(() => el.classList.add('visible'), 80 + i * 60);
                   }}
                 >
-                  <DiscoverInsightCard insight={insight} />
+                  <DiscoverInsightCard
+                    insight={insight}
+                    isHighlighted={isHighlighted(insight)}
+                  />
                 </div>
               ))}
               {filtered.length === 0 && (
                 <div className="text-center py-16">
-                  <p className="font-caption" style={{ fontSize: 13 }}>
+                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}>
                     No insights match this filter
                   </p>
                 </div>
@@ -221,7 +254,10 @@ export default function DiscoverModule() {
 
             {/* RIGHT — Synthesis panel */}
             <div className="lg:w-[320px] flex-shrink-0">
-              <SynthesisPanel synthesis={result.synthesis} />
+              <SynthesisPanel
+                synthesis={result.synthesis}
+                onHighlightInsight={setHighlightKeyword}
+              />
             </div>
           </div>
         </>
