@@ -1,38 +1,134 @@
+import { useState } from 'react';
 import type { DiscoverSynthesis } from '@/lib/discover';
 
-function SynthesisSection({ title, items, icon }: { title: string; items: string[]; icon: string }) {
+function OpportunityGauge({ score }: { score: number }) {
+  const size = 100;
+  const strokeWidth = 6;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = Math.PI * radius; // semicircle
+  const pct = Math.min(score / 100, 1);
+  const offset = circumference * (1 - pct);
+
+  const color =
+    score >= 70 ? 'var(--accent-teal)' :
+    score >= 40 ? 'var(--accent-amber)' :
+    '#EF4444';
+
   return (
-    <div className="mb-6">
-      <p className="font-caption mb-2" style={{ fontSize: 11, letterSpacing: '0.04em' }}>
+    <div className="flex flex-col items-center">
+      <svg width={size} height={size / 2 + 10} viewBox={`0 0 ${size} ${size / 2 + 10}`}>
+        {/* Background arc */}
+        <path
+          d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
+          fill="none"
+          stroke="var(--divider-light)"
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+        />
+        {/* Score arc */}
+        <path
+          d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
+          fill="none"
+          stroke={color}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          style={{ transition: 'stroke-dashoffset 1s ease-out' }}
+        />
+      </svg>
+      <span style={{
+        fontFamily: "'Inter', sans-serif",
+        fontSize: 28,
+        fontWeight: 400,
+        color,
+        marginTop: -20,
+      }}>
+        {score}
+      </span>
+      <span style={{
+        fontFamily: "'Inter', sans-serif",
+        fontSize: 10,
+        fontWeight: 300,
+        color: 'var(--text-muted)',
+        letterSpacing: '0.04em',
+        marginTop: 4,
+      }}>
+        OPPORTUNITY SCORE
+      </span>
+    </div>
+  );
+}
+
+function ClickableSection({
+  title,
+  items,
+  icon,
+  onItemClick,
+  activeItem,
+}: {
+  title: string;
+  items: string[];
+  icon: string;
+  onItemClick?: (item: string) => void;
+  activeItem?: string | null;
+}) {
+  return (
+    <div className="mb-5">
+      <p style={{
+        fontFamily: "'Inter', sans-serif",
+        fontSize: 10,
+        fontWeight: 300,
+        letterSpacing: '0.06em',
+        color: 'var(--text-muted)',
+        marginBottom: 8,
+      }}>
         {icon} {title}
       </p>
-      <div className="flex flex-col gap-2">
-        {items.map((item, i) => (
-          <p
-            key={i}
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: 13,
-              fontWeight: 300,
-              lineHeight: 1.5,
-              color: 'var(--text-secondary)',
-            }}
-          >
-            {item}
-          </p>
-        ))}
+      <div className="flex flex-col gap-1.5">
+        {items.map((item, i) => {
+          const isActive = activeItem === item;
+          return (
+            <div
+              key={i}
+              className="rounded-[8px] px-3 py-2 transition-all duration-150 cursor-pointer"
+              style={{
+                backgroundColor: isActive ? 'rgba(108,92,231,0.06)' : 'transparent',
+                border: isActive ? '1px solid rgba(108,92,231,0.15)' : '1px solid transparent',
+              }}
+              onClick={() => onItemClick?.(item)}
+            >
+              <p style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 13,
+                fontWeight: 300,
+                lineHeight: 1.5,
+                color: isActive ? 'var(--accent-purple)' : 'var(--text-secondary)',
+              }}>
+                {item}
+              </p>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 }
 
-export default function SynthesisPanel({ synthesis }: { synthesis: DiscoverSynthesis }) {
-  const scoreColor =
-    synthesis.opportunity_score >= 70
-      ? 'var(--accent-teal)'
-      : synthesis.opportunity_score >= 40
-        ? 'var(--accent-amber)'
-        : '#EF4444';
+export default function SynthesisPanel({
+  synthesis,
+  onHighlightInsight,
+}: {
+  synthesis: DiscoverSynthesis;
+  onHighlightInsight?: (keyword: string) => void;
+}) {
+  const [activeItem, setActiveItem] = useState<string | null>(null);
+
+  const handleClick = (item: string) => {
+    const next = activeItem === item ? null : item;
+    setActiveItem(next);
+    onHighlightInsight?.(next || '');
+  };
 
   return (
     <div
@@ -43,53 +139,50 @@ export default function SynthesisPanel({ synthesis }: { synthesis: DiscoverSynth
         boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
       }}
     >
-      <p className="font-heading mb-6" style={{ fontSize: 18 }}>
-        Key Takeaways
+      <p style={{
+        fontFamily: "'Inter', sans-serif",
+        fontSize: 16,
+        fontWeight: 400,
+        color: 'var(--text-primary)',
+        marginBottom: 20,
+      }}>
+        Founder Synthesis
       </p>
 
-      {/* Opportunity Score */}
-      <div className="text-center mb-8">
-        <p className="font-caption mb-2" style={{ fontSize: 11, letterSpacing: '0.04em' }}>
-          OPPORTUNITY SIGNAL SCORE
-        </p>
-        <div
-          className="inline-flex items-center justify-center rounded-full"
-          style={{
-            width: 72,
-            height: 72,
-            border: `3px solid ${scoreColor}`,
-            fontFamily: "'Inter', sans-serif",
-            fontSize: 24,
-            fontWeight: 400,
-            color: scoreColor,
-          }}
-        >
-          {synthesis.opportunity_score}
-        </div>
-      </div>
+      <OpportunityGauge score={synthesis.opportunity_score} />
 
-      <SynthesisSection
+      <div style={{ height: 1, backgroundColor: 'var(--divider)', margin: '20px 0' }} />
+
+      <ClickableSection
         title="TOP PAIN POINTS"
         items={synthesis.top_pain_points}
         icon="🔴"
+        onItemClick={handleClick}
+        activeItem={activeItem}
       />
 
-      <SynthesisSection
+      <ClickableSection
         title="WHAT THEY DO INSTEAD"
         items={synthesis.current_workarounds}
         icon="🔄"
+        onItemClick={handleClick}
+        activeItem={activeItem}
       />
 
-      <SynthesisSection
+      <ClickableSection
         title="WHAT THEY VALUE"
         items={synthesis.what_they_value}
         icon="💎"
+        onItemClick={handleClick}
+        activeItem={activeItem}
       />
 
-      <SynthesisSection
-        title="PAY SIGNALS"
+      <ClickableSection
+        title="WILLINGNESS TO PAY"
         items={synthesis.willingness_signals}
         icon="💰"
+        onItemClick={handleClick}
+        activeItem={activeItem}
       />
     </div>
   );
