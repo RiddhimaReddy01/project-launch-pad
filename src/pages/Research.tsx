@@ -211,7 +211,7 @@ export default function Research() {
         {currentStep === 'discover' ? (
           <>
             <DecomposeModule />
-            <div style={{ marginTop: 64 }}>
+            <div style={{ marginTop: 32 }}>
               <DiscoverModule />
             </div>
           </>
