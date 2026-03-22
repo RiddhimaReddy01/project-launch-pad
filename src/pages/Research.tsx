@@ -61,7 +61,10 @@ function StepperDot({ step, index, currentIndex, onNavigate }: { step: typeof ST
 
 export default function Research() {
   const { idea, currentStep, setCurrentStep } = useIdea();
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const contentRef = useRef<HTMLDivElement>(null);
 
   const currentIndex = STEPS.findIndex((s) => s.key === currentStep);
