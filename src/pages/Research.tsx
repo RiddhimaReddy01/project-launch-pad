@@ -1,10 +1,12 @@
 import { useIdea, type Step } from '@/context/IdeaContext';
+import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import DiscoverModule from '@/components/discover/DiscoverModule';
 import AnalyzeModule from '@/components/analyze/AnalyzeModule';
 import SetupModule from '@/components/setup/SetupModule';
 import ValidateModule from '@/components/validate/ValidateModule';
+import { saveIdea } from '@/lib/saved-ideas';
 
 const STEPS: { key: Step; label: string; placeholder: string }[] = [
   { key: 'discover', label: 'Discover', placeholder: 'Scanning real conversations...' },
@@ -59,8 +61,10 @@ function StepperDot({ step, index, currentIndex, onNavigate }: { step: typeof ST
 
 export default function Research() {
   const { idea, currentStep, setCurrentStep } = useIdea();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
 
   const currentIndex = STEPS.findIndex((s) => s.key === currentStep);
   const activeStep = STEPS[currentIndex];
@@ -105,29 +109,29 @@ export default function Research() {
           >
             New idea
           </span>
+          {user && (
+            <span
+              className="cursor-pointer transition-colors duration-200"
+              style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-purple)')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+              onClick={async () => {
+                setSaveStatus('saving');
+                await saveIdea(idea, currentStep);
+                setSaveStatus('saved');
+                setTimeout(() => setSaveStatus('idle'), 2000);
+              }}
+            >
+              {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? '✓ Saved' : 'Save'}
+            </span>
+          )}
           <span
             className="cursor-pointer"
             style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}
+            onClick={() => navigate(user ? '/dashboard' : '/auth')}
           >
-            Saved
+            {user ? 'Dashboard' : 'Log in'}
           </span>
-          <div
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: '50%',
-              backgroundColor: 'rgba(108,92,231,0.08)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontFamily: "'Inter', sans-serif",
-              fontSize: 12,
-              fontWeight: 400,
-              color: 'var(--accent-purple)',
-            }}
-          >
-            R
-          </div>
         </div>
       </header>
 
