@@ -209,7 +209,12 @@ export default function Research() {
         }}
       >
         {currentStep === 'discover' ? (
-          <DiscoverModule />
+          <>
+            <DecomposeModule />
+            <div style={{ marginTop: 64 }}>
+              <DiscoverModule />
+            </div>
+          </>
         ) : currentStep === 'analyze' ? (
           <AnalyzeModule />
         ) : currentStep === 'setup' ? (
