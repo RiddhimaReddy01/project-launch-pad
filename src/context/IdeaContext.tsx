@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
+import type { DecomposeResult } from '@/lib/decompose';
 
 export type Step = 'discover' | 'analyze' | 'setup' | 'validate';
 
@@ -9,6 +10,8 @@ interface IdeaState {
   setCurrentStep: (step: Step) => void;
   selectedInsight: string | null;
   setSelectedInsight: (insight: string | null) => void;
+  decomposeResult: DecomposeResult | null;
+  setDecomposeResult: (result: DecomposeResult | null) => void;
 }
 
 const IdeaContext = createContext<IdeaState | null>(null);
@@ -17,9 +20,10 @@ export function IdeaProvider({ children }: { children: ReactNode }) {
   const [idea, setIdea] = useState('');
   const [currentStep, setCurrentStep] = useState<Step>('discover');
   const [selectedInsight, setSelectedInsight] = useState<string | null>(null);
+  const [decomposeResult, setDecomposeResult] = useState<DecomposeResult | null>(null);
 
   return (
-    <IdeaContext.Provider value={{ idea, setIdea, currentStep, setCurrentStep, selectedInsight, setSelectedInsight }}>
+    <IdeaContext.Provider value={{ idea, setIdea, currentStep, setCurrentStep, selectedInsight, setSelectedInsight, decomposeResult, setDecomposeResult }}>
       {children}
     </IdeaContext.Provider>
   );
