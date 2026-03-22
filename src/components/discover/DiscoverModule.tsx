@@ -1,142 +1,231 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useIdea } from '@/context/IdeaContext';
-import { MOCK_SOURCES, MOCK_INSIGHTS, MOCK_SUMMARY } from '@/data/discover-mock';
-import type { Insight, Source } from '@/data/discover-mock';
-import SourceBar from './SourceBar';
-import FilterPills from './FilterPills';
-import InsightCard from './InsightCard';
-import MentionsPanel from './MentionsPanel';
+import { discoverInsights, type DiscoverResult } from '@/lib/discover';
+import DiscoverInsightCard from './DiscoverInsightCard';
+import SynthesisPanel from './SynthesisPanel';
+import DiscoverLoading from './DiscoverLoading';
+
+type Status = 'idle' | 'loading' | 'done' | 'error';
+
+const TYPE_FILTERS = [
+  { key: 'all', label: 'All Insights' },
+  { key: 'pain_point', label: 'Pain Points' },
+  { key: 'workaround', label: 'Workarounds' },
+  { key: 'demand_signal', label: 'Demand Signals' },
+  { key: 'expectation', label: 'Expectations' },
+] as const;
 
 export default function DiscoverModule() {
-  const { decomposeResult } = useIdea();
-  const [selectedSource, setSelectedSource] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [mentionsInsight, setMentionsInsight] = useState<Insight | null>(null);
+  const { decomposeResult, setDiscoverResult: setContextDiscover } = useIdea();
+  const [status, setStatus] = useState<Status>('idle');
+  const [result, setResult] = useState<DiscoverResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState('all');
+  const [cached, setCached] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const hasRun = useRef(false);
 
   useEffect(() => {
     const el = containerRef.current;
     if (el) requestAnimationFrame(() => el.classList.add('visible'));
   }, []);
 
-  // Build dynamic sources from decompose result
-  const sources: Source[] = useMemo(() => {
-    if (!decomposeResult) return MOCK_SOURCES;
-
-    const dynamicSources: Source[] = [];
-
-    // Add subreddits
-    decomposeResult.stage2.subreddits.forEach((sub, i) => {
-      dynamicSources.push({
-        id: `reddit_${sub}`,
-        name: `r/${sub}`,
-        type: 'reddit_local',
-        postCount: Math.floor(Math.random() * 80) + 10,
-        url: `https://www.reddit.com/r/${sub}/`,
-        active: false,
-      });
-    });
-
-    // Add source domains
-    decomposeResult.stage2.source_domains.forEach((domain, i) => {
-      const name = domain.replace(/^www\./, '').replace(/\.com$|\.org$/, '');
-      dynamicSources.push({
-        id: `domain_${i}`,
-        name: name.charAt(0).toUpperCase() + name.slice(1),
-        type: 'reviews',
-        postCount: Math.floor(Math.random() * 120) + 20,
-        url: `https://${domain}`,
-        active: false,
-      });
-    });
-
-    return dynamicSources;
+  // Auto-run when decompose result is available
+  useEffect(() => {
+    if (decomposeResult && !hasRun.current) {
+      hasRun.current = true;
+      runDiscover();
+    }
   }, [decomposeResult]);
 
-  const summary = useMemo(() => {
-    if (!decomposeResult) return MOCK_SUMMARY;
-    return {
-      totalSources: sources.length,
-      totalSignals: sources.reduce((sum, s) => sum + s.postCount, 0),
-    };
-  }, [decomposeResult, sources]);
+  const runDiscover = async () => {
+    if (!decomposeResult) return;
 
-  const filtered = MOCK_INSIGHTS.filter((insight) => {
-    if (selectedCategory !== 'all' && insight.type !== selectedCategory) return false;
-    if (selectedSource && !insight.sourceIds.includes(selectedSource)) return false;
-    return true;
-  });
+    setError(null);
+    setStatus('loading');
+    setCached(false);
+
+    try {
+      const startTime = Date.now();
+      const data = await discoverInsights({
+        business_type: decomposeResult.stage1.business_type,
+        location: decomposeResult.stage1.location,
+        search_queries: decomposeResult.stage2.search_queries,
+        source_domains: decomposeResult.stage2.source_domains,
+        subreddits: decomposeResult.stage2.subreddits,
+        target_customers: decomposeResult.stage2.target_customers,
+        price_tier: decomposeResult.stage2.price_tier,
+      });
+
+      // If it returned instantly, it was cached
+      if (Date.now() - startTime < 1000) {
+        setCached(true);
+      }
+
+      setResult(data);
+      setContextDiscover(data);
+      setStatus('done');
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong while fetching insights');
+      setStatus('error');
+    }
+  };
+
+  if (!decomposeResult) return null;
+
+  const filtered = result?.insights.filter(
+    (i) => filter === 'all' || i.type === filter
+  ) ?? [];
+
+  const locationStr = decomposeResult.stage1.location.city
+    ? `${decomposeResult.stage1.location.city}, ${decomposeResult.stage1.location.state}`
+    : '';
 
   return (
-    <>
-      <div
-        ref={containerRef}
-        className="scroll-reveal"
-        style={{ maxWidth: 700, margin: '0 auto', padding: '0 24px' }}
-      >
-        {/* Section 1 — Status */}
-        <div className="text-center mb-12">
-          <p className="font-heading" style={{ fontSize: 26 }}>
-            Community signals
+    <div ref={containerRef} className="scroll-reveal">
+      {/* Top bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <p className="font-heading" style={{ fontSize: 24 }}>
+            {decomposeResult.stage1.business_type}
+            {locationStr && (
+              <span style={{ fontSize: 16, fontWeight: 300, fontFamily: "'Inter', sans-serif", color: 'var(--text-muted)', marginLeft: 8 }}>
+                — {locationStr}
+              </span>
+            )}
           </p>
-          <p className="font-caption mt-3" style={{ fontSize: 13 }}>
-            We scanned {summary.totalSources} sources and analyzed {summary.totalSignals} community signals
-          </p>
+          {result && (
+            <p className="font-caption mt-1" style={{ fontSize: 12 }}>
+              {result.source_summary.total_signals} signals from {result.source_summary.reddit_count} Reddit + {result.source_summary.google_count} Google + {result.source_summary.yelp_count} Yelp sources
+            </p>
+          )}
         </div>
 
-        {/* Section 2 — Source bar */}
-        <div className="mb-6">
-          <p className="font-caption mb-3" style={{ fontSize: 12, letterSpacing: '0.04em' }}>
-            SOURCES
-          </p>
-          <SourceBar
-            sources={sources}
-            selectedSourceId={selectedSource}
-            onSelectSource={setSelectedSource}
-          />
-        </div>
-
-        {/* Section 3 — Filter pills */}
-        <div className="mb-10">
-          <FilterPills selected={selectedCategory} onSelect={setSelectedCategory} />
-        </div>
-
-        {/* Section 4 — Insight list */}
-        <div className="flex flex-col gap-3">
-          {filtered.map((insight, i) => (
-            <div
-              key={insight.id}
-              className="scroll-reveal"
-              style={{ animationDelay: `${i * 80}ms` }}
-              ref={(el) => {
-                if (el) setTimeout(() => el.classList.add('visible'), 100 + i * 80);
+        <div className="flex items-center gap-3">
+          {cached && (
+            <span
+              className="rounded-full px-3 py-1"
+              style={{
+                fontSize: 11,
+                fontFamily: "'Inter', sans-serif",
+                backgroundColor: 'rgba(45,139,117,0.08)',
+                color: 'var(--accent-teal)',
               }}
             >
-              <InsightCard
-                insight={insight}
-                sources={sources}
-                onSeeMentions={setMentionsInsight}
-              />
-            </div>
-          ))}
-
-          {filtered.length === 0 && (
-            <div className="text-center py-16">
-              <p className="font-caption" style={{ fontSize: 13 }}>
-                No insights match this filter combination
-              </p>
-            </div>
+              ⚡ Cached result
+            </span>
+          )}
+          {status === 'done' && (
+            <button
+              onClick={() => { hasRun.current = false; runDiscover(); }}
+              className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
+              style={{
+                fontSize: 13,
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 300,
+                backgroundColor: 'var(--surface-input)',
+                color: 'var(--text-secondary)',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              Re-run Discovery
+            </button>
           )}
         </div>
       </div>
 
-      {/* Section 5 — Mentions side panel */}
-      {mentionsInsight && (
-        <MentionsPanel
-          insight={mentionsInsight}
-          onClose={() => setMentionsInsight(null)}
-        />
+      {/* Loading */}
+      {status === 'loading' && <DiscoverLoading />}
+
+      {/* Error */}
+      {status === 'error' && (
+        <div className="text-center py-16">
+          <div className="rounded-[12px] p-6 mb-4 inline-block" style={{ backgroundColor: 'rgba(239,68,68,0.06)' }}>
+            <p style={{ fontSize: 14, fontFamily: "'Inter', sans-serif", color: 'var(--destructive)' }}>
+              {error}
+            </p>
+          </div>
+          <div>
+            <button
+              onClick={() => { hasRun.current = false; runDiscover(); }}
+              className="rounded-[12px] px-5 py-3 transition-all duration-200 active:scale-[0.97]"
+              style={{
+                fontSize: 14,
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 400,
+                backgroundColor: 'var(--accent-purple)',
+                color: '#fff',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        </div>
       )}
-    </>
+
+      {/* Results */}
+      {status === 'done' && result && (
+        <>
+          {/* Filter pills */}
+          <div className="flex flex-wrap gap-2 mb-8">
+            {TYPE_FILTERS.map((f) => {
+              const isActive = filter === f.key;
+              return (
+                <button
+                  key={f.key}
+                  onClick={() => setFilter(f.key)}
+                  className="rounded-full px-4 py-1.5 transition-all duration-200"
+                  style={{
+                    fontSize: 12,
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: isActive ? 400 : 300,
+                    backgroundColor: isActive ? 'var(--accent-purple)' : 'var(--surface-input)',
+                    color: isActive ? '#fff' : 'var(--text-secondary)',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {f.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* 2-column layout */}
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* LEFT — Insights feed */}
+            <div className="flex-1 min-w-0 flex flex-col gap-4">
+              {filtered.map((insight, i) => (
+                <div
+                  key={i}
+                  className="scroll-reveal"
+                  style={{ animationDelay: `${i * 60}ms` }}
+                  ref={(el) => {
+                    if (el) setTimeout(() => el.classList.add('visible'), 80 + i * 60);
+                  }}
+                >
+                  <DiscoverInsightCard insight={insight} />
+                </div>
+              ))}
+              {filtered.length === 0 && (
+                <div className="text-center py-16">
+                  <p className="font-caption" style={{ fontSize: 13 }}>
+                    No insights match this filter
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* RIGHT — Synthesis panel */}
+            <div className="lg:w-[320px] flex-shrink-0">
+              <SynthesisPanel synthesis={result.synthesis} />
+            </div>
+          </div>
+        </>
+      )}
+    </div>
   );
 }

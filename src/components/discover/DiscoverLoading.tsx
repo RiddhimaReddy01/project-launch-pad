@@ -1,0 +1,95 @@
+import { useState, useEffect } from 'react';
+
+const STEPS = [
+  { label: 'Fetching Reddit posts', icon: '🔍' },
+  { label: 'Scraping reviews', icon: '📝' },
+  { label: 'Clustering pain points', icon: '🔗' },
+  { label: 'Extracting insights', icon: '💡' },
+];
+
+export default function DiscoverLoading() {
+  const [activeStep, setActiveStep] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const stepInterval = setInterval(() => {
+      setActiveStep((prev) => Math.min(prev + 1, STEPS.length - 1));
+    }, 2500);
+
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => Math.min(prev + 1.2, 95));
+    }, 100);
+
+    return () => {
+      clearInterval(stepInterval);
+      clearInterval(progressInterval);
+    };
+  }, []);
+
+  return (
+    <div className="flex flex-col items-center gap-8 py-20">
+      <div className="text-center">
+        <p className="font-heading" style={{ fontSize: 22 }}>
+          Scanning real customer discussions…
+        </p>
+        <p className="font-caption mt-3" style={{ fontSize: 13 }}>
+          Analyzing Reddit threads, reviews, and search results (200+ sources)
+        </p>
+      </div>
+
+      {/* Progress bar */}
+      <div
+        className="rounded-full overflow-hidden"
+        style={{ width: 320, height: 4, backgroundColor: 'var(--divider-light)' }}
+      >
+        <div
+          className="rounded-full h-full transition-all duration-300 ease-out"
+          style={{
+            width: `${progress}%`,
+            backgroundColor: 'var(--accent-purple)',
+          }}
+        />
+      </div>
+
+      {/* Steps */}
+      <div className="flex flex-col gap-3" style={{ width: 280 }}>
+        {STEPS.map((step, i) => {
+          const isDone = i < activeStep;
+          const isActive = i === activeStep;
+          return (
+            <div
+              key={i}
+              className="flex items-center gap-3 transition-opacity duration-300"
+              style={{ opacity: i <= activeStep ? 1 : 0.3 }}
+            >
+              <span style={{ fontSize: 14, width: 20, textAlign: 'center' }}>
+                {isDone ? '✓' : step.icon}
+              </span>
+              <span
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 13,
+                  fontWeight: isActive ? 400 : 300,
+                  color: isDone ? 'var(--accent-teal)' : isActive ? 'var(--text-primary)' : 'var(--text-muted)',
+                }}
+              >
+                {step.label}
+              </span>
+              {isActive && (
+                <div
+                  className="rounded-full"
+                  style={{
+                    width: 6,
+                    height: 6,
+                    backgroundColor: 'var(--accent-purple)',
+                    animation: 'pulse 1.2s ease-in-out infinite',
+                  }}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
