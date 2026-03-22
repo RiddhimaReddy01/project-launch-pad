@@ -65,7 +65,6 @@ export default function Research() {
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
-  const contentRef = useRef<HTMLDivElement>(null);
 
   const currentIndex = STEPS.findIndex((s) => s.key === currentStep);
   const activeStep = STEPS[currentIndex];
