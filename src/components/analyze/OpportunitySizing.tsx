@@ -1,138 +1,125 @@
-import { useState } from 'react';
-import { MOCK_MARKET_SIZE } from '@/data/analyze-mock';
+import { useState, useEffect } from 'react';
+import { analyzeSection, type AnalyzeContext, type OpportunityData } from '@/lib/analyze';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import SectionSkeleton from './SectionSkeleton';
 
-export default function OpportunitySizing() {
+const CONFIDENCE_ICON = { low: '⚠️', medium: 'ℹ️', high: '✅' };
+const CONFIDENCE_COLOR = { low: '#EF4444', medium: 'var(--accent-amber)', high: 'var(--accent-teal)' };
+
+export default function OpportunitySizing({ context, onData }: { context: AnalyzeContext; onData?: (data: OpportunityData) => void }) {
+  const [data, setData] = useState<OpportunityData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [methodOpen, setMethodOpen] = useState(false);
-  const [hoveredBar, setHoveredBar] = useState<string | null>(null);
-  const [hoveredMetric, setHoveredMetric] = useState<string | null>(null);
-  const maxRaw = MOCK_MARKET_SIZE[0].rawValue;
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    analyzeSection('opportunity', context)
+      .then((result) => {
+        if (!cancelled) {
+          const d = result as OpportunityData;
+          setData(d);
+          onData?.(d);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err.message);
+          setLoading(false);
+        }
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (loading) return <SectionSkeleton label="Calculating TAM / SAM / SOM..." />;
+  if (error) return (
+    <div className="text-center py-12">
+      <p style={{ fontSize: 14, color: 'var(--destructive)', marginBottom: 12 }}>{error}</p>
+      <button onClick={() => { setLoading(true); setError(null); analyzeSection('opportunity', context).then(r => { setData(r as OpportunityData); setLoading(false); }).catch(e => { setError(e.message); setLoading(false); }); }}
+        className="rounded-[10px] px-4 py-2" style={{ backgroundColor: 'var(--accent-purple)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 13 }}>Retry</button>
+    </div>
+  );
+  if (!data) return null;
+
+  const tiers = [
+    { key: 'TAM', label: 'Total Addressable Market', ...data.tam },
+    { key: 'SAM', label: 'Serviceable Available Market', ...data.sam },
+    { key: 'SOM', label: 'Serviceable Obtainable Market', ...data.som },
+  ];
+
+  const chartData = tiers.map(t => ({ name: t.key, value: t.value }));
+  const barColors = ['var(--accent-purple)', 'var(--accent-blue)', 'var(--accent-teal)'];
+
+  const funnelData = [
+    { name: 'Population', value: data.funnel.population },
+    { name: 'Aware', value: data.funnel.aware },
+    { name: 'Interested', value: data.funnel.interested },
+    { name: 'Willing to Try', value: data.funnel.willing_to_try },
+    { name: 'Repeat', value: data.funnel.repeat_customers },
+  ];
+
+  const fmt = (v: number) => {
+    if (v >= 1e9) return `$${(v / 1e9).toFixed(1)}B`;
+    if (v >= 1e6) return `$${(v / 1e6).toFixed(1)}M`;
+    if (v >= 1e3) return `$${(v / 1e3).toFixed(0)}K`;
+    return `$${v}`;
+  };
+
+  const fmtNum = (v: number) => {
+    if (v >= 1e6) return `${(v / 1e6).toFixed(1)}M`;
+    if (v >= 1e3) return `${(v / 1e3).toFixed(1)}K`;
+    return v.toString();
+  };
 
   return (
     <div>
-      {/* Metric blocks */}
-      <div className="flex flex-col gap-8">
-        {MOCK_MARKET_SIZE.map((m) => (
-          <div
-            key={m.acronym}
-            className="rounded-[12px] p-5 transition-all duration-200"
-            style={{
-              backgroundColor: hoveredMetric === m.acronym ? 'var(--surface-card)' : 'transparent',
-              boxShadow: hoveredMetric === m.acronym ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
-              cursor: 'default',
-            }}
-            onMouseEnter={() => setHoveredMetric(m.acronym)}
-            onMouseLeave={() => setHoveredMetric(null)}
-          >
-            <p
-              className="font-caption"
-              style={{ fontSize: 11, letterSpacing: '0.06em', marginBottom: 6 }}
-            >
-              {m.acronym} — {m.label}
-            </p>
-            <p
-              className="font-heading"
-              style={{ fontSize: 26, lineHeight: 1.25, letterSpacing: '-0.02em' }}
-            >
-              {m.value}
-            </p>
-            <p
-              className="font-caption transition-all duration-200"
-              style={{
-                fontSize: 12,
-                marginTop: 4,
-                maxWidth: 420,
-                maxHeight: hoveredMetric === m.acronym ? 60 : 20,
-                overflow: 'hidden',
-              }}
-            >
-              {m.methodology}
-            </p>
+      {/* Tier cards */}
+      <div className="flex flex-col gap-6 mb-10">
+        {tiers.map((t) => (
+          <div key={t.key} className="rounded-[12px] p-5" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="font-caption" style={{ fontSize: 11, letterSpacing: '0.06em' }}>{t.key} — {t.label}</span>
+              <span style={{ fontSize: 14 }}>{CONFIDENCE_ICON[t.confidence]}</span>
+              <span style={{ fontSize: 11, color: CONFIDENCE_COLOR[t.confidence], fontFamily: "'Inter', sans-serif" }}>{t.confidence}</span>
+            </div>
+            <p className="font-heading" style={{ fontSize: 28, letterSpacing: '-0.02em' }}>{t.formatted}</p>
+            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', marginTop: 6, lineHeight: 1.6 }}>{t.methodology}</p>
           </div>
         ))}
       </div>
 
-      {/* Funnel */}
-      <div style={{ marginTop: 56 }}>
-        <p
-          className="font-caption"
-          style={{ fontSize: 11, letterSpacing: '0.06em', marginBottom: 16 }}
-        >
-          MARKET FUNNEL
-        </p>
-        <div className="flex flex-col gap-3">
-          {MOCK_MARKET_SIZE.map((m) => {
-            const pct = Math.max((m.rawValue / maxRaw) * 100, 4);
-            const isHovered = hoveredBar === m.acronym;
-            return (
-              <div
-                key={m.acronym}
-                className="flex items-center gap-3 group"
-                onMouseEnter={() => setHoveredBar(m.acronym)}
-                onMouseLeave={() => setHoveredBar(null)}
-                style={{ cursor: 'pointer' }}
-              >
-                <span
-                  className="transition-colors duration-200"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 12,
-                    fontWeight: 400,
-                    color: isHovered ? 'var(--accent-purple)' : 'var(--text-muted)',
-                    width: 36,
-                    textAlign: 'right',
-                  }}
-                >
-                  {m.acronym}
-                </span>
-                <div style={{ flex: 1, height: 28, position: 'relative' }}>
-                  <div
-                    className="rounded-[6px] transition-all duration-300 ease-out"
-                    style={{
-                      width: `${pct}%`,
-                      height: isHovered ? 34 : 28,
-                      marginTop: isHovered ? -3 : 0,
-                      backgroundColor: isHovered ? 'rgba(108,92,231,0.14)' : 'rgba(108,92,231,0.08)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      paddingLeft: 10,
-                    }}
-                  >
-                    <span
-                      className="transition-all duration-200"
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: isHovered ? 13 : 12,
-                        fontWeight: 400,
-                        color: 'var(--accent-purple)',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {m.value}
-                    </span>
-                  </div>
+      {/* TAM/SAM/SOM bar chart */}
+      <div className="mb-10">
+        <p className="font-caption" style={{ fontSize: 11, letterSpacing: '0.06em', marginBottom: 16 }}>MARKET SIZE COMPARISON</p>
+        <div style={{ height: 200 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 30 }}>
+              <XAxis type="number" tickFormatter={fmt} style={{ fontSize: 11 }} />
+              <YAxis type="category" dataKey="name" width={40} style={{ fontSize: 12 }} />
+              <Tooltip formatter={(v: number) => fmt(v)} />
+              <Bar dataKey="value" radius={[0, 6, 6, 0]}>
+                {chartData.map((_, i) => <Cell key={i} fill={barColors[i]} opacity={0.7} />)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
-                  {/* Tooltip on hover */}
-                  <div
-                    className="transition-all duration-200 pointer-events-none"
-                    style={{
-                      position: 'absolute',
-                      top: -36,
-                      left: `${Math.min(pct, 80)}%`,
-                      opacity: isHovered ? 1 : 0,
-                      transform: isHovered ? 'translateY(0)' : 'translateY(4px)',
-                    }}
-                  >
-                    <div
-                      className="rounded-[8px] px-3 py-1.5"
-                      style={{
-                        backgroundColor: 'var(--text-primary)',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: '#fff' }}>
-                        {m.label}
-                      </span>
-                    </div>
+      {/* Customer funnel */}
+      <div className="mb-10">
+        <p className="font-caption" style={{ fontSize: 11, letterSpacing: '0.06em', marginBottom: 16 }}>CUSTOMER FUNNEL</p>
+        <div className="flex flex-col items-center gap-2">
+          {funnelData.map((step, i) => {
+            const widthPct = Math.max(((funnelData.length - i) / funnelData.length) * 100, 20);
+            return (
+              <div key={step.name} className="flex items-center gap-3" style={{ width: '100%' }}>
+                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--text-muted)', width: 90, textAlign: 'right', flexShrink: 0 }}>{step.name}</span>
+                <div style={{ flex: 1 }}>
+                  <div className="rounded-[6px]" style={{ width: `${widthPct}%`, height: 28, backgroundColor: `rgba(108,92,231,${0.08 + i * 0.04})`, display: 'flex', alignItems: 'center', paddingLeft: 10, transition: 'width 600ms ease-out' }}>
+                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, color: 'var(--accent-purple)', whiteSpace: 'nowrap' }}>{fmtNum(step.value)}</span>
                   </div>
                 </div>
               </div>
@@ -141,50 +128,19 @@ export default function OpportunitySizing() {
         </div>
       </div>
 
-      {/* Collapsible methodology */}
-      <div style={{ marginTop: 48 }}>
-        <button
-          onClick={() => setMethodOpen(!methodOpen)}
-          className="transition-colors duration-200 active:scale-[0.98] group flex items-center gap-2"
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: 13,
-            fontWeight: 400,
-            color: 'var(--accent-purple)',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: 0,
-          }}
-        >
-          <span>{methodOpen ? 'Hide methodology' : 'How we estimated this'}</span>
-          <span
-            className="transition-transform duration-200"
-            style={{ transform: methodOpen ? 'rotate(180deg)' : 'rotate(0deg)', display: 'inline-block' }}
-          >
-            ↓
-          </span>
-        </button>
-        <div
-          style={{
-            maxHeight: methodOpen ? 300 : 0,
-            overflow: 'hidden',
-            transition: 'max-height 300ms ease-out',
-          }}
-        >
-          <div
-            className="rounded-[10px] mt-3 p-4"
-            style={{ backgroundColor: 'var(--surface-input)' }}
-          >
-            {MOCK_MARKET_SIZE.map((m) => (
-              <p key={m.acronym} className="font-caption" style={{ fontSize: 12, marginBottom: 8 }}>
-                <span style={{ fontWeight: 400, color: 'var(--text-primary)' }}>{m.acronym}:</span>{' '}
-                {m.methodology}
-              </p>
-            ))}
-          </div>
+      {/* Methodology */}
+      <button onClick={() => setMethodOpen(!methodOpen)} style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: 'var(--accent-purple)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+        {methodOpen ? 'Hide methodology ↑' : 'How we estimated this ↓'}
+      </button>
+      {methodOpen && (
+        <div className="rounded-[10px] mt-3 p-4" style={{ backgroundColor: 'var(--surface-input)' }}>
+          {tiers.map(t => (
+            <p key={t.key} className="font-caption" style={{ fontSize: 12, marginBottom: 8 }}>
+              <span style={{ fontWeight: 400, color: 'var(--text-primary)' }}>{t.key}:</span> {t.methodology}
+            </p>
+          ))}
         </div>
-      </div>
+      )}
     </div>
   );
 }

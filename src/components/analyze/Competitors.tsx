@@ -1,138 +1,145 @@
-import { useState } from 'react';
-import { MOCK_COMPETITORS } from '@/data/analyze-mock';
-import type { Competitor } from '@/data/analyze-mock';
+import { useState, useEffect } from 'react';
+import { analyzeSection, type AnalyzeContext, type CompetitorsData, type Competitor } from '@/lib/analyze';
+import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import SectionSkeleton from './SectionSkeleton';
 
-function CompetitorRow({ comp }: { comp: Competitor }) {
+const THREAT_CONFIG = {
+  high: { label: '🔴 High', color: '#EF4444', bg: 'rgba(239,68,68,0.06)' },
+  medium: { label: '🟡 Medium', color: 'var(--accent-amber)', bg: 'rgba(212,136,15,0.06)' },
+  low: { label: '🟢 Low', color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.06)' },
+};
+
+function CompetitorCard({ comp }: { comp: Competitor }) {
   const [open, setOpen] = useState(false);
+  const threat = THREAT_CONFIG[comp.threat_level];
 
   return (
-    <div
-      className="rounded-[12px] transition-shadow duration-200"
-      style={{
-        backgroundColor: 'var(--surface-card)',
-        boxShadow: open ? '0 4px 16px rgba(0,0,0,0.06)' : '0 1px 3px rgba(0,0,0,0.04)',
-      }}
-    >
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full text-left p-5 flex items-center gap-4 active:scale-[0.995] transition-transform duration-150"
-        style={{ cursor: 'pointer', border: 'none', background: 'none' }}
-      >
-        <div className="flex-1 min-w-0">
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)' }}>
-            {comp.name}
-          </p>
-          <p className="font-caption mt-1" style={{ fontSize: 12 }}>
-            {comp.location} · ★ {comp.rating} · {comp.priceRange}
-          </p>
+    <div className="rounded-[12px] transition-shadow duration-200" style={{ backgroundColor: 'var(--surface-card)', boxShadow: open ? '0 4px 16px rgba(0,0,0,0.06)' : '0 1px 3px rgba(0,0,0,0.04)' }}>
+      <button onClick={() => setOpen(!open)} className="w-full text-left p-5 flex items-start gap-4" style={{ cursor: 'pointer', border: 'none', background: 'none' }}>
+        {/* Rating circle */}
+        <div className="flex-shrink-0 flex items-center justify-center rounded-full" style={{ width: 40, height: 40, backgroundColor: threat.bg }}>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: threat.color }}>
+            {comp.rating ? comp.rating.toFixed(1) : '—'}
+          </span>
         </div>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', maxWidth: 260, textAlign: 'right' }}>
-          {comp.keyGap}
-        </p>
-        <span style={{ fontSize: 14, color: 'var(--text-muted)', transition: 'transform 200ms ease-out', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-          ↓
-        </span>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap mb-1">
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)' }}>{comp.name}</span>
+            <span className="rounded-full px-2 py-0.5" style={{ fontSize: 10, backgroundColor: threat.bg, color: threat.color }}>{threat.label}</span>
+          </div>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}>{comp.location} · {comp.price_range}</p>
+        </div>
+        <span style={{ fontSize: 14, color: 'var(--text-muted)', transform: open ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 200ms', display: 'inline-block' }}>↓</span>
       </button>
 
-      <div style={{ maxHeight: open ? 600 : 0, overflow: 'hidden', transition: 'max-height 300ms ease-out' }}>
+      {open && (
         <div className="px-5 pb-5">
-          <div style={{ height: 1, backgroundColor: 'var(--divider)', marginBottom: 20 }} />
-
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, lineHeight: 1.7, color: 'var(--text-secondary)', marginBottom: 20 }}>
-            {comp.description}
-          </p>
-
-          {/* Source link */}
+          <div style={{ height: 1, backgroundColor: 'var(--divider)', marginBottom: 16 }} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div className="rounded-[10px] p-3" style={{ backgroundColor: 'rgba(45,139,117,0.04)' }}>
+              <p className="font-caption" style={{ fontSize: 10, letterSpacing: '0.04em', color: 'var(--accent-teal)', marginBottom: 4 }}>STRENGTH</p>
+              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{comp.key_strength}</p>
+            </div>
+            <div className="rounded-[10px] p-3" style={{ backgroundColor: 'rgba(239,68,68,0.04)' }}>
+              <p className="font-caption" style={{ fontSize: 10, letterSpacing: '0.04em', color: '#EF4444', marginBottom: 4 }}>GAP</p>
+              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{comp.key_gap}</p>
+            </div>
+          </div>
           {comp.url && (
-            <a
-              href={comp.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block mb-5 transition-colors duration-200"
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: 13,
-                fontWeight: 400,
-                color: 'var(--accent-purple)',
-                textDecoration: 'none',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
-              onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
-            >
-              Visit website →
+            <a href={comp.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'var(--accent-purple)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
+              View website →
             </a>
           )}
-
-          {/* Review excerpts */}
-          <div className="mb-5">
-            <p className="font-caption" style={{ fontSize: 11, letterSpacing: '0.04em', marginBottom: 10 }}>
-              REVIEW EXCERPTS
-            </p>
-            <div className="flex flex-col gap-2">
-              {comp.reviewExcerpts.map((r, i) => (
-                <p
-                  key={i}
-                  className="rounded-[8px] p-3"
-                  style={{
-                    backgroundColor: 'var(--surface-input)',
-                    fontFamily: "'Instrument Serif', serif",
-                    fontStyle: 'italic',
-                    fontSize: 14,
-                    lineHeight: 1.55,
-                    color: 'var(--text-primary)',
-                  }}
-                >
-                  {r}
-                </p>
-              ))}
-            </div>
-          </div>
-
-          {/* Why it matters */}
-          <div className="mb-5">
-            <p className="font-caption" style={{ fontSize: 11, letterSpacing: '0.04em', marginBottom: 8 }}>
-              WHY THIS GAP MATTERS
-            </p>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.65 }}>
-              {comp.keyGap}
-            </p>
-          </div>
-
-          {/* Strengths & weaknesses */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="font-caption" style={{ fontSize: 11, letterSpacing: '0.04em', marginBottom: 8 }}>
-                WHAT THEY DO WELL
-              </p>
-              {comp.strengths.map((s) => (
-                <p key={s} style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--accent-teal)', marginBottom: 4 }}>
-                  + {s}
-                </p>
-              ))}
-            </div>
-            <div>
-              <p className="font-caption" style={{ fontSize: 11, letterSpacing: '0.04em', marginBottom: 8 }}>
-                WHAT THEY MISS
-              </p>
-              {comp.weaknesses.map((w) => (
-                <p key={w} style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--accent-amber)', marginBottom: 4 }}>
-                  − {w}
-                </p>
-              ))}
-            </div>
-          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
-export default function Competitors() {
+export default function Competitors({ context, onData }: { context: AnalyzeContext; onData?: (data: CompetitorsData) => void }) {
+  const [data, setData] = useState<CompetitorsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    analyzeSection('competitors', context)
+      .then((result) => {
+        if (!cancelled) {
+          const d = result as CompetitorsData;
+          setData(d);
+          onData?.(d);
+          setLoading(false);
+        }
+      })
+      .catch((err) => { if (!cancelled) { setError(err.message); setLoading(false); } });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (loading) return <SectionSkeleton label="Analyzing competitive landscape..." />;
+  if (error) return (
+    <div className="text-center py-12">
+      <p style={{ fontSize: 14, color: 'var(--destructive)', marginBottom: 12 }}>{error}</p>
+      <button onClick={() => { setLoading(true); setError(null); analyzeSection('competitors', context).then(r => { setData(r as CompetitorsData); setLoading(false); }).catch(e => { setError(e.message); setLoading(false); }); }}
+        className="rounded-[10px] px-4 py-2" style={{ backgroundColor: 'var(--accent-purple)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 13 }}>Retry</button>
+    </div>
+  );
+  if (!data) return null;
+
+  // Scatter data: x = rating, y = threat index, z = bubble size
+  const threatVal = { high: 3, medium: 2, low: 1 };
+  const scatterData = data.competitors.map(c => ({
+    x: c.rating || 3,
+    y: threatVal[c.threat_level],
+    z: 200,
+    name: c.name,
+    threat: c.threat_level,
+  }));
+  const scatterColors = { high: '#EF4444', medium: '#D4880F', low: '#2D8B75' };
+
   return (
-    <div className="flex flex-col gap-3">
-      {MOCK_COMPETITORS.map((c) => (
-        <CompetitorRow key={c.name} comp={c} />
-      ))}
+    <div>
+      {/* Threat matrix scatter */}
+      <div className="mb-8">
+        <p className="font-caption" style={{ fontSize: 11, letterSpacing: '0.06em', marginBottom: 16 }}>THREAT MATRIX</p>
+        <div style={{ height: 200 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <ScatterChart margin={{ top: 10, right: 20, bottom: 10, left: 10 }}>
+              <XAxis type="number" dataKey="x" name="Rating" domain={[1, 5]} tickCount={5} style={{ fontSize: 11 }} label={{ value: 'Rating', position: 'insideBottom', offset: -5, style: { fontSize: 10, fill: 'var(--text-muted)' } }} />
+              <YAxis type="number" dataKey="y" name="Threat" domain={[0, 4]} tickCount={4} tickFormatter={(v: number) => ['', 'Low', 'Med', 'High'][v] || ''} style={{ fontSize: 11 }} />
+              <ZAxis type="number" dataKey="z" range={[100, 400]} />
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} formatter={(v: any, name: string) => name === 'name' ? v : undefined} content={({ payload }) => {
+                if (!payload?.[0]) return null;
+                const d = payload[0].payload;
+                return <div className="rounded-[8px] px-3 py-2" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', fontSize: 12 }}>{d.name} · ★{d.x}</div>;
+              }} />
+              <Scatter data={scatterData}>
+                {scatterData.map((d, i) => <Cell key={i} fill={scatterColors[d.threat as keyof typeof scatterColors]} opacity={0.7} />)}
+              </Scatter>
+            </ScatterChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Competitor cards */}
+      <div className="flex flex-col gap-3 mb-8">
+        {data.competitors.map((c, i) => <CompetitorCard key={i} comp={c} />)}
+      </div>
+
+      {/* Unfilled gaps */}
+      {data.unfilled_gaps.length > 0 && (
+        <div className="rounded-[14px] p-6" style={{ backgroundColor: 'rgba(45,139,117,0.03)', border: '1px solid rgba(45,139,117,0.08)' }}>
+          <p className="font-caption" style={{ fontSize: 11, letterSpacing: '0.06em', color: 'var(--accent-teal)', marginBottom: 12 }}>UNFILLED MARKET GAPS</p>
+          <div className="flex flex-col gap-3">
+            {data.unfilled_gaps.map((gap, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <span style={{ fontSize: 14, flexShrink: 0 }}>💡</span>
+                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{gap}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
