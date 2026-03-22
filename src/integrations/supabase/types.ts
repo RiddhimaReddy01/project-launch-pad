@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      decompose_cache: {
+        Row: {
+          created_at: string
+          id: string
+          idea_text: string
+          idea_text_hash: string
+          stage1_data: Json | null
+          stage2_data: Json | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          idea_text: string
+          idea_text_hash: string
+          stage1_data?: Json | null
+          stage2_data?: Json | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          idea_text?: string
+          idea_text_hash?: string
+          stage1_data?: Json | null
+          stage2_data?: Json | null
+        }
+        Relationships: []
+      }
       experiments: {
         Row: {
           assets_data: Json | null
