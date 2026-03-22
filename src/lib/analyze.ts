@@ -10,7 +10,7 @@ export interface AnalyzeContext {
   insight_evidence?: string;
 }
 
-export type SectionKey = "opportunity" | "customers" | "competitors" | "rootcause" | "costs";
+export type SectionKey = "opportunity" | "customers" | "competitors" | "rootcause" | "costs" | "risk" | "location" | "moat";
 
 // ── Section result types ──
 
@@ -88,7 +88,56 @@ export interface CostsData {
   note: string;
 }
 
-export type SectionData = OpportunityData | CustomersData | CompetitorsData | RootCauseData | CostsData;
+export interface RiskItem {
+  risk: string;
+  likelihood: "low" | "medium" | "high";
+  impact: "low" | "medium" | "high";
+  mitigation: string;
+  category: string;
+}
+
+export interface RiskData {
+  risks: RiskItem[];
+  overall_risk_level: "low" | "medium" | "high";
+  summary: string;
+}
+
+export interface LocationData {
+  demographics: {
+    population: number;
+    median_income: number;
+    median_age: number;
+    growth_rate: string;
+  };
+  foot_traffic: {
+    best_areas: string[];
+    avg_monthly_rent_sqft: number;
+    competitor_density: string;
+  };
+  regulatory: {
+    key_permits: string[];
+    estimated_timeline: string;
+    notes: string;
+  };
+  score: number;
+  verdict: string;
+}
+
+export interface MoatDimension {
+  dimension: string;
+  score: number;
+  rationale: string;
+}
+
+export interface MoatData {
+  dimensions: MoatDimension[];
+  overall_score: number;
+  strongest: string;
+  weakest: string;
+  recommendation: string;
+}
+
+export type SectionData = OpportunityData | CustomersData | CompetitorsData | RootCauseData | CostsData | RiskData | LocationData | MoatData;
 
 export async function analyzeSection(
   section: SectionKey,

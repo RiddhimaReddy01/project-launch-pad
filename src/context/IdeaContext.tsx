@@ -4,6 +4,13 @@ import type { DiscoverResult } from '@/lib/discover';
 
 export type Step = 'discover' | 'analyze' | 'setup' | 'validate';
 
+export interface AnalyzeFinding {
+  id: string;
+  text: string;
+  section: string;
+  type: string;
+}
+
 interface IdeaState {
   idea: string;
   setIdea: (idea: string) => void;
@@ -15,6 +22,8 @@ interface IdeaState {
   setDecomposeResult: (result: DecomposeResult | null) => void;
   discoverResult: DiscoverResult | null;
   setDiscoverResult: (result: DiscoverResult | null) => void;
+  analyzeFindings: AnalyzeFinding[];
+  setAnalyzeFindings: (findings: AnalyzeFinding[]) => void;
 }
 
 const IdeaContext = createContext<IdeaState | null>(null);
@@ -25,9 +34,10 @@ export function IdeaProvider({ children }: { children: ReactNode }) {
   const [selectedInsight, setSelectedInsight] = useState<string | null>(null);
   const [decomposeResult, setDecomposeResult] = useState<DecomposeResult | null>(null);
   const [discoverResult, setDiscoverResult] = useState<DiscoverResult | null>(null);
+  const [analyzeFindings, setAnalyzeFindings] = useState<AnalyzeFinding[]>([]);
 
   return (
-    <IdeaContext.Provider value={{ idea, setIdea, currentStep, setCurrentStep, selectedInsight, setSelectedInsight, decomposeResult, setDecomposeResult, discoverResult, setDiscoverResult }}>
+    <IdeaContext.Provider value={{ idea, setIdea, currentStep, setCurrentStep, selectedInsight, setSelectedInsight, decomposeResult, setDecomposeResult, discoverResult, setDiscoverResult, analyzeFindings, setAnalyzeFindings }}>
       {children}
     </IdeaContext.Provider>
   );
