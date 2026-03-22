@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -18,11 +22,12 @@ export default function Nav() {
         backdropFilter: scrolled ? 'blur(12px)' : 'none'
       }}>
       
-      <span style={{ fontSize: 18 }}>
+      <span style={{ fontSize: 18, cursor: 'pointer' }} onClick={() => navigate('/')}>
         <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400 }}>Launch </span>
         <span style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', fontWeight: 400 }}>​LEAN</span>
       </span>
       <span
+        onClick={() => navigate(user ? '/dashboard' : '/auth')}
         style={{
           fontFamily: "'Inter', sans-serif",
           fontSize: 14,
@@ -30,9 +35,8 @@ export default function Nav() {
           color: '#6B6B6B',
           cursor: 'pointer'
         }}>
-        
-        Log in
+        {user ? 'Dashboard' : 'Log in'}
       </span>
-    </nav>);
-
+    </nav>
+  );
 }
