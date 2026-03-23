@@ -92,7 +92,7 @@ export default function DiscoverModule() {
   }
 
   const counts = result ? getCounts(result) : {};
-  const visibleTabs = TYPE_TABS.filter(t => (counts[t.key] || 0) > 0);
+  const visibleTabs = result ? buildTabs(result.insights) : [];
 
   const filtered = result?.insights.filter(
     (i) => filter === null || i.type === filter
