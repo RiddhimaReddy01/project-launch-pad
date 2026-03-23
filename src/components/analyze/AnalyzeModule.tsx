@@ -362,6 +362,43 @@ export default function AnalyzeModule() {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Run All — parallel */}
+            {completedCount < MODULE_DEFS.length && context && (
+              <button
+                onClick={async () => {
+                  const remaining = MODULE_DEFS.filter(m => sections[m.key].status !== 'completed').map(m => m.key);
+                  if (remaining.length === 0) return;
+                  // Mark all as loading
+                  setSections(prev => {
+                    const next = { ...prev };
+                    remaining.forEach(k => { next[k] = { ...next[k], status: 'loading', error: undefined }; });
+                    return next;
+                  });
+                  // Run in parallel
+                  const results = await analyzeSectionsParallel(remaining, context);
+                  setSections(prev => {
+                    const next = { ...prev };
+                    Object.entries(results).forEach(([k, v]) => {
+                      if (v.data) {
+                        next[k as SectionKey] = { data: v.data, status: 'completed', lastRun: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), inputsUsed: { ...inputs, prior_sections: new Set(inputs.prior_sections) } };
+                      } else {
+                        next[k as SectionKey] = { ...next[k as SectionKey], status: 'error', error: v.error };
+                      }
+                    });
+                    // Update shared context
+                    const shared: Record<string, any> = {};
+                    Object.entries(next).forEach(([k, v]) => { if (v.data) shared[k] = v.data; });
+                    setAnalyzeData(shared);
+                    return next;
+                  });
+                  toast.success('All sections researched');
+                }}
+                className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
+                style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
+              >
+                Run all sections
+              </button>
+            )}
             {completedCount > 0 && (
               <>
                 <button
@@ -377,7 +414,7 @@ export default function AnalyzeModule() {
                   className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
                   style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', border: '1px solid var(--divider)', cursor: 'pointer', backgroundColor: 'transparent' }}
                 >
-                  {exporting ? 'Exporting...' : 'Export PDF'}
+                  {exporting ? 'Exporting…' : 'Export PDF'}
                 </button>
               </>
             )}
