@@ -128,22 +128,33 @@ serve(async (req) => {
       }
     }
 
-    // Stage 1 — Fast extraction (cheapest model)
+    // Stage 1 — Fast extraction
     const stage1 = await callAI(
       LOVABLE_API_KEY,
-      "google/gemini-2.5-flash-lite",
-      "You are a business analyst. Extract the core business type and location from the user's business idea. If no location is mentioned, use empty strings.",
+      "google/gemini-2.5-flash",
+      `You are a business analyst. Extract the business type and location from the user's idea.
+IMPORTANT: Look carefully for city/state/country mentions. Examples:
+- "Juice bar in Plano TX" → business_type: "Juice bar", location: { city: "Plano", state: "TX" }
+- "Coffee shop in Austin, Texas" → business_type: "Coffee shop", location: { city: "Austin", state: "Texas" }
+- "Online tutoring platform" → business_type: "Online tutoring platform", location: { city: "", state: "" }
+Always extract the most specific location mentioned. Use standard state abbreviations or full names as written.`,
       idea,
       STAGE1_TOOLS
     );
 
-    // Stage 2 — Detailed extraction (cheap model, parallel with stage 1 would need Promise.all but sequential is fine for 2 calls)
-    const stage2Prompt = `Business idea: ${idea}\nBusiness type: ${stage1.business_type}\nLocation: ${stage1.location.city ? `${stage1.location.city}, ${stage1.location.state}` : "Not specified"}`;
+    // Stage 2 — Detailed extraction
+    const loc = stage1.location?.city ? `${stage1.location.city}, ${stage1.location.state}` : "Not specified";
+    const stage2Prompt = `Business idea: ${idea}\nBusiness type: ${stage1.business_type}\nLocation: ${loc}\n\nExtract target customer segments, price tier, and research parameters for this specific business.`;
 
     const stage2 = await callAI(
       LOVABLE_API_KEY,
-      "google/gemini-2.5-flash-lite",
-      "You are a market research expert. Extract detailed research parameters for finding real customer discussions and reviews online. Be specific to the business type and location.",
+      "google/gemini-2.5-flash",
+      `You are a market research expert. Extract detailed parameters for market research.
+- target_customers: 3-5 specific customer segments (e.g. "Health-conscious millennials", "Office workers seeking quick lunch")
+- price_tier: one of "budget", "mid-range", "premium", "luxury" based on the business concept
+- search_queries: 5-8 Google search queries to find customer discussions about this type of business
+- source_domains: 3-5 review/discussion domains relevant to this business (e.g. yelp.com, reddit.com)
+- subreddits: 3-5 relevant subreddit names without r/ prefix`,
       stage2Prompt,
       STAGE2_TOOLS
     );
