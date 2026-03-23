@@ -121,16 +121,17 @@ export default function InputComposer({
     { key: 'customer_evidence', label: 'Customer Evidence', available: !!(discoverResult?.insights?.length) },
   ];
 
-  const PRIOR_SECTIONS: { key: SectionKey; label: string }[] = [
-    { key: 'opportunity', label: 'Opportunity' },
-    { key: 'customers', label: 'Customers' },
-    { key: 'competitors', label: 'Competitors' },
-    { key: 'rootcause', label: 'Root Cause' },
-    { key: 'costs', label: 'Costs' },
-    { key: 'risk', label: 'Risk' },
-    { key: 'location', label: 'Location' },
-    { key: 'moat', label: 'Moat' },
-  ].filter(s => s.key !== activeModule && completedSections.has(s.key));
+  const ALL_SECTIONS: { key: SectionKey; label: string }[] = [
+    { key: 'opportunity' as SectionKey, label: 'Opportunity' },
+    { key: 'customers' as SectionKey, label: 'Customers' },
+    { key: 'competitors' as SectionKey, label: 'Competitors' },
+    { key: 'rootcause' as SectionKey, label: 'Root Cause' },
+    { key: 'costs' as SectionKey, label: 'Costs' },
+    { key: 'risk' as SectionKey, label: 'Risk' },
+    { key: 'location' as SectionKey, label: 'Location' },
+    { key: 'moat' as SectionKey, label: 'Moat' },
+  ];
+  const PRIOR_SECTIONS = ALL_SECTIONS.filter(s => s.key !== activeModule && completedSections.has(s.key));
 
   return (
     <div
