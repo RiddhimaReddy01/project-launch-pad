@@ -439,9 +439,9 @@ export default function ValidateModule() {
     <div ref={containerRef} className="scroll-reveal">
       <div className="mb-10">
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>VALIDATE</p>
-        <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>Generating your validation kit</p>
+        <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>Crafting your toolkit</p>
       </div>
-      <SectionSkeleton label="Building landing page copy, survey questions, outreach messages, community list, and scorecard targets..." />
+      <SectionSkeleton label="Writing landing page copy, designing survey questions, drafting outreach messages, finding communities, and setting benchmarks..." />
     </div>
   );
 
