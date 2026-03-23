@@ -30,7 +30,7 @@ interface SectionState<T> {
 }
 
 export default function SetupModule() {
-  const { idea, decomposeResult } = useIdea();
+  const { idea, decomposeResult, setSetupData } = useIdea();
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -66,10 +66,12 @@ export default function SetupModule() {
     try {
       const result = await setupSection(section, context);
       setters[section]({ data: result as any, status: 'completed' });
+      // Push to shared context for Validate tab
+      setSetupData(prev => ({ ...prev, tier: context.tier, [section]: result }));
     } catch (err: any) {
       setters[section]({ data: null, status: 'error', error: err.message });
     }
-  }, [context]);
+  }, [context, setSetupData]);
 
   // Auto-load costs on mount
   useEffect(() => {
