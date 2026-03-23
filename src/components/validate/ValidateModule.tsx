@@ -372,9 +372,9 @@ export default function ValidateModule() {
     <div ref={containerRef} className="scroll-reveal">
       <div className="mb-10">
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>VALIDATE</p>
-        <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>Choose your validation approach</p>
+        <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>How do you want to test demand?</p>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-          Select methods to test real demand. We generate the complete toolkit — landing page copy, survey, outreach messages, communities, and scorecard.
+          Pick the methods that fit your stage. We'll build a ready-to-deploy toolkit — landing page copy, survey questions, outreach messages, target communities, and success benchmarks.
         </p>
       </div>
 
