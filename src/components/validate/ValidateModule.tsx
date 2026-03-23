@@ -228,15 +228,23 @@ export default function ValidateModule() {
     setPhase('generating');
     setErrorMsg('');
     try {
-      const data = await generateValidation(context);
+      // Determine which outputs are needed based on selected methods
+      const requiredOutputs = new Set<string>();
+      selectedMethods.forEach(mId => {
+        const method = ALL_METHODS.find(m => m.id === mId);
+        method?.outputs.forEach(o => requiredOutputs.add(o));
+      });
+      requiredOutputs.add('scorecard');
+
+      const data = await generateValidation(context, Array.from(requiredOutputs));
       data.scorecard = deriveScorecard(data.scorecard);
       setResult(data);
       setPhase('toolkit');
     } catch (err: any) {
-      setErrorMsg(err.message || 'Generation failed');
+      setErrorMsg(err.message || 'Something went wrong — please try again');
       setPhase('select');
     }
-  }, [context, deriveScorecard]);
+  }, [context, deriveScorecard, selectedMethods]);
 
   const toggleMethod = (id: string) => {
     setSelectedMethods(prev => {
