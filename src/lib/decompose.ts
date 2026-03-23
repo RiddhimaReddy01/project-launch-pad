@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { invokeApi } from "@/lib/api-client";
 
 export interface DecomposeStage1 {
   business_type: string;
