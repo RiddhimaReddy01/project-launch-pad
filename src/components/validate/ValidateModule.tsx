@@ -359,9 +359,9 @@ export default function ValidateModule() {
   if (!decomposeResult) return (
     <div className="flex items-center justify-center" style={{ height: '60vh' }}>
       <div className="text-center" style={{ maxWidth: 400 }}>
-        <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Complete the Discover step first</p>
+        <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Start with your idea first</p>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-          Validation needs your business context from the decomposition step.
+          Head to the Understand tab to enter your business idea. We need that context before building your validation toolkit.
         </p>
       </div>
     </div>
