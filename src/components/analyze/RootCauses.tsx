@@ -61,20 +61,23 @@ function CauseCard({ cause }: { cause: RootCause }) {
   );
 }
 
-export default function RootCauses({ context, onData }: { context: AnalyzeContext; onData?: (data: RootCauseData) => void }) {
+export default function RootCauses({ context, onData, onError, shouldRun = true }: { context: AnalyzeContext; onData?: (data: RootCauseData) => void; onError?: (error: string) => void; shouldRun?: boolean }) {
   const [data, setData] = useState<RootCauseData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!shouldRun || data) return;
     let cancelled = false;
+    setLoading(true);
+    setError(null);
     analyzeSection('rootcause', context)
       .then((result) => {
         if (!cancelled) { const d = result as RootCauseData; setData(d); onData?.(d); setLoading(false); }
       })
-      .catch((err) => { if (!cancelled) { setError(err.message); setLoading(false); } });
+      .catch((err) => { if (!cancelled) { setError(err.message); onError?.(err.message); setLoading(false); } });
     return () => { cancelled = true; };
-  }, []);
+  }, [shouldRun]);
 
   if (loading) return <SectionSkeleton label="Analyzing why this gap exists..." />;
   if (error) return (

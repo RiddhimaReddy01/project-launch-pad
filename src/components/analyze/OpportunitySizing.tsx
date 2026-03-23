@@ -9,13 +9,14 @@ const CONFIDENCE_CONFIG = {
   high: { color: 'var(--accent-teal)', label: 'High confidence' },
 };
 
-export default function OpportunitySizing({ context, onData }: { context: AnalyzeContext; onData?: (data: OpportunityData) => void }) {
+export default function OpportunitySizing({ context, onData, onError, shouldRun = true }: { context: AnalyzeContext; onData?: (data: OpportunityData) => void; onError?: (error: string) => void; shouldRun?: boolean }) {
   const [data, setData] = useState<OpportunityData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [methodOpen, setMethodOpen] = useState(false);
 
   useEffect(() => {
+    if (!shouldRun || data) return;
     let cancelled = false;
     setLoading(true);
     setError(null);
@@ -23,9 +24,9 @@ export default function OpportunitySizing({ context, onData }: { context: Analyz
       .then((result) => {
         if (!cancelled) { const d = result as OpportunityData; setData(d); onData?.(d); setLoading(false); }
       })
-      .catch((err) => { if (!cancelled) { setError(err.message); setLoading(false); } });
+      .catch((err) => { if (!cancelled) { setError(err.message); onError?.(err.message); setLoading(false); } });
     return () => { cancelled = true; };
-  }, []);
+  }, [shouldRun]);
 
   if (loading) return <SectionSkeleton label="Calculating TAM / SAM / SOM..." />;
   if (error) return (

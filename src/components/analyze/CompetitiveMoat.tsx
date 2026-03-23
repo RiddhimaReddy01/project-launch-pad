@@ -3,20 +3,23 @@ import { analyzeSection, type AnalyzeContext, type MoatData } from '@/lib/analyz
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
 import SectionSkeleton from './SectionSkeleton';
 
-export default function CompetitiveMoat({ context, onData }: { context: AnalyzeContext; onData?: (data: MoatData) => void }) {
+export default function CompetitiveMoat({ context, onData, onError, shouldRun = true }: { context: AnalyzeContext; onData?: (data: MoatData) => void; onError?: (error: string) => void; shouldRun?: boolean }) {
   const [data, setData] = useState<MoatData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!shouldRun || data) return;
     let cancelled = false;
+    setLoading(true);
+    setError(null);
     analyzeSection('moat', context)
       .then((result) => {
         if (!cancelled) { const d = result as MoatData; setData(d); onData?.(d); setLoading(false); }
       })
-      .catch((err) => { if (!cancelled) { setError(err.message); setLoading(false); } });
+      .catch((err) => { if (!cancelled) { setError(err.message); onError?.(err.message); setLoading(false); } });
     return () => { cancelled = true; };
-  }, []);
+  }, [shouldRun]);
 
   if (loading) return <SectionSkeleton label="Evaluating competitive defensibility..." />;
   if (error) return (

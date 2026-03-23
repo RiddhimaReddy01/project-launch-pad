@@ -57,20 +57,23 @@ function CompetitorCard({ comp }: { comp: Competitor }) {
   );
 }
 
-export default function Competitors({ context, onData }: { context: AnalyzeContext; onData?: (data: CompetitorsData) => void }) {
+export default function Competitors({ context, onData, onError, shouldRun = true }: { context: AnalyzeContext; onData?: (data: CompetitorsData) => void; onError?: (error: string) => void; shouldRun?: boolean }) {
   const [data, setData] = useState<CompetitorsData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!shouldRun || data) return;
     let cancelled = false;
+    setLoading(true);
+    setError(null);
     analyzeSection('competitors', context)
       .then((result) => {
         if (!cancelled) { const d = result as CompetitorsData; setData(d); onData?.(d); setLoading(false); }
       })
-      .catch((err) => { if (!cancelled) { setError(err.message); setLoading(false); } });
+      .catch((err) => { if (!cancelled) { setError(err.message); onError?.(err.message); setLoading(false); } });
     return () => { cancelled = true; };
-  }, []);
+  }, [shouldRun]);
 
   if (loading) return <SectionSkeleton label="Analyzing competitive landscape..." />;
   if (error) return (
