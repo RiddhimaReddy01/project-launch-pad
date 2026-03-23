@@ -49,7 +49,7 @@ html {
 }
 
 ::selection {
-  background: rgba(108, 92, 231, 0.15);
+  background: rgba(26, 26, 26, 0.1);
 }
 
 @layer base {
