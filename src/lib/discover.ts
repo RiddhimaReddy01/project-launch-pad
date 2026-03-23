@@ -71,19 +71,7 @@ export async function discoverInsights(decomposition: {
     return cached.result;
   }
 
-  const { data, error } = await supabase.functions.invoke("discover-insights", {
-    body: { decomposition },
-  });
-
-  if (error) {
-    throw new Error(error.message || "Failed to discover insights");
-  }
-
-  if (data?.error) {
-    throw new Error(data.error);
-  }
-
-  const result = data as DiscoverResult;
+  const result = await invokeApi<DiscoverResult>("discover-insights", { decomposition });
 
   memCache.set(key, { result, timestamp: Date.now() });
 

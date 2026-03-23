@@ -67,15 +67,8 @@ export async function generateValidation(
   context: ValidateContext,
   requiredOutputs?: string[]
 ): Promise<ValidateResult> {
-  const { data, error } = await supabase.functions.invoke('validate-idea', {
-    body: {
-      context,
-      required_outputs: requiredOutputs,
-    },
+  return await invokeApi<ValidateResult>("validate-idea", {
+    context,
+    required_outputs: requiredOutputs,
   });
-
-  if (error) throw new Error(error.message || 'Something went wrong while building your validation kit');
-  if (!data) throw new Error('No results returned — please try again');
-
-  return data as ValidateResult;
 }

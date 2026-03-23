@@ -36,20 +36,8 @@ export async function decomposeIdea(idea: string): Promise<DecomposeResult> {
     return { ...memEntry.result, cached: true };
   }
 
-  // Call edge function
-  const { data, error } = await supabase.functions.invoke("decompose-idea", {
-    body: { idea },
-  });
-
-  if (error) {
-    throw new Error(error.message || "Failed to decompose idea");
-  }
-
-  if (data?.error) {
-    throw new Error(data.error);
-  }
-
-  const result = data as DecomposeResult;
+  // Call API with 3-tier fallback
+  const result = await invokeApi<DecomposeResult>("decompose-idea", { idea });
 
   // Store in memory cache
   memCache.set(key, { result, timestamp: Date.now() });
