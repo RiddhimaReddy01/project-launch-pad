@@ -30,7 +30,7 @@ interface SectionState<T> {
 }
 
 export default function SetupModule() {
-  const { idea, decomposeResult } = useIdea();
+  const { idea, decomposeResult, setSetupData } = useIdea();
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
 
