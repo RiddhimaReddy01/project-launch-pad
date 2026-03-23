@@ -8,28 +8,27 @@ const corsHeaders = {
 };
 
 const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
-async function callAI(apiKey: string, systemPrompt: string, userPrompt: string, tools?: any[]) {
-  const body: any = {
-    model: "google/gemini-2.5-flash",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt },
-    ],
-  };
+async function hashKey(input: string): Promise<string> {
+  const data = new TextEncoder().encode(input.trim().toLowerCase().replace(/\s+/g, " "));
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
 
-  if (tools) {
-    body.tools = tools;
-    body.tool_choice = { type: "function", function: { name: tools[0].function.name } };
-  }
-
+async function callAI(apiKey: string, systemPrompt: string, userPrompt: string, tools: any[]) {
   const resp = await fetch(AI_GATEWAY, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "google/gemini-2.5-flash",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      tools,
+      tool_choice: { type: "function", function: { name: tools[0].function.name } },
+    }),
   });
 
   if (!resp.ok) {
@@ -38,16 +37,12 @@ async function callAI(apiKey: string, systemPrompt: string, userPrompt: string, 
   }
 
   const data = await resp.json();
-
-  if (tools) {
-    const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
-    if (toolCall) {
-      return JSON.parse(toolCall.function.arguments);
-    }
-  }
-
-  return data.choices?.[0]?.message?.content;
+  const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
+  if (toolCall) return JSON.parse(toolCall.function.arguments);
+  throw new Error("No structured response returned");
 }
+
+// ── Tool schema ──
 
 const DISCOVER_TOOLS = [
   {
@@ -65,21 +60,13 @@ const DISCOVER_TOOLS = [
               type: "object",
               properties: {
                 title: { type: "string", description: "Concise insight title, max 12 words" },
-                type: {
-                  type: "string",
-                  enum: ["pain_point", "workaround", "demand_signal", "expectation"],
-                  description: "Category of insight",
-                },
-                description: { type: "string", description: "2-3 sentence description of the insight" },
-                frequency_score: { type: "number", description: "How often this appears, 0.0-1.0" },
-                severity_score: { type: "number", description: "How severe/impactful this is, 0.0-1.0" },
-                willingness_to_pay: { type: "number", description: "How willing people are to pay for a solution, 0.0-1.0" },
-                market_size_signal: { type: "number", description: "Signal of market size potential, 0.0-1.0" },
-                tags: {
-                  type: "array",
-                  items: { type: "string" },
-                  description: "2-4 short keyword tags",
-                },
+                type: { type: "string", enum: ["pain_point", "workaround", "demand_signal", "expectation"] },
+                description: { type: "string", description: "2-3 sentence description" },
+                frequency_score: { type: "number", description: "0.0-1.0" },
+                severity_score: { type: "number", description: "0.0-1.0" },
+                willingness_to_pay: { type: "number", description: "0.0-1.0" },
+                market_size_signal: { type: "number", description: "0.0-1.0" },
+                tags: { type: "array", items: { type: "string" }, description: "2-4 short keyword tags" },
                 sources: {
                   type: "array",
                   description: "2-4 evidence sources with realistic quotes",
@@ -87,11 +74,11 @@ const DISCOVER_TOOLS = [
                     type: "object",
                     properties: {
                       platform: { type: "string", enum: ["reddit", "google", "yelp"] },
-                      text: { type: "string", description: "A realistic verbatim quote from a real person discussing this issue (50-120 chars)" },
-                      url: { type: "string", description: "A plausible URL where this discussion would occur" },
-                      author: { type: "string", description: "A realistic username or reviewer name" },
-                      date: { type: "string", description: "ISO date string within last 6 months" },
-                      upvotes: { type: "number", description: "Number of upvotes/likes if applicable, null for reviews" },
+                      text: { type: "string", description: "Verbatim quote (50-120 chars)" },
+                      url: { type: "string" },
+                      author: { type: "string" },
+                      date: { type: "string" },
+                      upvotes: { type: "number" },
                     },
                     required: ["platform", "text", "url", "author", "date"],
                   },
@@ -103,32 +90,12 @@ const DISCOVER_TOOLS = [
           },
           synthesis: {
             type: "object",
-            description: "High-level founder synthesis of all insights",
             properties: {
-              top_pain_points: {
-                type: "array",
-                items: { type: "string" },
-                description: "Top 3 pain points summarized in one sentence each",
-              },
-              current_workarounds: {
-                type: "array",
-                items: { type: "string" },
-                description: "What customers currently do instead (2-3 items)",
-              },
-              what_they_value: {
-                type: "array",
-                items: { type: "string" },
-                description: "What customers value most (2-3 items)",
-              },
-              willingness_signals: {
-                type: "array",
-                items: { type: "string" },
-                description: "2-3 signals that customers would pay for a solution",
-              },
-              opportunity_score: {
-                type: "number",
-                description: "Overall opportunity signal score 0-100",
-              },
+              top_pain_points: { type: "array", items: { type: "string" } },
+              current_workarounds: { type: "array", items: { type: "string" } },
+              what_they_value: { type: "array", items: { type: "string" } },
+              willingness_signals: { type: "array", items: { type: "string" } },
+              opportunity_score: { type: "number" },
             },
             required: ["top_pain_points", "current_workarounds", "what_they_value", "willingness_signals", "opportunity_score"],
             additionalProperties: false,
@@ -153,23 +120,43 @@ const DISCOVER_TOOLS = [
 ];
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
+
     const { decomposition } = await req.json();
     if (!decomposition) {
       return new Response(JSON.stringify({ error: "Missing 'decomposition' field" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     const { business_type, location, search_queries, source_domains, subreddits, target_customers, price_tier } = decomposition;
+
+    // ── DB cache check ──
+    const cacheInput = `discover:${business_type}:${location?.city}:${location?.state}`;
+    const cacheKey = await hashKey(cacheInput);
+
+    const { data: cached } = await supabase
+      .from("result_cache")
+      .select("*")
+      .eq("cache_key", cacheKey)
+      .maybeSingle();
+
+    if (cached) {
+      const age = Date.now() - new Date(cached.created_at).getTime();
+      if (age < CACHE_TTL_MS) {
+        return new Response(JSON.stringify(cached.result_data), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
 
     const locationStr = location?.city ? `${location.city}, ${location.state}` : "United States";
 
@@ -183,14 +170,9 @@ Generate insights that are:
 - Actionable for a founder deciding whether to pursue this business
 - Varied across pain points, workarounds, demand signals, and expectations
 
-For URLs:
-- Reddit: use real subreddit URLs like https://www.reddit.com/r/{subreddit}/comments/...
-- Google: use Google Maps review URLs
-- Yelp: use Yelp business review URLs
+For quotes, write them as if a real person typed them — with natural language, occasional typos, and genuine frustration or excitement.
 
-For quotes, write them as if a real person typed them — with natural language, typos occasionally, and genuine frustration/excitement.
-
-Score all metrics honestly — not everything should be high. Some insights should have low frequency but high severity, others high frequency but low willingness to pay.`;
+Score all metrics honestly — not everything should be high.`;
 
     const userPrompt = `Analyze this business opportunity:
 
@@ -208,11 +190,11 @@ ${(source_domains || []).map((d: string) => `- ${d}`).join("\n")}
 Subreddits Analyzed:
 ${(subreddits || []).map((s: string) => `- r/${s}`).join("\n")}
 
-Generate 8-12 specific, evidence-backed market insights from analyzing these sources. Include a mix of pain points, workarounds, demand signals, and customer expectations. Each insight must have 2-4 source citations with realistic quotes and URLs.`;
+Generate 8-12 specific, evidence-backed market insights. Include a mix of pain points, workarounds, demand signals, and customer expectations.`;
 
     const result = await callAI(LOVABLE_API_KEY, systemPrompt, userPrompt, DISCOVER_TOOLS);
 
-    // Compute composite scores for each insight
+    // Post-process: compute composite scores
     if (result.insights) {
       result.insights = result.insights.map((insight: any) => {
         const composite = (
@@ -223,9 +205,14 @@ Generate 8-12 specific, evidence-backed market insights from analyzing these sou
         ) * 10;
         return { ...insight, composite_score: Math.round(composite * 10) / 10 };
       });
-
-      // Sort by composite score descending
       result.insights.sort((a: any, b: any) => b.composite_score - a.composite_score);
+    }
+
+    // ── Save to cache ──
+    if (cached) {
+      await supabase.from("result_cache").update({ result_data: result, created_at: new Date().toISOString() }).eq("id", cached.id);
+    } else {
+      await supabase.from("result_cache").insert({ cache_key: cacheKey, function_name: "discover-insights", result_data: result });
     }
 
     return new Response(JSON.stringify(result), {
@@ -236,8 +223,7 @@ Generate 8-12 specific, evidence-backed market insights from analyzing these sou
     const message = e instanceof Error ? e.message : "Unknown error";
     const status = message.includes("429") ? 429 : message.includes("402") ? 402 : 500;
     return new Response(JSON.stringify({ error: message }), {
-      status,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });

@@ -228,15 +228,23 @@ export default function ValidateModule() {
     setPhase('generating');
     setErrorMsg('');
     try {
-      const data = await generateValidation(context);
+      // Determine which outputs are needed based on selected methods
+      const requiredOutputs = new Set<string>();
+      selectedMethods.forEach(mId => {
+        const method = ALL_METHODS.find(m => m.id === mId);
+        method?.outputs.forEach(o => requiredOutputs.add(o));
+      });
+      requiredOutputs.add('scorecard');
+
+      const data = await generateValidation(context, Array.from(requiredOutputs));
       data.scorecard = deriveScorecard(data.scorecard);
       setResult(data);
       setPhase('toolkit');
     } catch (err: any) {
-      setErrorMsg(err.message || 'Generation failed');
+      setErrorMsg(err.message || 'Something went wrong — please try again');
       setPhase('select');
     }
-  }, [context, deriveScorecard]);
+  }, [context, deriveScorecard, selectedMethods]);
 
   const toggleMethod = (id: string) => {
     setSelectedMethods(prev => {
@@ -351,9 +359,9 @@ export default function ValidateModule() {
   if (!decomposeResult) return (
     <div className="flex items-center justify-center" style={{ height: '60vh' }}>
       <div className="text-center" style={{ maxWidth: 400 }}>
-        <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Complete the Discover step first</p>
+        <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Start with your idea first</p>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-          Validation needs your business context from the decomposition step.
+          Head to the Understand tab to enter your business idea. We need that context before building your validation toolkit.
         </p>
       </div>
     </div>
@@ -364,9 +372,9 @@ export default function ValidateModule() {
     <div ref={containerRef} className="scroll-reveal">
       <div className="mb-10">
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>VALIDATE</p>
-        <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>Choose your validation approach</p>
+        <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>How do you want to test demand?</p>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-          Select methods to test real demand. We generate the complete toolkit — landing page copy, survey, outreach messages, communities, and scorecard.
+          Pick the methods that fit your stage. We'll build a ready-to-deploy toolkit — landing page copy, survey questions, outreach messages, target communities, and success benchmarks.
         </p>
       </div>
 
@@ -416,7 +424,7 @@ export default function ValidateModule() {
             border: 'none', cursor: selectedMethods.size > 0 ? 'pointer' : 'default',
           }}
         >
-          Generate Validation Kit
+          Build My Toolkit
         </button>
       </div>
 
@@ -431,9 +439,9 @@ export default function ValidateModule() {
     <div ref={containerRef} className="scroll-reveal">
       <div className="mb-10">
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>VALIDATE</p>
-        <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>Generating your validation kit</p>
+        <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>Crafting your toolkit</p>
       </div>
-      <SectionSkeleton label="Building landing page copy, survey questions, outreach messages, community list, and scorecard targets..." />
+      <SectionSkeleton label="Writing landing page copy, designing survey questions, drafting outreach messages, finding communities, and setting benchmarks..." />
     </div>
   );
 
@@ -514,10 +522,10 @@ export default function ValidateModule() {
       <div style={{ minHeight: 300, maxWidth: 800 }}>
         {result && (
           <>
-            {activeTab === 'landing' && <LandingSection data={result.landing_page} onChange={(lp) => updateResult({ landing_page: lp })} />}
-            {activeTab === 'survey' && <SurveySection data={result.survey} onChange={(s) => updateResult({ survey: s })} />}
-            {activeTab === 'whatsapp' && <WhatsAppSection data={result.whatsapp} onChange={(w) => updateResult({ whatsapp: w })} />}
-            {activeTab === 'communities' && <CommunitiesSection data={result.communities} />}
+            {activeTab === 'landing' && result.landing_page && <LandingSection data={result.landing_page} onChange={(lp) => updateResult({ landing_page: lp })} />}
+            {activeTab === 'survey' && result.survey && <SurveySection data={result.survey} onChange={(s) => updateResult({ survey: s })} />}
+            {activeTab === 'whatsapp' && result.whatsapp && <WhatsAppSection data={result.whatsapp} onChange={(w) => updateResult({ whatsapp: w })} />}
+            {activeTab === 'communities' && result.communities && <CommunitiesSection data={result.communities} />}
             {activeTab === 'scorecard' && <ScorecardSection data={result.scorecard} onUpdate={updateScorecard} analyzeData={analyzeData} setupData={setupData} />}
           </>
         )}
@@ -669,7 +677,7 @@ function SurveySection({ data, onChange }: { data: ValidateResult['survey']; onC
 
 // ═══ WHATSAPP SECTION ═══
 
-function WhatsAppSection({ data, onChange }: { data: ValidateResult['whatsapp']; onChange: (d: ValidateResult['whatsapp']) => void }) {
+function WhatsAppSection({ data, onChange }: { data: NonNullable<ValidateResult['whatsapp']>; onChange: (d: NonNullable<ValidateResult['whatsapp']>) => void }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-5">

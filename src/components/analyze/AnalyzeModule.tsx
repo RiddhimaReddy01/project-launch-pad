@@ -317,9 +317,9 @@ export default function AnalyzeModule() {
   if (!decomposeResult) return (
     <div className="flex items-center justify-center" style={{ height: '60vh' }}>
       <div className="text-center" style={{ maxWidth: 400 }}>
-        <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Select a module and compile your analysis</p>
+        <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Pick a module and run your analysis</p>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-          Choose which signals, insights, and prior outputs to include. Run only the analyses you need.
+          Choose which signals and insights to include, then run only the analyses you need.
         </p>
       </div>
     </div>
@@ -392,10 +392,10 @@ export default function AnalyzeModule() {
           {activeSec.status === 'idle' && (
             <div className="flex flex-col items-center justify-center" style={{ minHeight: 300 }}>
               <p className="font-heading" style={{ fontSize: 20, marginBottom: 8, textAlign: 'center' }}>
-                Ready to analyze
+                Ready to research
               </p>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', textAlign: 'center', maxWidth: 360, lineHeight: 1.6, marginBottom: 20 }}>
-                Configure your inputs in the composer panel, then compile this analysis module.
+                Set up your inputs in the panel on the right, then hit the button below.
               </p>
               <button
                 onClick={() => {
@@ -404,7 +404,7 @@ export default function AnalyzeModule() {
                 className="rounded-[10px] px-5 py-2.5 transition-all duration-200 active:scale-[0.97]"
                 style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
               >
-                Compile {MODULE_DEFS.find(m => m.key === activeModule)?.label}
+                Run {MODULE_DEFS.find(m => m.key === activeModule)?.label}
               </button>
             </div>
           )}
@@ -412,10 +412,10 @@ export default function AnalyzeModule() {
           {activeSec.status === 'error' && (
             <div className="flex flex-col items-center justify-center" style={{ minHeight: 300 }}>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>
-                This analysis could not be completed.
+                This section couldn't load right now.
               </p>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>
-                {activeSec.error || 'Try again with fewer inputs or a different signal set.'}
+                {activeSec.error || 'Give it another shot — sometimes a retry does the trick.'}
               </p>
               <button
                 onClick={() => setSections(prev => ({ ...prev, [activeModule]: { ...prev[activeModule], status: 'loading', error: undefined } }))}
