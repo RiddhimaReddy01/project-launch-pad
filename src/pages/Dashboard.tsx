@@ -35,11 +35,13 @@ export default function Dashboard() {
   const allFindings = ideas.flatMap(idea => {
     const analysis = (idea as any).analysis_data;
     if (!analysis?.selected_findings) return [];
-    return (analysis.selected_findings as { text: string; section: string }[]).map(f => ({
-      ...f,
-      idea_text: idea.idea_text,
-      idea_id: idea.id,
-    }));
+    return ((analysis.selected_findings as { text?: string; section?: string }[]) || [])
+      .filter(f => f && f.text && f.section)
+      .map(f => ({
+        ...f,
+        idea_text: idea.idea_text,
+        idea_id: idea.id,
+      }));
   });
 
   useEffect(() => {
