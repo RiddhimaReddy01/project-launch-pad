@@ -677,7 +677,7 @@ function SurveySection({ data, onChange }: { data: ValidateResult['survey']; onC
 
 // ═══ WHATSAPP SECTION ═══
 
-function WhatsAppSection({ data, onChange }: { data: ValidateResult['whatsapp']; onChange: (d: ValidateResult['whatsapp']) => void }) {
+function WhatsAppSection({ data, onChange }: { data: NonNullable<ValidateResult['whatsapp']>; onChange: (d: NonNullable<ValidateResult['whatsapp']>) => void }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-5">
