@@ -165,16 +165,17 @@ function transformResponseFromRender(functionName: string, data: any): any {
     case "discover-insights":
       // Render returns: { sources, insights } — may differ from Lovable's { insights, synthesis, source_summary }
       if (data.synthesis) return data; // Already Lovable format
+      const normalizeScore = (v: number) => v > 1 ? v / 10 : v; // Render uses 0-10, Lovable uses 0-1
       return {
         insights: (data.insights || []).map((ins: any) => ({
           title: ins.title || "",
           type: ins.type || "pain_point",
           description: ins.description || ins.title || "",
-          frequency_score: ins.frequency_score || ins.score || 0,
-          severity_score: ins.intensity_score || ins.severity_score || 0,
-          willingness_to_pay: ins.willingness_to_pay_score || ins.willingness_to_pay || 0,
-          market_size_signal: ins.market_size_signal || 0,
-          composite_score: ins.score || ins.composite_score || 0,
+          frequency_score: normalizeScore(ins.frequency_score || ins.score || 0),
+          severity_score: normalizeScore(ins.intensity_score || ins.severity_score || 0),
+          willingness_to_pay: normalizeScore(ins.willingness_to_pay_score || ins.willingness_to_pay || 0),
+          market_size_signal: normalizeScore(ins.market_size_signal || 0),
+          composite_score: normalizeScore(ins.score || ins.composite_score || 0),
           tags: ins.tags || ins.source_platforms || [],
           sources: (ins.evidence || ins.sources || []).map((s: any) => ({
             platform: s.platform || s.source || "google",
