@@ -10,8 +10,10 @@
 
 import { supabase } from "@/integrations/supabase/client";
 
-const PRIMARY_API = "https://launchlens.com";
-const BACKUP_API = "https://launch-lean-ed28c2e7.onrender.com";
+const PRIMARY_API = "https://launch-lean-ed28c2e7.onrender.com";
+const BACKUP_API = "https://steven-impervious-lorretta.ngrok-free.dev";
+const PRIMARY_TIMEOUT = 5000;
+const BACKUP_TIMEOUT = 90000;
 
 // Map edge function names to Render API paths
 const RENDER_ENDPOINTS: Record<string, string> = {
