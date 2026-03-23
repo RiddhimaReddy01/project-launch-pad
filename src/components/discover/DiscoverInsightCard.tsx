@@ -7,12 +7,21 @@ import { toast } from 'sonner';
 import ScoreDonut from './ScoreDonut';
 import ScoreMethodology from './ScoreMethodology';
 
-const TYPE_CONFIG = {
+const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
   pain_point: { label: 'PAIN POINT', color: '#8C6B6B', bg: 'rgba(140,107,107,0.06)', icon: 'P' },
   workaround: { label: 'WORKAROUND', color: 'var(--accent-amber)', bg: 'rgba(166,139,91,0.06)', icon: 'W' },
   demand_signal: { label: 'DEMAND SIGNAL', color: 'var(--accent-teal)', bg: 'rgba(91,140,126,0.06)', icon: 'D' },
   expectation: { label: 'EXPECTATION', color: 'var(--accent-blue)', bg: 'rgba(122,143,160,0.06)', icon: 'E' },
+  market_gap: { label: 'MARKET GAP', color: 'var(--accent-teal)', bg: 'rgba(91,140,126,0.06)', icon: 'G' },
+  opportunity: { label: 'OPPORTUNITY', color: 'var(--accent-blue)', bg: 'rgba(122,143,160,0.06)', icon: 'O' },
+  trend: { label: 'TREND', color: 'var(--accent-amber)', bg: 'rgba(166,139,91,0.06)', icon: 'T' },
 };
+
+const DEFAULT_TYPE_CONFIG = { label: 'INSIGHT', color: '#8C6B6B', bg: 'rgba(140,107,107,0.06)', icon: '•' };
+
+function getTypeConfig(type: string) {
+  return TYPE_CONFIG[type] || DEFAULT_TYPE_CONFIG;
+}
 
 const PLATFORM_META: Record<string, { label: string }> = {
   reddit: { label: 'Reddit' },
