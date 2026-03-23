@@ -277,7 +277,7 @@ export default function ValidateModule() {
               survey: method?.outputs.includes('survey') ? result.survey : null,
               whatsapp: method?.outputs.includes('whatsapp') ? result.whatsapp : null,
               communities: method?.outputs.includes('communities') ? result.communities : null,
-            },
+            } as any,
           };
         });
         await supabase.from('experiments').insert(methodEntries);

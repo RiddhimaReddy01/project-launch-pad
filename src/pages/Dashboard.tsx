@@ -69,7 +69,7 @@ export default function Dashboard() {
     if (ideasRes.data) setIdeas(ideasRes.data as SavedIdea[]);
     if (expRes.data && ideasRes.data) {
       const ideasMap = Object.fromEntries((ideasRes.data as SavedIdea[]).map(i => [i.id, i.idea_text]));
-      setExperiments((expRes.data as Experiment[]).map(e => ({ ...e, idea_text: ideasMap[e.idea_id] || 'Unknown idea' })));
+      setExperiments((expRes.data as unknown as Experiment[]).map(e => ({ ...e, idea_text: ideasMap[e.idea_id] || 'Unknown idea' })));
     }
     setLoading(false);
   };
