@@ -19,6 +19,9 @@ const ENDPOINT_MAP: Record<string, string> = {
   "validate-idea": "/api/generate-validation",
 };
 
+// Functions where Lovable Cloud (better AI) should be tried FIRST
+const LOVABLE_FIRST = new Set(["decompose-idea"]);
+
 async function tryFetch(baseUrl: string, path: string, body: unknown, timeoutMs = 8000): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -46,7 +49,19 @@ async function tryFetch(baseUrl: string, path: string, body: unknown, timeoutMs 
 export async function invokeApi<T = unknown>(functionName: string, body: unknown): Promise<T> {
   const externalPath = ENDPOINT_MAP[functionName];
 
-  // If we have an external path, try primary → backup first
+  // For some functions, Lovable Cloud has better AI — try it first
+  if (LOVABLE_FIRST.has(functionName)) {
+    try {
+      const { data, error } = await supabase.functions.invoke(functionName, { body });
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+      return data as T;
+    } catch (e) {
+      console.log(`[API] Lovable Cloud failed for ${functionName}:`, (e as Error).message);
+    }
+  }
+
+  // Try external backends: primary → backup
   if (externalPath) {
     // Try PRIMARY
     try {
@@ -69,12 +84,14 @@ export async function invokeApi<T = unknown>(functionName: string, body: unknown
     }
   }
 
-  // Fallback to Lovable Cloud edge functions
-  console.log(`[API] Falling back to Lovable Cloud for ${functionName}`);
-  const { data, error } = await supabase.functions.invoke(functionName, { body });
+  // Final fallback to Lovable Cloud (for non-LOVABLE_FIRST functions)
+  if (!LOVABLE_FIRST.has(functionName)) {
+    console.log(`[API] Falling back to Lovable Cloud for ${functionName}`);
+    const { data, error } = await supabase.functions.invoke(functionName, { body });
+    if (error) throw new Error(error.message || `Failed: ${functionName}`);
+    if (data?.error) throw new Error(data.error);
+    return data as T;
+  }
 
-  if (error) throw new Error(error.message || `Failed: ${functionName}`);
-  if (data?.error) throw new Error(data.error);
-
-  return data as T;
+  throw new Error(`All API backends failed for ${functionName}`);
 }
