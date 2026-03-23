@@ -236,7 +236,7 @@ export default function SetupModule() {
         <div className="grid grid-cols-3 gap-3">
           {(['lean', 'mid', 'premium'] as const).map((tier) => {
             const isSelected = selectedTier === tier;
-            const tierData = costsState.data?.tiers.find(t => t.id === tier);
+            const tierData = costsState.data?.tiers?.find(t => t.id === tier);
             const labels = {
               lean: { title: 'Lean', sub: 'Speed + DIY', cost: tierData ? `$${(tierData.cost_min/1000).toFixed(0)}K–$${(tierData.cost_max/1000).toFixed(0)}K` : '$30–50K', weeks: tierData?.timeline_weeks || 16, team: tierData?.team_size || '1', best: tierData?.best_for || 'MVPs, services' },
               mid: { title: 'Balanced', sub: 'Quality + team', cost: tierData ? `$${(tierData.cost_min/1000).toFixed(0)}K–$${(tierData.cost_max/1000).toFixed(0)}K` : '$75–100K', weeks: tierData?.timeline_weeks || 24, team: tierData?.team_size || '1–2', best: tierData?.best_for || 'Most startups' },
