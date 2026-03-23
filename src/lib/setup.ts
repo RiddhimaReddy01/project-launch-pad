@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { invokeApi } from "@/lib/api-client";
 
 export interface SetupContext {
   business_type: string;
@@ -91,12 +91,6 @@ export async function setupSection(
   section: SetupSectionKey,
   context: SetupContext
 ): Promise<SetupSectionData> {
-  const { data, error } = await supabase.functions.invoke("setup-section", {
-    body: { section, context },
-  });
-
-  if (error) throw new Error(error.message || `Failed to generate ${section}`);
-  if (data?.error) throw new Error(data.error);
-
-  return data.data as SetupSectionData;
+  const result = await invokeApi<{ data: SetupSectionData }>("setup-section", { section, context });
+  return result.data ?? (result as unknown as SetupSectionData);
 }

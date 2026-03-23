@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { invokeApi } from "@/lib/api-client";
 
 export interface AnalyzeContext {
   business_type: string;
@@ -143,14 +143,8 @@ export async function analyzeSection(
   section: SectionKey,
   context: AnalyzeContext
 ): Promise<SectionData> {
-  const { data, error } = await supabase.functions.invoke("analyze-section", {
-    body: { section, context },
-  });
-
-  if (error) throw new Error(error.message || `Failed to analyze ${section}`);
-  if (data?.error) throw new Error(data.error);
-
-  return data.data as SectionData;
+  const result = await invokeApi<{ data: SectionData }>("analyze-section", { section, context });
+  return result.data ?? (result as unknown as SectionData);
 }
 
 /**
