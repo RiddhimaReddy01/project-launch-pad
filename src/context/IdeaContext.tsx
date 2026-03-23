@@ -34,7 +34,7 @@ const IdeaContext = createContext<IdeaState | null>(null);
 
 export function IdeaProvider({ children }: { children: ReactNode }) {
   const [idea, setIdea] = useState('');
-  const [currentStep, setCurrentStep] = useState<Step>('discover');
+  const [currentStep, setCurrentStep] = useState<Step>('understand');
   const [selectedInsight, setSelectedInsight] = useState<string | null>(null);
   const [decomposeResult, setDecomposeResult] = useState<DecomposeResult | null>(null);
   const [discoverResult, setDiscoverResult] = useState<DiscoverResult | null>(null);
