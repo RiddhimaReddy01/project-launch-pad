@@ -8,10 +8,10 @@ import ScoreDonut from './ScoreDonut';
 import ScoreMethodology from './ScoreMethodology';
 
 const TYPE_CONFIG = {
-  pain_point: { label: 'PAIN POINT', color: '#EF4444', bg: 'rgba(239,68,68,0.06)', icon: 'P' },
-  workaround: { label: 'WORKAROUND', color: 'var(--accent-amber)', bg: 'rgba(212,136,15,0.06)', icon: 'W' },
-  demand_signal: { label: 'DEMAND SIGNAL', color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.06)', icon: 'D' },
-  expectation: { label: 'EXPECTATION', color: 'var(--accent-blue)', bg: 'rgba(59,130,246,0.06)', icon: 'E' },
+  pain_point: { label: 'PAIN POINT', color: '#8C6B6B', bg: 'rgba(140,107,107,0.06)', icon: 'P' },
+  workaround: { label: 'WORKAROUND', color: 'var(--accent-amber)', bg: 'rgba(166,139,91,0.06)', icon: 'W' },
+  demand_signal: { label: 'DEMAND SIGNAL', color: 'var(--accent-teal)', bg: 'rgba(91,140,126,0.06)', icon: 'D' },
+  expectation: { label: 'EXPECTATION', color: 'var(--accent-blue)', bg: 'rgba(122,143,160,0.06)', icon: 'E' },
 };
 
 const PLATFORM_META: Record<string, { label: string }> = {
@@ -89,7 +89,7 @@ function NoteInput({ onSubmit, onCancel }: NoteInputProps) {
           onClick={() => { if (text.trim()) onSubmit(text.trim()); }}
           disabled={!text.trim()}
           className="rounded-[8px] px-3 py-1 disabled:opacity-40"
-          style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--accent-purple)', color: '#fff', border: 'none', cursor: 'pointer' }}
+          style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
         >
           Save note
         </button>
@@ -168,7 +168,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
   };
 
   const scoreColor = insight.composite_score >= 7 ? 'var(--accent-teal)' :
-    insight.composite_score >= 4 ? 'var(--accent-amber)' : '#EF4444';
+    insight.composite_score >= 4 ? 'var(--accent-amber)' : '#8C6B6B';
 
   return (
     <div
@@ -238,7 +238,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
 
             {/* Expand hint */}
             <div className="mt-3">
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--accent-purple)' }}>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--accent-primary)' }}>
                 {expanded ? 'Hide evidence' : `${insight.sources.length} sources — click to expand`}
               </span>
             </div>
@@ -260,8 +260,8 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
               className="rounded-full px-2.5 py-1 transition-colors duration-150"
               style={{
                 fontSize: 10, fontFamily: "'Inter', sans-serif", fontWeight: 300,
-                backgroundColor: showMethodology ? 'rgba(108,92,231,0.08)' : 'var(--surface-input)',
-                color: showMethodology ? 'var(--accent-purple)' : 'var(--text-muted)',
+                backgroundColor: showMethodology ? 'rgba(26,26,26,0.06)' : 'var(--surface-input)',
+                color: showMethodology ? 'var(--accent-primary)' : 'var(--text-muted)',
                 border: 'none', cursor: 'pointer',
               }}
             >
@@ -284,7 +284,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
                     <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)' }}>{meta.label}</span>
                     <a href={source.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
                       className="transition-colors duration-150"
-                      style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'var(--accent-purple)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
+                      style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'var(--accent-primary)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
                       {source.author}
                     </a>
                     {source.upvotes != null && (
@@ -314,7 +314,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
             <button
               onClick={(e) => { e.stopPropagation(); setSelectedInsight(insight.title); setCurrentStep('analyze'); }}
               className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
-              style={{ fontSize: 13, fontFamily: "'Inter', sans-serif", fontWeight: 400, backgroundColor: 'var(--accent-purple)', color: '#fff', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 13, fontFamily: "'Inter', sans-serif", fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
             >
               Deep dive this opportunity
             </button>
@@ -324,7 +324,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
               className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
               style={{
                 fontSize: 13, fontFamily: "'Inter', sans-serif", fontWeight: 300,
-                backgroundColor: saved ? 'rgba(45,139,117,0.08)' : 'var(--surface-input)',
+                backgroundColor: saved ? 'rgba(91,140,126,0.08)' : 'var(--surface-input)',
                 color: saved ? 'var(--accent-teal)' : 'var(--text-secondary)',
                 border: 'none', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.6 : 1,
               }}
@@ -336,7 +336,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
               className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
               style={{
                 fontSize: 13, fontFamily: "'Inter', sans-serif", fontWeight: 300,
-                backgroundColor: noteSaved ? 'rgba(45,139,117,0.08)' : 'var(--surface-input)',
+                backgroundColor: noteSaved ? 'rgba(91,140,126,0.08)' : 'var(--surface-input)',
                 color: noteSaved ? 'var(--accent-teal)' : 'var(--text-secondary)',
                 border: 'none', cursor: 'pointer',
               }}

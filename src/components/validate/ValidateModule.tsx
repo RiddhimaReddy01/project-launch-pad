@@ -29,7 +29,7 @@ const ALL_METHODS: ValidationMethod[] = [
   { id: 'teardown', name: 'Competitor Teardown', description: 'Side-by-side comparison highlighting your differentiation', effort: 'low', speed: 'fast', outputs: ['landing_page', 'scorecard'] },
 ];
 
-const EFFORT_COLORS: Record<string, string> = { low: '#2D8B75', medium: '#D4880F', high: '#E05252' };
+const EFFORT_COLORS: Record<string, string> = { low: 'var(--accent-teal)', medium: 'var(--accent-amber)', high: '#8C6B6B' };
 const SPEED_LABELS: Record<string, string> = { fast: 'Fast', medium: 'Medium', slow: 'Slow' };
 
 type TabKey = 'landing' | 'survey' | 'whatsapp' | 'communities' | 'scorecard';
@@ -48,9 +48,9 @@ const ALL_TABS: { key: TabKey; label: string; mono: string; subtitle: string; ou
 ];
 
 const PLATFORM_COLORS: Record<string, string> = {
-  Reddit: '#FF4500', Facebook: '#1877F2', Discord: '#5865F2', LinkedIn: '#0A66C2',
-  Nextdoor: '#00B246', WhatsApp: '#25D366', Slack: '#4A154B', Twitter: '#1DA1F2',
-  Instagram: '#E4405F', TikTok: '#000000',
+  Reddit: '#8C6B6B', Facebook: '#7A8FA0', Discord: '#7A8FA0', LinkedIn: '#7A8FA0',
+  Nextdoor: '#5B8C7E', WhatsApp: '#5B8C7E', Slack: '#5A5A5A', Twitter: '#7A8FA0',
+  Instagram: '#8C6B6B', TikTok: '#5A5A5A',
 };
 
 // ═══ UTILITIES ═══
@@ -63,8 +63,8 @@ function CopyButton({ text }: { text: string }) {
       className="rounded-[6px] px-2.5 py-1 transition-all duration-200"
       style={{
         fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400,
-        color: copied ? '#2D8B75' : 'var(--text-muted)',
-        backgroundColor: copied ? 'rgba(45,139,117,0.06)' : 'var(--surface-input)',
+        color: copied ? 'var(--accent-teal)' : 'var(--text-muted)',
+        backgroundColor: copied ? 'rgba(91,140,126,0.06)' : 'var(--surface-input)',
         border: 'none', cursor: 'pointer',
       }}
     >
@@ -429,7 +429,7 @@ export default function ValidateModule() {
       </div>
 
       {errorMsg && (
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: '#E05252', marginTop: 12, textAlign: 'right' }}>{errorMsg}</p>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: '#8C6060', marginTop: 12, textAlign: 'right' }}>{errorMsg}</p>
       )}
     </div>
   );
@@ -609,7 +609,7 @@ function LandingSection({ data, onChange }: { data: ValidateResult['landing_page
           <div style={{ maxWidth: 380, margin: '0 auto 32px', textAlign: 'left' }}>
             {data.benefits.map((b, i) => (
               <div key={i} className="flex items-start" style={{ gap: 10, marginBottom: 10 }}>
-                <span style={{ color: '#2D8B75', fontSize: 13, marginTop: 2, flexShrink: 0 }}>—</span>
+                <span style={{ color: 'var(--accent-teal)', fontSize: 13, marginTop: 2, flexShrink: 0 }}>—</span>
                 <EditableText value={b} onChange={(v) => { const next = [...data.benefits]; next[i] = v; onChange({ ...data, benefits: next }); }}
                   style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }} />
               </div>
@@ -753,9 +753,9 @@ function ScorecardSection({ data, onUpdate, analyzeData, setupData }: {
     if (!hasData) return { label: 'Awaiting data', color: 'var(--text-muted)', bg: 'var(--surface-bg)', reasoning: 'Enter your validation results above to get a recommendation.' };
 
     const metPct = data.filter(m => m.target > 0 && m.actual >= m.target).length / Math.max(data.filter(m => m.target > 0).length, 1);
-    if (metPct >= 0.7) return { label: 'GO', color: '#2D8B75', bg: 'rgba(45,139,117,0.06)', reasoning: 'Strong signals across your validation metrics. Move forward with confidence.' };
-    if (metPct >= 0.4) return { label: 'PIVOT', color: '#D4880F', bg: 'rgba(212,136,15,0.06)', reasoning: 'Mixed signals. Refine your positioning or target a narrower segment before investing further.' };
-    return { label: 'RECONSIDER', color: '#E05252', bg: 'rgba(224,82,82,0.06)', reasoning: 'Weak demand signals. Consider a fundamentally different approach or target market.' };
+    if (metPct >= 0.7) return { label: 'GO', color: 'var(--accent-teal)', bg: 'rgba(91,140,126,0.06)', reasoning: 'Strong signals across your validation metrics. Move forward with confidence.' };
+    if (metPct >= 0.4) return { label: 'PIVOT', color: 'var(--accent-amber)', bg: 'rgba(166,139,91,0.06)', reasoning: 'Mixed signals. Refine your positioning or target a narrower segment before investing further.' };
+    return { label: 'RECONSIDER', color: '#8C6060', bg: 'rgba(140,96,96,0.06)', reasoning: 'Weak demand signals. Consider a fundamentally different approach or target market.' };
   }, [data]);
 
   // Context summary
@@ -790,7 +790,7 @@ function ScorecardSection({ data, onUpdate, analyzeData, setupData }: {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
         {data.map((m) => {
           const pct = m.target > 0 ? Math.min((m.actual / m.target) * 100, 100) : 0;
-          const barColor = pct >= 100 ? '#2D8B75' : pct >= 50 ? '#D4880F' : 'var(--divider-light)';
+          const barColor = pct >= 100 ? 'var(--accent-teal)' : pct >= 50 ? 'var(--accent-amber)' : 'var(--divider-light)';
           return (
             <div key={m.id} className="rounded-[12px] p-5" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
               <div className="flex items-center justify-between mb-3">

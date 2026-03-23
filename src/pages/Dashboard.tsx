@@ -101,13 +101,13 @@ export default function Dashboard() {
   if (authLoading || !user) return null;
 
   const stepColors: Record<string, string> = {
-    discover: '#3B82F6', analyze: '#D4880F', setup: '#2D8B75', validate: '#6C5CE7',
+    discover: 'var(--accent-blue)', analyze: 'var(--accent-amber)', setup: 'var(--accent-teal)', validate: 'var(--text-primary)',
   };
 
   const statusStyles: Record<string, { color: string; bg: string }> = {
     planned: { color: 'var(--text-muted)', bg: 'var(--surface-input)' },
-    running: { color: '#D4880F', bg: 'rgba(212,136,15,0.06)' },
-    completed: { color: '#2D8B75', bg: 'rgba(45,139,117,0.06)' },
+    running: { color: 'var(--accent-amber)', bg: 'rgba(166,139,91,0.06)' },
+    completed: { color: 'var(--accent-teal)', bg: 'rgba(91,140,126,0.06)' },
   };
 
   return (
@@ -119,7 +119,7 @@ export default function Dashboard() {
         </span>
         <div className="flex items-center" style={{ gap: 16 }}>
           <span className="cursor-pointer transition-colors duration-200" style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }} onClick={() => navigate('/')}>New idea</span>
-          <span className="cursor-pointer" style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: '#E05252' }} onClick={signOut}>Sign out</span>
+          <span className="cursor-pointer" style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: '#8C6060' }} onClick={signOut}>Sign out</span>
         </div>
       </header>
 
@@ -134,9 +134,9 @@ export default function Dashboard() {
             <button key={tab} onClick={() => setActiveTab(tab)} style={{
               padding: '10px 20px', fontFamily: "'Inter', sans-serif", fontSize: 13,
               fontWeight: activeTab === tab ? 400 : 300,
-              color: activeTab === tab ? 'var(--accent-purple)' : 'var(--text-muted)',
+              color: activeTab === tab ? 'var(--accent-primary)' : 'var(--text-muted)',
               backgroundColor: 'transparent', border: 'none',
-              borderBottom: activeTab === tab ? '2px solid var(--accent-purple)' : '2px solid transparent',
+              borderBottom: activeTab === tab ? '2px solid var(--accent-primary)' : '2px solid transparent',
               cursor: 'pointer', marginBottom: -1, textTransform: 'capitalize',
             }}>
               {tab === 'ideas' ? `Ideas (${ideas.length})` : tab === 'findings' ? `Findings (${allFindings.length})` : `Experiments (${experiments.length})`}
@@ -168,7 +168,7 @@ function IdeasTab({ ideas, stepColors, onResume, onDelete, onNavigate }: {
       <p style={{ fontFamily: "'Instrument Serif', serif", fontSize: 22, color: 'var(--text-primary)', marginBottom: 8 }}>No saved ideas yet</p>
       <p className="font-caption" style={{ marginBottom: 24 }}>Research an idea and save it to see it here.</p>
       <button onClick={onNavigate} className="rounded-[12px] transition-all duration-200 active:scale-[0.97]"
-        style={{ padding: '10px 24px', backgroundColor: 'var(--accent-purple)', color: '#fff', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, border: 'none', cursor: 'pointer' }}>
+        style={{ padding: '10px 24px', backgroundColor: 'var(--accent-primary)', color: '#fff', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, border: 'none', cursor: 'pointer' }}>
         Start researching
       </button>
     </div>
@@ -206,9 +206,9 @@ function IdeasTab({ ideas, stepColors, onResume, onDelete, onNavigate }: {
 // ═══ FINDINGS TAB ═══
 function FindingsTab({ findings }: { findings: { text?: string; section?: string; idea_text: string; idea_id: string }[] }) {
   const sectionColors: Record<string, string> = {
-    opportunity: '#3B82F6', customers: '#2D8B75', competitors: '#D4880F',
-    rootcause: '#6C5CE7', costs: '#E05252', risk: '#E05252',
-    location: '#3B82F6', moat: '#2D8B75',
+    opportunity: 'var(--accent-blue)', customers: 'var(--accent-teal)', competitors: 'var(--accent-amber)',
+    rootcause: 'var(--accent-primary)', costs: '#8C6060', risk: '#8C6060',
+    location: 'var(--accent-blue)', moat: 'var(--accent-teal)',
   };
 
   if (findings.length === 0) return (
@@ -306,7 +306,7 @@ function ExperimentsTab({ experiments, statusStyles, onStatusChange, onDelete }:
                         <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>
                           {metMet}/{metCount} targets met
                         </span>
-                        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: metMet === metCount && metCount > 0 ? '#2D8B75' : 'var(--text-muted)' }}>
+                        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: metMet === metCount && metCount > 0 ? 'var(--accent-teal)' : 'var(--text-muted)' }}>
                           {metCount > 0 ? Math.round((metMet / metCount) * 100) : 0}%
                         </span>
                       </div>
@@ -315,7 +315,7 @@ function ExperimentsTab({ experiments, statusStyles, onStatusChange, onDelete }:
                         <div style={{
                           height: '100%', borderRadius: 2, transition: 'width 300ms ease-out',
                           width: `${metCount > 0 ? (metMet / metCount) * 100 : 0}%`,
-                          backgroundColor: metMet === metCount && metCount > 0 ? '#2D8B75' : metMet > 0 ? '#D4880F' : 'var(--divider-light)',
+                          backgroundColor: metMet === metCount && metCount > 0 ? 'var(--accent-teal)' : metMet > 0 ? 'var(--accent-amber)' : 'var(--divider-light)',
                         }} />
                       </div>
                       {/* Individual metrics */}
@@ -326,8 +326,8 @@ function ExperimentsTab({ experiments, statusStyles, onStatusChange, onDelete }:
                           return (
                             <span key={key} className="rounded-[6px]" style={{
                               padding: '3px 8px', fontSize: 11, fontFamily: "'Inter', sans-serif",
-                              backgroundColor: met ? 'rgba(45,139,117,0.06)' : 'var(--surface-input)',
-                              color: met ? '#2D8B75' : 'var(--text-secondary)',
+                              backgroundColor: met ? 'rgba(91,140,126,0.06)' : 'var(--surface-input)',
+                              color: met ? 'var(--accent-teal)' : 'var(--text-secondary)',
                             }}>
                               {key}: {val.actual}/{val.target_label || val.target} {val.unit}
                             </span>

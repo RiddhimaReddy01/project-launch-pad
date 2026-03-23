@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { MOCK_METHODS, type ValidationMethod } from '@/data/validate-mock';
 
 const EFFORT_COLORS: Record<string, string> = {
-  low: '#2D8B75',
-  medium: '#D4880F',
-  high: '#E05252',
+  low: 'var(--accent-teal)',
+  medium: 'var(--accent-amber)',
+  high: '#8C6060',
 };
 
 const SPEED_LABELS: Record<string, string> = {
@@ -37,7 +37,7 @@ export default function MethodSelector({ selected, onToggle }: Props) {
               padding: 24,
               borderRadius: 14,
               backgroundColor: isSelected ? 'rgba(108,92,231,0.04)' : '#FFFFFF',
-              border: isSelected ? '1.5px solid var(--accent-purple)' : '1px solid var(--divider-light)',
+              border: isSelected ? '1.5px solid var(--accent-primary)' : '1px solid var(--divider-light)',
               cursor: 'pointer',
               transition: 'all 200ms ease-out',
               transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
@@ -62,8 +62,8 @@ export default function MethodSelector({ selected, onToggle }: Props) {
                   width: 20,
                   height: 20,
                   borderRadius: 6,
-                  border: isSelected ? '2px solid var(--accent-purple)' : '2px solid var(--divider-light)',
-                  backgroundColor: isSelected ? 'var(--accent-purple)' : 'transparent',
+                  border: isSelected ? '2px solid var(--accent-primary)' : '2px solid var(--divider-light)',
+                  backgroundColor: isSelected ? 'var(--accent-primary)' : 'transparent',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',

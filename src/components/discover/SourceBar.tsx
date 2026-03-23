@@ -26,7 +26,7 @@ export default function SourceBar({ sources, selectedSourceId, onSelectSource }:
             <span
               className="font-caption transition-colors duration-200"
               style={{
-                color: isSelected ? 'var(--accent-purple)' : 'var(--text-primary)',
+                color: isSelected ? 'var(--accent-primary)' : 'var(--text-primary)',
                 fontWeight: 400,
                 fontSize: 13,
               }}
@@ -37,7 +37,7 @@ export default function SourceBar({ sources, selectedSourceId, onSelectSource }:
               className="font-caption"
               style={{
                 fontSize: 12,
-                color: isSelected ? 'var(--accent-purple)' : 'var(--text-muted)',
+                color: isSelected ? 'var(--accent-primary)' : 'var(--text-muted)',
               }}
             >
               {source.postCount}

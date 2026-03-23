@@ -36,7 +36,7 @@ function EditableCard({ label, value, onSave, mono }: EditableCardProps) {
             if (editing) { onSave(draft); setEditing(false); }
             else setEditing(true);
           }}
-          style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--accent-purple)', background: 'none', border: 'none', cursor: 'pointer' }}
+          style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--accent-primary)', background: 'none', border: 'none', cursor: 'pointer' }}
         >
           {editing ? 'Save' : 'Edit'}
         </button>
@@ -92,7 +92,7 @@ function EditableListCard({ label, items, onSave }: EditableListCardProps) {
             if (editing) { onSave(draft.split('\n').map(s => s.trim()).filter(Boolean)); setEditing(false); }
             else setEditing(true);
           }}
-          style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--accent-purple)', background: 'none', border: 'none', cursor: 'pointer' }}
+          style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--accent-primary)', background: 'none', border: 'none', cursor: 'pointer' }}
         >
           {editing ? 'Save' : 'Edit'}
         </button>
@@ -259,7 +259,7 @@ export default function UnderstandModule() {
               color: 'var(--text-primary)', backgroundColor: 'var(--surface-input)',
               border: '1px solid var(--divider-light)', outline: 'none',
             }}
-            onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-purple)'}
+            onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
             onBlur={(e) => e.currentTarget.style.borderColor = 'var(--divider-light)'}
           />
           <div className="flex justify-end mt-4">
@@ -269,7 +269,7 @@ export default function UnderstandModule() {
               className="rounded-[10px] px-6 py-2.5 transition-all duration-200 active:scale-[0.97] disabled:opacity-40"
               style={{
                 fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400,
-                backgroundColor: 'var(--accent-purple)', color: '#fff', border: 'none', cursor: 'pointer',
+                backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer',
               }}
             >
               Analyze idea →
@@ -284,7 +284,7 @@ export default function UnderstandModule() {
           <div className="flex items-center justify-center gap-3 py-8">
             <div
               className="rounded-full"
-              style={{ width: 18, height: 18, border: '2px solid var(--divider-light)', borderTopColor: 'var(--accent-purple)', animation: 'spin 0.8s linear infinite' }}
+              style={{ width: 18, height: 18, border: '2px solid var(--divider-light)', borderTopColor: 'var(--accent-primary)', animation: 'spin 0.8s linear infinite' }}
             />
             <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)' }}>
               Breaking down your idea…
@@ -296,12 +296,12 @@ export default function UnderstandModule() {
 
       {/* Error */}
       {status === 'error' && (
-        <div className="rounded-[14px] p-6 text-center" style={{ backgroundColor: 'rgba(239,68,68,0.04)' }}>
+        <div className="rounded-[14px] p-6 text-center" style={{ backgroundColor: 'rgba(140,96,96,0.04)' }}>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: 'var(--destructive)', marginBottom: 16 }}>{error}</p>
           <button
             onClick={() => { hasRun.current = false; runDecompose(); }}
             className="rounded-[10px] px-5 py-2.5 transition-all duration-200 active:scale-[0.97]"
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, backgroundColor: 'var(--accent-purple)', color: '#fff', border: 'none', cursor: 'pointer' }}
+            style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
           >
             Retry
           </button>
@@ -314,7 +314,7 @@ export default function UnderstandModule() {
           {/* Sticky actions bar */}
           <div className="flex items-center justify-between flex-wrap gap-3">
             {result.cached && (
-              <span className="rounded-full px-3 py-1" style={{ fontSize: 11, fontFamily: "'Inter', sans-serif", backgroundColor: 'rgba(45,139,117,0.08)', color: 'var(--accent-teal)' }}>
+              <span className="rounded-full px-3 py-1" style={{ fontSize: 11, fontFamily: "'Inter', sans-serif", backgroundColor: 'rgba(91,140,126,0.08)', color: 'var(--accent-teal)' }}>
                 Cached result
               </span>
             )}
@@ -333,7 +333,7 @@ export default function UnderstandModule() {
                   className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
                   style={{
                     fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 400,
-                    backgroundColor: saveStatus === 'saved' ? 'rgba(45,139,117,0.08)' : 'var(--surface-input)',
+                    backgroundColor: saveStatus === 'saved' ? 'rgba(91,140,126,0.08)' : 'var(--surface-input)',
                     color: saveStatus === 'saved' ? 'var(--accent-teal)' : 'var(--text-secondary)',
                     border: 'none', cursor: 'pointer',
                   }}
@@ -388,8 +388,8 @@ export default function UnderstandModule() {
               className="rounded-[12px] px-8 py-3 transition-all duration-200 active:scale-[0.97]"
               style={{
                 fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 400,
-                backgroundColor: 'var(--accent-purple)', color: '#fff', border: 'none', cursor: 'pointer',
-                boxShadow: '0 2px 12px rgba(108,92,231,0.25)',
+                backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer',
+                boxShadow: '0 2px 12px rgba(26,26,26,0.12)',
               }}
             >
               Continue to Discover →

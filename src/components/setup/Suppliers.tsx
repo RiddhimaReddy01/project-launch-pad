@@ -2,11 +2,11 @@ import { useState } from 'react';
 import type { SuppliersResult, SupplierItem } from '@/lib/setup';
 
 const CATEGORY_COLORS: Record<string, { color: string; bg: string }> = {
-  Engineering: { color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.06)' },
-  Marketing: { color: 'var(--accent-amber)', bg: 'rgba(212,136,15,0.06)' },
-  Legal: { color: 'hsl(0 84% 60%)', bg: 'rgba(239,68,68,0.06)' },
+  Engineering: { color: 'var(--accent-teal)', bg: 'rgba(91,140,126,0.06)' },
+  Marketing: { color: 'var(--accent-amber)', bg: 'rgba(166,139,91,0.06)' },
+  Legal: { color: 'hsl(0 84% 60%)', bg: 'rgba(140,96,96,0.06)' },
   Operations: { color: 'var(--text-secondary)', bg: 'rgba(26,26,26,0.04)' },
-  Infrastructure: { color: '#3B82F6', bg: 'rgba(59,130,246,0.06)' },
+  Infrastructure: { color: 'var(--accent-blue)', bg: 'rgba(122,143,160,0.06)' },
 };
 
 export default function Suppliers({ data, tier }: { data: SuppliersResult; tier: string }) {

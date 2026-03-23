@@ -14,7 +14,7 @@ function CopyButton({ text }: { text: string }) {
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
       style={{
         fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400,
-        color: copied ? '#2D8B75' : 'var(--accent-purple)',
+        color: copied ? 'var(--accent-teal)' : 'var(--accent-primary)',
         background: 'none', border: 'none', cursor: 'pointer',
         transition: 'color 200ms ease-out',
       }}
@@ -66,14 +66,14 @@ function LandingPageAsset() {
           <div style={{ maxWidth: 340, margin: '0 auto', textAlign: 'left', marginBottom: 28 }}>
             {lp.benefits.map((b, i) => (
               <div key={i} className="flex items-start" style={{ gap: 10, marginBottom: 10 }}>
-                <span style={{ color: '#2D8B75', fontSize: 14, marginTop: 2 }}>✓</span>
+                <span style={{ color: 'var(--accent-teal)', fontSize: 14, marginTop: 2 }}>✓</span>
                 <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{b}</span>
               </div>
             ))}
           </div>
           <button style={{
             fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400,
-            color: '#FFFFFF', backgroundColor: 'var(--accent-purple)',
+            color: '#FFFFFF', backgroundColor: 'var(--accent-primary)',
             border: 'none', borderRadius: 12, padding: '12px 28px', cursor: 'pointer',
           }}>
             {lp.cta}
@@ -149,12 +149,12 @@ function MarketplaceAsset() {
   return (
     <SectionBlock title="Marketplace listing" copyText={allText}>
       <div style={{ padding: 20, borderRadius: 12, border: '1px solid var(--divider-light)' }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--accent-purple)', marginBottom: 8 }}>{ml.hook}</p>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--accent-primary)', marginBottom: 8 }}>{ml.hook}</p>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 12 }}>{ml.title}</p>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: 16 }}>{ml.description}</p>
         <span style={{
           fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400,
-          color: '#2D8B75', padding: '4px 10px', borderRadius: 6, backgroundColor: 'rgba(45,139,117,0.06)',
+          color: 'var(--accent-teal)', padding: '4px 10px', borderRadius: 6, backgroundColor: 'rgba(91,140,126,0.06)',
         }}>
           {ml.pricing}
         </span>

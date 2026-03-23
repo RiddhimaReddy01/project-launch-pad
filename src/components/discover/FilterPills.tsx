@@ -19,7 +19,7 @@ export default function FilterPills({ selected, onSelect }: FilterPillsProps) {
               fontSize: 13,
               fontFamily: "'Inter', sans-serif",
               fontWeight: isActive ? 400 : 300,
-              backgroundColor: isActive ? 'var(--accent-purple)' : 'var(--surface-input)',
+              backgroundColor: isActive ? 'var(--accent-primary)' : 'var(--surface-input)',
               color: isActive ? '#FFFFFF' : 'var(--text-secondary)',
             }}
           >

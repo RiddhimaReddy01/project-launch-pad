@@ -22,7 +22,7 @@ function StepperDot({ step, index, currentIndex, onNavigate }: { step: typeof ST
   const isCompleted = index < currentIndex;
   const isFuture = index > currentIndex;
 
-  const dotColor = isCompleted || isActive ? 'var(--accent-purple)' : 'var(--divider-light)';
+  const dotColor = isCompleted || isActive ? 'var(--accent-primary)' : 'var(--divider-light)';
 
   return (
     <div
@@ -33,7 +33,7 @@ function StepperDot({ step, index, currentIndex, onNavigate }: { step: typeof ST
       <div
         style={{
           width: 10, height: 10, borderRadius: '50%',
-          backgroundColor: isCompleted ? 'var(--accent-purple)' : 'transparent',
+          backgroundColor: isCompleted ? 'var(--accent-primary)' : 'transparent',
           border: `2px solid ${dotColor}`,
           transition: 'all 300ms ease-out',
         }}
@@ -82,7 +82,7 @@ export default function Research() {
           <span
             className="cursor-pointer transition-colors duration-200"
             style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-purple)')}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-primary)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
             onClick={() => navigate('/')}
           >
@@ -92,7 +92,7 @@ export default function Research() {
             <span
               className="cursor-pointer transition-colors duration-200"
               style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-purple)')}
+              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-primary)')}
               onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
               onClick={async () => {
                 setSaveStatus('saving');
@@ -135,7 +135,7 @@ export default function Research() {
         <div style={{
           position: 'absolute', top: 5, left: '10%',
           width: `${(currentIndex / (STEPS.length - 1)) * 80}%`,
-          height: 1, backgroundColor: 'var(--accent-purple)', transition: 'width 500ms ease-out',
+          height: 1, backgroundColor: 'var(--accent-primary)', transition: 'width 500ms ease-out',
         }} />
         <div className="relative flex items-start justify-between">
           {STEPS.map((step, i) => (

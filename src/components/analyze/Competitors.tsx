@@ -4,7 +4,7 @@ import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, ResponsiveContaine
 import SectionSkeleton from './SectionSkeleton';
 
 const THREAT_CONFIG = {
-  high: { label: 'High', color: 'hsl(0 84% 60%)', bg: 'rgba(239,68,68,0.04)' },
+  high: { label: 'High', color: 'hsl(0 84% 60%)', bg: 'rgba(140,96,96,0.04)' },
   medium: { label: 'Medium', color: 'var(--accent-amber)', bg: 'rgba(212,136,15,0.04)' },
   low: { label: 'Low', color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.04)' },
 };
@@ -37,7 +37,7 @@ function CompetitorCard({ comp }: { comp: Competitor }) {
         <div className="px-5 pb-5">
           <div style={{ height: 1, backgroundColor: 'var(--divider)', marginBottom: 16 }} />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-            <div className="rounded-[8px] p-3" style={{ backgroundColor: 'rgba(45,139,117,0.03)', border: '1px solid rgba(45,139,117,0.08)' }}>
+            <div className="rounded-[8px] p-3" style={{ backgroundColor: 'rgba(91,140,126,0.03)', border: '1px solid rgba(91,140,126,0.08)' }}>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--accent-teal)', marginBottom: 4 }}>Strength</p>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{comp.key_strength}</p>
             </div>
@@ -87,7 +87,7 @@ export default function Competitors({ context, onData, onError, shouldRun = true
 
   const threatVal = { high: 3, medium: 2, low: 1 };
   const scatterData = data.competitors.map(c => ({ x: c.rating || 3, y: threatVal[c.threat_level], z: 200, name: c.name, threat: c.threat_level }));
-  const scatterColors = { high: '#EF4444', medium: '#D4880F', low: '#2D8B75' };
+  const scatterColors = { high: '#8C6B6B', medium: 'var(--accent-amber)', low: 'var(--accent-teal)' };
 
   return (
     <div>
@@ -120,7 +120,7 @@ export default function Competitors({ context, onData, onError, shouldRun = true
 
       {/* Gaps */}
       {data.unfilled_gaps.length > 0 && (
-        <div className="rounded-[12px] p-5" style={{ backgroundColor: 'rgba(45,139,117,0.02)', border: '1px solid rgba(45,139,117,0.08)' }}>
+        <div className="rounded-[12px] p-5" style={{ backgroundColor: 'rgba(45,139,117,0.02)', border: '1px solid rgba(91,140,126,0.08)' }}>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--accent-teal)', marginBottom: 12 }}>Unfilled Market Gaps</p>
           <div className="flex flex-col gap-3">
             {data.unfilled_gaps.map((gap, i) => (
