@@ -101,7 +101,7 @@ export default function Dashboard() {
   if (authLoading || !user) return null;
 
   const stepColors: Record<string, string> = {
-    discover: '#3B82F6', analyze: '#D4880F', setup: '#2D8B75', validate: '#6C5CE7',
+    discover: 'var(--accent-blue)', analyze: 'var(--accent-amber)', setup: 'var(--accent-teal)', validate: 'var(--text-primary)',
   };
 
   const statusStyles: Record<string, { color: string; bg: string }> = {
