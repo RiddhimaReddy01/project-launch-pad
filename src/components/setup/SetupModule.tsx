@@ -190,7 +190,7 @@ export default function SetupModule() {
         </button>
       </div>
     );
-    if (state.status === 'idle') return <SectionSkeleton label="Initializing..." />;
+    if (state.status === 'idle') return <SectionSkeleton label="Getting ready..." />;
 
     switch (activeTab) {
       case 'costs': return costsState.data ? <CostBuilder data={costsState.data} selectedTier={selectedTier} onSelectTier={setSelectedTier} /> : null;
