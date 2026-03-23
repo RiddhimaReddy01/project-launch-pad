@@ -45,7 +45,7 @@ const initSections = (): SectionResults => {
 };
 
 export default function AnalyzeModule() {
-  const { idea, selectedInsight, decomposeResult, discoverResult, setAnalyzeFindings } = useIdea();
+  const { idea, selectedInsight, decomposeResult, discoverResult, setAnalyzeFindings, setAnalyzeData } = useIdea();
   const { user } = useAuth();
 
   const [activeModule, setActiveModule] = useState<SectionKey>('opportunity');
