@@ -34,12 +34,17 @@ const SPEED_LABELS: Record<string, string> = { fast: 'Fast', medium: 'Medium', s
 
 type TabKey = 'landing' | 'survey' | 'whatsapp' | 'communities' | 'scorecard';
 
-const TABS: { key: TabKey; label: string; mono: string; subtitle: string }[] = [
-  { key: 'landing', label: 'Landing Page', mono: 'L', subtitle: 'Pitch your idea' },
-  { key: 'survey', label: 'Survey', mono: 'S', subtitle: '7 discovery questions' },
-  { key: 'whatsapp', label: 'Message', mono: 'W', subtitle: 'Community outreach' },
-  { key: 'communities', label: 'Communities', mono: 'C', subtitle: '10 places to test' },
-  { key: 'scorecard', label: 'Scorecard', mono: 'T', subtitle: 'Track progress' },
+const ALL_TABS: { key: TabKey; label: string; mono: string; subtitle: string; outputKey: string; deployGuide: { tool: string; url: string; instruction: string } }[] = [
+  { key: 'landing', label: 'Landing Page', mono: 'L', subtitle: 'Pitch your idea', outputKey: 'landing_page',
+    deployGuide: { tool: 'Carrd / Framer / Typedream', url: 'https://carrd.co', instruction: 'Copy the headline, benefits, and CTA into a one-page builder. Connect a form to capture emails.' } },
+  { key: 'survey', label: 'Survey', mono: 'S', subtitle: '7 discovery questions', outputKey: 'survey',
+    deployGuide: { tool: 'Google Forms / Typeform', url: 'https://forms.google.com', instruction: 'Copy questions into a form builder. Keep it under 3 minutes to complete.' } },
+  { key: 'whatsapp', label: 'Message', mono: 'W', subtitle: 'Community outreach', outputKey: 'whatsapp',
+    deployGuide: { tool: 'WhatsApp / Slack / Discord', url: '', instruction: 'Replace [SURVEY_LINK] with your actual form URL, then share in the communities listed.' } },
+  { key: 'communities', label: 'Communities', mono: 'C', subtitle: '10 places to test', outputKey: 'communities',
+    deployGuide: { tool: 'Facebook / Reddit / Discord', url: '', instruction: 'Join each community and engage genuinely before sharing your survey or landing page.' } },
+  { key: 'scorecard', label: 'Scorecard', mono: 'T', subtitle: 'Track progress', outputKey: 'scorecard',
+    deployGuide: { tool: 'Dashboard', url: '', instruction: 'Update metrics as responses come in. Save to persist to your account.' } },
 ];
 
 const PLATFORM_COLORS: Record<string, string> = {
