@@ -29,7 +29,18 @@ export default function Dashboard() {
   const [ideas, setIdeas] = useState<SavedIdea[]>([]);
   const [experiments, setExperiments] = useState<Experiment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'ideas' | 'experiments'>('ideas');
+  const [activeTab, setActiveTab] = useState<'ideas' | 'findings' | 'experiments'>('ideas');
+
+  // Extract findings from saved ideas
+  const allFindings = ideas.flatMap(idea => {
+    const analysis = (idea as any).analysis_data;
+    if (!analysis?.selected_findings) return [];
+    return (analysis.selected_findings as { text: string; section: string }[]).map(f => ({
+      ...f,
+      idea_text: idea.idea_text,
+      idea_id: idea.id,
+    }));
+  });
 
   useEffect(() => {
     if (!authLoading && !user) navigate('/auth', { replace: true });
