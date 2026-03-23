@@ -133,16 +133,23 @@ export default function AnalyzeModule() {
   }, [context, activeModule]);
 
   const handleSectionData = useCallback((section: SectionKey, data: SectionData) => {
-    setSections(prev => ({
-      ...prev,
-      [section]: {
-        data,
-        status: 'completed',
-        lastRun: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        inputsUsed: { ...inputs, prior_sections: new Set(inputs.prior_sections) },
-      },
-    }));
-  }, [inputs]);
+    setSections(prev => {
+      const next = {
+        ...prev,
+        [section]: {
+          data,
+          status: 'completed' as const,
+          lastRun: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          inputsUsed: { ...inputs, prior_sections: new Set(inputs.prior_sections) },
+        },
+      };
+      // Push completed data to shared context for Validate tab
+      const shared: Record<string, any> = {};
+      Object.entries(next).forEach(([k, v]) => { if (v.data) shared[k] = v.data; });
+      setAnalyzeData(shared);
+      return next;
+    });
+  }, [inputs, setAnalyzeData]);
 
   const handleSectionError = useCallback((section: SectionKey, error: string) => {
     setSections(prev => ({
