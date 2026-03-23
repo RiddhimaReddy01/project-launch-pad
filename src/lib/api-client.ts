@@ -1,6 +1,6 @@
 /**
  * 3-tier fallback API client:
- *   1. PRIMARY: https://launchlens.com (Cloudflare Tunnel) — currently CORS-blocked, skipped
+ *   1. PRIMARY: https://launchlens.com (Cloudflare Tunnel)
  *   2. BACKUP:  https://launch-lean-ed28c2e7.onrender.com (Render)
  *   3. LOVABLE: Lovable Cloud edge functions (supabase.functions.invoke)
  *
@@ -10,7 +10,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 
-// const PRIMARY_API = "https://launchlens.com"; // CORS-blocked, disabled
+const PRIMARY_API = "https://launchlens.com";
 const BACKUP_API = "https://launch-lean-ed28c2e7.onrender.com";
 
 // Map edge function names to Render API paths
@@ -225,12 +225,12 @@ async function tryLovableCloud<T>(functionName: string, body: unknown): Promise<
   return data as T;
 }
 
-async function tryRender<T>(functionName: string, body: unknown): Promise<T> {
+async function tryExternalApi<T>(baseUrl: string, functionName: string, body: unknown): Promise<T> {
   const path = RENDER_ENDPOINTS[functionName];
-  if (!path) throw new Error(`No Render endpoint for ${functionName}`);
+  if (!path) throw new Error(`No endpoint for ${functionName}`);
 
   const renderBody = transformRequestForRender(functionName, body);
-  const resp = await tryFetch(BACKUP_API, path, renderBody);
+  const resp = await tryFetch(baseUrl, path, renderBody);
   const rawData = await resp.json();
   if (rawData?.error) throw new Error(rawData.error);
   if (rawData?.detail) throw new Error(JSON.stringify(rawData.detail));
@@ -239,33 +239,41 @@ async function tryRender<T>(functionName: string, body: unknown): Promise<T> {
 }
 
 /**
- * Invoke an API function with smart fallback.
+ * Invoke an API function with 3-tier fallback:
+ *   1. PRIMARY (launchlens.com)
+ *   2. BACKUP (Render)
+ *   3. LOVABLE Cloud edge functions
+ *   For decompose-idea: Lovable Cloud first (better AI), then Primary, then Backup.
  */
 export async function invokeApi<T = unknown>(functionName: string, body: unknown): Promise<T> {
-  // For decompose, Lovable Cloud has much better AI extraction — try it first
+  // For decompose, Lovable Cloud has better AI — try it first
   if (LOVABLE_FIRST.has(functionName)) {
     try {
       return await tryLovableCloud<T>(functionName, body);
     } catch (e) {
       console.log(`[API] Lovable Cloud failed for ${functionName}:`, (e as Error).message);
     }
-    // Fall through to Render
-    try {
-      return await tryRender<T>(functionName, body);
-    } catch (e) {
-      console.log(`[API] Render also failed for ${functionName}:`, (e as Error).message);
-    }
-    throw new Error(`All API backends failed for ${functionName}`);
   }
 
-  // For other functions: try Render first (faster), Lovable Cloud as fallback
+  // Try Primary API (launchlens.com)
   try {
-    return await tryRender<T>(functionName, body);
+    return await tryExternalApi<T>(PRIMARY_API, functionName, body);
   } catch (e) {
-    console.log(`[API] Render failed for ${functionName}:`, (e as Error).message);
+    console.log(`[API] Primary failed for ${functionName}:`, (e as Error).message);
   }
 
-  // Fallback to Lovable Cloud
-  console.log(`[API] Falling back to Lovable Cloud for ${functionName}`);
-  return await tryLovableCloud<T>(functionName, body);
+  // Try Backup API (Render)
+  try {
+    return await tryExternalApi<T>(BACKUP_API, functionName, body);
+  } catch (e) {
+    console.log(`[API] Backup failed for ${functionName}:`, (e as Error).message);
+  }
+
+  // Final fallback: Lovable Cloud
+  if (!LOVABLE_FIRST.has(functionName)) {
+    console.log(`[API] Falling back to Lovable Cloud for ${functionName}`);
+    return await tryLovableCloud<T>(functionName, body);
+  }
+
+  throw new Error(`All API backends failed for ${functionName}`);
 }
