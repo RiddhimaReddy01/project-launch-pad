@@ -34,12 +34,17 @@ const SPEED_LABELS: Record<string, string> = { fast: 'Fast', medium: 'Medium', s
 
 type TabKey = 'landing' | 'survey' | 'whatsapp' | 'communities' | 'scorecard';
 
-const TABS: { key: TabKey; label: string; mono: string; subtitle: string }[] = [
-  { key: 'landing', label: 'Landing Page', mono: 'L', subtitle: 'Pitch your idea' },
-  { key: 'survey', label: 'Survey', mono: 'S', subtitle: '7 discovery questions' },
-  { key: 'whatsapp', label: 'Message', mono: 'W', subtitle: 'Community outreach' },
-  { key: 'communities', label: 'Communities', mono: 'C', subtitle: '10 places to test' },
-  { key: 'scorecard', label: 'Scorecard', mono: 'T', subtitle: 'Track progress' },
+const ALL_TABS: { key: TabKey; label: string; mono: string; subtitle: string; outputKey: string; deployGuide: { tool: string; url: string; instruction: string } }[] = [
+  { key: 'landing', label: 'Landing Page', mono: 'L', subtitle: 'Pitch your idea', outputKey: 'landing_page',
+    deployGuide: { tool: 'Carrd / Framer / Typedream', url: 'https://carrd.co', instruction: 'Copy the headline, benefits, and CTA into a one-page builder. Connect a form to capture emails.' } },
+  { key: 'survey', label: 'Survey', mono: 'S', subtitle: '7 discovery questions', outputKey: 'survey',
+    deployGuide: { tool: 'Google Forms / Typeform', url: 'https://forms.google.com', instruction: 'Copy questions into a form builder. Keep it under 3 minutes to complete.' } },
+  { key: 'whatsapp', label: 'Message', mono: 'W', subtitle: 'Community outreach', outputKey: 'whatsapp',
+    deployGuide: { tool: 'WhatsApp / Slack / Discord', url: '', instruction: 'Replace [SURVEY_LINK] with your actual form URL, then share in the communities listed.' } },
+  { key: 'communities', label: 'Communities', mono: 'C', subtitle: '10 places to test', outputKey: 'communities',
+    deployGuide: { tool: 'Facebook / Reddit / Discord', url: '', instruction: 'Join each community and engage genuinely before sharing your survey or landing page.' } },
+  { key: 'scorecard', label: 'Scorecard', mono: 'T', subtitle: 'Track progress', outputKey: 'scorecard',
+    deployGuide: { tool: 'Dashboard', url: '', instruction: 'Update metrics as responses come in. Save to persist to your account.' } },
 ];
 
 const PLATFORM_COLORS: Record<string, string> = {
@@ -107,7 +112,7 @@ export default function ValidateModule() {
 
   const [phase, setPhase] = useState<'select' | 'generating' | 'toolkit'>('select');
   const [selectedMethods, setSelectedMethods] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState<TabKey>('landing');
+  const [activeTab, setActiveTab] = useState<TabKey | null>(null);
   const [result, setResult] = useState<ValidateResult | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [saving, setSaving] = useState(false);
@@ -199,13 +204,31 @@ export default function ValidateModule() {
     });
   }, [analyzeData, setupData]);
 
+  // Filter tabs based on selected methods' outputs
+  const visibleTabs = useMemo(() => {
+    const selectedOutputs = new Set<string>();
+    selectedMethods.forEach(mId => {
+      const method = ALL_METHODS.find(m => m.id === mId);
+      method?.outputs.forEach(o => selectedOutputs.add(o));
+    });
+    // Always include scorecard
+    selectedOutputs.add('scorecard');
+    return ALL_TABS.filter(tab => selectedOutputs.has(tab.outputKey));
+  }, [selectedMethods]);
+
+  // Auto-set activeTab to first visible tab when toolkit opens
+  useEffect(() => {
+    if (phase === 'toolkit' && visibleTabs.length > 0 && (!activeTab || !visibleTabs.find(t => t.key === activeTab))) {
+      setActiveTab(visibleTabs[0].key);
+    }
+  }, [phase, visibleTabs, activeTab]);
+
   const generate = useCallback(async () => {
     if (!context) return;
     setPhase('generating');
     setErrorMsg('');
     try {
       const data = await generateValidation(context);
-      // Apply derived scorecard targets
       data.scorecard = deriveScorecard(data.scorecard);
       setResult(data);
       setPhase('toolkit');
@@ -446,9 +469,9 @@ export default function ValidateModule() {
         </div>
       </div>
 
-      {/* Tab navigation */}
+      {/* Tab navigation — only show tabs for selected methods */}
       <div className="flex gap-1 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider)' }}>
-        {TABS.map(tab => {
+        {visibleTabs.map(tab => {
           const isActive = activeTab === tab.key;
           return (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
@@ -466,7 +489,28 @@ export default function ValidateModule() {
         })}
       </div>
 
-      {/* Content */}
+      {/* Deploy guide for active tab */}
+      {activeTab && (() => {
+        const currentTab = ALL_TABS.find(t => t.key === activeTab);
+        if (!currentTab) return null;
+        return (
+          <div className="flex items-center gap-3 mb-6 rounded-[10px] px-4 py-3" style={{ backgroundColor: 'var(--surface-input)', border: '1px solid var(--divider-light)' }}>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0 }}>Deploy</span>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              {currentTab.deployGuide.instruction}
+            </span>
+            {currentTab.deployGuide.url && (
+              <a href={currentTab.deployGuide.url} target="_blank" rel="noopener noreferrer"
+                className="rounded-[6px] px-3 py-1.5 transition-all duration-200 whitespace-nowrap"
+                style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-primary)', backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', textDecoration: 'none', flexShrink: 0 }}>
+                {currentTab.deployGuide.tool.split(' / ')[0]}
+              </a>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* Content — only render sections for visible tabs */}
       <div style={{ minHeight: 300, maxWidth: 800 }}>
         {result && (
           <>
@@ -572,9 +616,6 @@ function LandingSection({ data, onChange }: { data: ValidateResult['landing_page
           </div>
         </div>
       </div>
-      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginTop: 12, textAlign: 'center' }}>
-        Click any text to edit inline. Use Carrd, Framer, or Typedream to deploy.
-      </p>
     </div>
   );
 }
@@ -622,9 +663,6 @@ function SurveySection({ data, onChange }: { data: ValidateResult['survey']; onC
           </div>
         ))}
       </div>
-      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginTop: 12 }}>
-        Use Google Forms or Typeform to deploy. Keep it under 3 minutes.
-      </p>
     </div>
   );
 }
@@ -647,9 +685,6 @@ function WhatsAppSection({ data, onChange }: { data: ValidateResult['whatsapp'];
             style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75, whiteSpace: 'pre-line' }} />
         </div>
       </div>
-      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginTop: 12 }}>
-        Replace [SURVEY_LINK] with your actual survey URL before sharing.
-      </p>
     </div>
   );
 }
