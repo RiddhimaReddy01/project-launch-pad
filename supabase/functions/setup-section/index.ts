@@ -37,6 +37,7 @@ async function callAI(apiKey: string, systemPrompt: string, userPrompt: string, 
   throw new Error("No tool call in response");
 }
 
+// ── COSTS TOOL ──
 const COSTS_TOOL = [{
   type: "function",
   function: {
@@ -50,77 +51,75 @@ const COSTS_TOOL = [{
           items: {
             type: "object",
             properties: {
-              id: { type: "string", enum: ["minimum", "recommended", "full"] },
+              id: { type: "string", enum: ["lean", "mid", "premium"] },
               title: { type: "string" },
-              model: { type: "string" },
-              costRange: { type: "string" },
-              costMin: { type: "number" },
-              costMax: { type: "number" },
-              whenToChoose: { type: "string" },
+              philosophy: { type: "string" },
+              approach: { type: "string" },
+              team_size: { type: "string" },
+              timeline_weeks: { type: "number" },
+              cost_min: { type: "number" },
+              cost_max: { type: "number" },
+              best_for: { type: "string" },
             },
-            required: ["id", "title", "model", "costRange", "costMin", "costMax", "whenToChoose"],
+            required: ["id", "title", "philosophy", "approach", "team_size", "timeline_weeks", "cost_min", "cost_max", "best_for"],
           },
         },
-        tierCosts: {
+        breakdown: {
           type: "object",
-          description: "Cost categories per tier keyed by tier ID",
+          description: "Cost categories per tier keyed by tier ID (lean, mid, premium)",
           additionalProperties: {
             type: "array",
             items: {
               type: "object",
               properties: {
-                label: { type: "string" },
+                category: { type: "string" },
                 items: {
                   type: "array",
                   items: {
                     type: "object",
                     properties: {
                       label: { type: "string" },
-                      low: { type: "number" },
-                      mid: { type: "number" },
-                      high: { type: "number" },
-                      explanation: { type: "string" },
+                      min: { type: "number" },
+                      max: { type: "number" },
+                      note: { type: "string" },
                     },
-                    required: ["label", "low", "mid", "high", "explanation"],
+                    required: ["label", "min", "max", "note"],
                   },
                 },
               },
-              required: ["label", "items"],
+              required: ["category", "items"],
             },
           },
         },
       },
-      required: ["tiers", "tierCosts"],
+      required: ["tiers", "breakdown"],
     },
   },
 }];
 
+// ── SUPPLIERS TOOL ──
 const SUPPLIERS_TOOL = [{
   type: "function",
   function: {
     name: "generate_suppliers",
-    description: "Generate local supplier recommendations by category",
+    description: "Generate tier-appropriate vendor recommendations",
     parameters: {
       type: "object",
       properties: {
         suppliers: {
-          type: "object",
-          description: "Suppliers grouped by category",
-          additionalProperties: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                name: { type: "string" },
-                type: { type: "string" },
-                description: { type: "string" },
-                location: { type: "string" },
-                distance: { type: "string" },
-                url: { type: "string" },
-                category: { type: "string" },
-              },
-              required: ["name", "type", "description", "location", "distance", "url", "category"],
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              category: { type: "string", enum: ["Engineering", "Marketing", "Legal", "Operations", "Infrastructure"] },
+              name: { type: "string" },
+              description: { type: "string" },
+              location: { type: "string" },
+              website: { type: "string" },
+              cost: { type: "string" },
+              why_recommended: { type: "string" },
             },
+            required: ["category", "name", "description", "location", "website", "cost", "why_recommended"],
           },
         },
       },
@@ -129,11 +128,12 @@ const SUPPLIERS_TOOL = [{
   },
 }];
 
+// ── TEAM TOOL ──
 const TEAM_TOOL = [{
   type: "function",
   function: {
     name: "generate_team",
-    description: "Generate team roles for launching a business",
+    description: "Generate Year 1 hiring plan",
     parameters: {
       type: "object",
       properties: {
@@ -142,29 +142,31 @@ const TEAM_TOOL = [{
           items: {
             type: "object",
             properties: {
-              id: { type: "string" },
               title: { type: "string" },
-              type: { type: "string", enum: ["full-time", "part-time", "contract"] },
-              salaryRange: { type: "string" },
-              salaryLow: { type: "number" },
-              salaryHigh: { type: "number" },
-              description: { type: "string" },
-              linkedinSearch: { type: "string" },
+              type: { type: "string", enum: ["FTE", "Contract", "Advisory"] },
+              salary_min: { type: "number" },
+              salary_max: { type: "number" },
+              salary_label: { type: "string" },
+              priority: { type: "string", enum: ["MUST_HAVE", "NICE_TO_HAVE"] },
+              month: { type: "number" },
+              why_needed: { type: "string" },
             },
-            required: ["id", "title", "type", "salaryRange", "salaryLow", "salaryHigh", "description", "linkedinSearch"],
+            required: ["title", "type", "salary_min", "salary_max", "salary_label", "priority", "month", "why_needed"],
           },
         },
+        total_payroll: { type: "number" },
       },
-      required: ["team"],
+      required: ["team", "total_payroll"],
     },
   },
 }];
 
+// ── TIMELINE TOOL ──
 const TIMELINE_TOOL = [{
   type: "function",
   function: {
     name: "generate_timeline",
-    description: "Generate a phased launch timeline",
+    description: "Generate 4-phase launch roadmap",
     parameters: {
       type: "object",
       properties: {
@@ -173,22 +175,13 @@ const TIMELINE_TOOL = [{
           items: {
             type: "object",
             properties: {
-              id: { type: "string" },
-              title: { type: "string" },
-              weeks: { type: "string" },
-              tasks: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: { type: "string" },
-                    label: { type: "string" },
-                  },
-                  required: ["id", "label"],
-                },
-              },
+              phase: { type: "string", enum: ["VALIDATION", "BUILD MVP", "LAUNCH", "SCALE"] },
+              weeks: { type: "number" },
+              budget_percent: { type: "number" },
+              milestones: { type: "array", items: { type: "string" } },
+              success_metric: { type: "string" },
             },
-            required: ["id", "title", "weeks", "tasks"],
+            required: ["phase", "weeks", "budget_percent", "milestones", "success_metric"],
           },
         },
       },
@@ -197,22 +190,84 @@ const TIMELINE_TOOL = [{
   },
 }];
 
-const SECTION_CONFIG: Record<string, { tool: any[]; systemPrompt: (ctx: any) => string }> = {
+const SECTION_CONFIG: Record<string, { tool: any[]; systemPrompt: (ctx: any) => string; userPrompt: (ctx: any) => string }> = {
   costs: {
     tool: COSTS_TOOL,
-    systemPrompt: (ctx) => `You are a startup cost analyst. Generate 3 launch tiers (minimum/recommended/full) for a ${ctx.business_type} in ${ctx.city}, ${ctx.state}. Each tier should have 4-5 cost categories with 2-4 line items each. Use realistic costs specific to ${ctx.city}, ${ctx.state}. Tier "minimum" is the cheapest viable option, "recommended" is balanced, "full" is premium buildout.`,
+    systemPrompt: (ctx) => `You are a startup cost analyst. Generate 3 launch tiers (lean/mid/premium) for a ${ctx.business_type} in ${ctx.city}, ${ctx.state}.
+
+LEAN: 60-80% of base cost. Speed + DIY, founder-led, 16 weeks, 1 person.
+MID: 100% base cost. Balanced, 1-2 people, 24 weeks.
+PREMIUM: 120-180% of base. Full team, 2-3+ people, 32 weeks.
+
+Each tier needs 4-5 cost categories with 2-4 line items. Use realistic costs for ${ctx.city}, ${ctx.state}.`,
+    userPrompt: (ctx) => `Business: ${ctx.business_type}
+Location: ${ctx.city}, ${ctx.state}
+Target customers: ${(ctx.target_customers || []).join(", ")}
+${ctx.tier ? `Selected tier: ${ctx.tier}` : ""}
+
+Generate cost tiers for this business.`,
   },
   suppliers: {
     tool: SUPPLIERS_TOOL,
-    systemPrompt: (ctx) => `Find realistic local suppliers and partners for a ${ctx.business_type} in ${ctx.city}, ${ctx.state}. Group by 4-5 categories (e.g., Produce, Equipment, Packaging, Services). Include 2-3 suppliers per category with name, type, description, location, distance from ${ctx.city}, and website URL. Use real or highly realistic supplier names.`,
+    systemPrompt: (ctx) => `You are a startup resource advisor. Recommend 8-12 vendors for launching a ${ctx.business_type} in ${ctx.city}, ${ctx.state}.
+
+For TIER "${ctx.tier || 'mid'}":
+- LEAN: Cheap/free tools, freelancer platforms, DIY-friendly
+- MID: Balanced cost/quality, established services
+- PREMIUM: Full-service, managed, high-touch support
+
+Categories: Engineering, Marketing, Legal, Operations, Infrastructure.
+Include real company names, websites, and specific cost indications.
+Focus on vendors useful for ${ctx.business_type} in ${ctx.city}.`,
+    userPrompt: (ctx) => `Business: ${ctx.business_type}
+Location: ${ctx.city}, ${ctx.state}
+Tier: ${ctx.tier || 'mid'}
+Target customers: ${(ctx.target_customers || []).join(", ")}
+
+Recommend 8-12 tier-appropriate vendors.`,
   },
   team: {
     tool: TEAM_TOOL,
-    systemPrompt: (ctx) => `Generate 3-5 team roles needed to launch a ${ctx.business_type} in ${ctx.city}, ${ctx.state}. Include full-time, part-time, and contract roles. Use realistic ${ctx.state} salary ranges. Include LinkedIn search URLs for finding candidates in the area.`,
+    systemPrompt: (ctx) => `You are a startup hiring advisor. Create Year 1 hiring timeline for a ${ctx.business_type} startup (${ctx.tier || 'mid'} tier) in ${ctx.city}, ${ctx.state}.
+
+Hiring by tier:
+- LEAN: Max 2 people, mostly freelancers
+- MID: 1 FTE by Month 4, second hire by Month 8
+- PREMIUM: 2-3+ people by Month 12
+
+Include title, type (FTE/Contract/Advisory), salary range, priority (MUST_HAVE/NICE_TO_HAVE), hire month (1-12), and reason.
+Use realistic ${ctx.state} salary ranges. Sort by month ascending.`,
+    userPrompt: (ctx) => `Business: ${ctx.business_type}
+Location: ${ctx.city}, ${ctx.state}
+Tier: ${ctx.tier || 'mid'}
+Target customers: ${(ctx.target_customers || []).join(", ")}
+
+Plan Year 1 hiring for this startup.`,
   },
   timeline: {
     tool: TIMELINE_TOOL,
-    systemPrompt: (ctx) => `Generate a phased launch timeline for a ${ctx.business_type} in ${ctx.city}, ${ctx.state}. Include 4-5 phases from validation through launch, each with 3-5 actionable tasks. Be specific to the business type and location. Use realistic week ranges.`,
+    systemPrompt: (ctx) => `You are a startup launch strategist. Create a 4-phase roadmap for a ${ctx.business_type} in ${ctx.city}, ${ctx.state} (${ctx.tier || 'mid'} tier).
+
+Phases (fixed order):
+1. VALIDATION (4-12 weeks): Prove demand
+2. BUILD MVP (8-16 weeks): Create product
+3. LAUNCH (2-4 weeks): Go to market
+4. SCALE (rest of year): Grow revenue
+
+Total weeks should sum to ~52 (1 year).
+Budget allocation should sum to ~100%.
+Each phase needs 4-5 concrete milestones and 1 measurable success metric.
+
+Tier impacts:
+- LEAN: Faster validation, longer build, slower scale
+- MID: Balanced across phases
+- PREMIUM: Shorter validation, faster build, rapid scale`,
+    userPrompt: (ctx) => `Business: ${ctx.business_type}
+Location: ${ctx.city}, ${ctx.state}
+Tier: ${ctx.tier || 'mid'}
+Target customers: ${(ctx.target_customers || []).join(", ")}
+
+Create the 4-phase launch roadmap.`,
   },
 };
 
@@ -226,7 +281,6 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const { section, context } = await req.json();
-
     if (!section || !context) {
       return new Response(JSON.stringify({ error: "Missing section or context" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -240,17 +294,7 @@ serve(async (req) => {
       });
     }
 
-    const { business_type, city, state, tier, target_customers } = context;
-    const systemPrompt = config.systemPrompt({ business_type, city, state });
-
-    const userPrompt = `Business: ${business_type}
-Location: ${city}, ${state}
-Target customers: ${(target_customers || []).join(", ")}
-${tier ? `Selected tier: ${tier}` : ""}
-
-Generate the "${section}" plan for this business.`;
-
-    const result = await callAI(LOVABLE_API_KEY, systemPrompt, userPrompt, config.tool);
+    const result = await callAI(LOVABLE_API_KEY, config.systemPrompt(context), config.userPrompt(context), config.tool);
 
     return new Response(JSON.stringify({ section, data: result }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
