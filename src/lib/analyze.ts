@@ -152,3 +152,31 @@ export async function analyzeSection(
 
   return data.data as SectionData;
 }
+
+/**
+ * Run multiple analyze sections in parallel.
+ * Returns a map of section key → result or error.
+ */
+export async function analyzeSectionsParallel(
+  sections: SectionKey[],
+  context: AnalyzeContext
+): Promise<Record<SectionKey, { data?: SectionData; error?: string }>> {
+  const results = await Promise.allSettled(
+    sections.map(async (section) => {
+      const data = await analyzeSection(section, context);
+      return { section, data };
+    })
+  );
+
+  const map: Record<string, { data?: SectionData; error?: string }> = {};
+  results.forEach((result, i) => {
+    const section = sections[i];
+    if (result.status === 'fulfilled') {
+      map[section] = { data: result.value.data };
+    } else {
+      map[section] = { error: result.reason?.message || 'Analysis failed' };
+    }
+  });
+
+  return map as Record<SectionKey, { data?: SectionData; error?: string }>;
+}
