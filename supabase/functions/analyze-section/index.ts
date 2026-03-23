@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -7,16 +8,32 @@ const corsHeaders = {
 };
 
 const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
-async function callAI(apiKey: string, systemPrompt: string, userPrompt: string, tools: any[]) {
+async function hashKey(input: string): Promise<string> {
+  const data = new TextEncoder().encode(input.trim().toLowerCase().replace(/\s+/g, " "));
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+// Cost routing: simple extraction → cheaper model, complex synthesis → better model
+const MODEL_BY_SECTION: Record<string, string> = {
+  costs: "google/gemini-2.5-flash-lite",
+  risk: "google/gemini-2.5-flash-lite",
+  location: "google/gemini-2.5-flash-lite",
+  rootcause: "google/gemini-2.5-flash",
+  moat: "google/gemini-2.5-flash",
+  opportunity: "google/gemini-2.5-flash",
+  customers: "google/gemini-2.5-flash",
+  competitors: "google/gemini-2.5-flash",
+};
+
+async function callAI(apiKey: string, model: string, systemPrompt: string, userPrompt: string, tools: any[]) {
   const resp = await fetch(AI_GATEWAY, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "google/gemini-2.5-flash",
+      model,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
@@ -34,7 +51,7 @@ async function callAI(apiKey: string, systemPrompt: string, userPrompt: string, 
   const data = await resp.json();
   const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
   if (toolCall) return JSON.parse(toolCall.function.arguments);
-  throw new Error("No tool call in response");
+  throw new Error("No structured response returned");
 }
 
 // ── SECTION TOOLS ──
@@ -124,7 +141,7 @@ const RISK_TOOL = [{
   type: "function",
   function: {
     name: "analyze_risks",
-    description: "Assess business risks with likelihood and impact",
+    description: "Assess business risks",
     parameters: {
       type: "object",
       properties: {
@@ -186,11 +203,11 @@ const SECTION_CONFIG: Record<string, { tool: any[]; systemPrompt: (ctx: any) => 
   },
   competitors: {
     tool: COMPETITORS_TOOL,
-    systemPrompt: (ctx) => `Analyze competitors for a ${ctx.business_type} in ${ctx.city}, ${ctx.state}. 4-8 real/realistic competitors with threat levels, ratings, gaps from reviews, realistic URLs. Also 3 unfilled gaps no competitor fills. Sort by threat (high first).`,
+    systemPrompt: (ctx) => `Analyze competitors for a ${ctx.business_type} in ${ctx.city}, ${ctx.state}. 4-8 real/realistic competitors with threat levels, ratings, gaps from reviews, realistic URLs. Also 3 unfilled gaps no competitor fills.`,
   },
   rootcause: {
     tool: ROOTCAUSE_TOOL,
-    systemPrompt: (ctx) => `Identify 3-5 ROOT CAUSES for why a market gap exists for a ${ctx.business_type} in ${ctx.city}, ${ctx.state}. Structural, economic, or regulatory reasons. Each with actionable counter-strategy specific to ${ctx.city}. Sort by difficulty (easy first).`,
+    systemPrompt: (ctx) => `Identify 3-5 ROOT CAUSES for why a market gap exists for a ${ctx.business_type} in ${ctx.city}, ${ctx.state}. Structural, economic, or regulatory reasons. Each with actionable counter-strategy specific to ${ctx.city}.`,
   },
   costs: {
     tool: COSTS_TOOL,
@@ -198,29 +215,30 @@ const SECTION_CONFIG: Record<string, { tool: any[]; systemPrompt: (ctx: any) => 
   },
   risk: {
     tool: RISK_TOOL,
-    systemPrompt: (ctx) => `Assess 5-8 business risks for launching a ${ctx.business_type} in ${ctx.city}, ${ctx.state}. Categorize each as operational, financial, market, regulatory, or competitive. Rate likelihood and impact (low/medium/high). Include specific mitigation strategies. Provide overall risk level and summary.`,
+    systemPrompt: (ctx) => `Assess 5-8 business risks for launching a ${ctx.business_type} in ${ctx.city}, ${ctx.state}. Categorize each as operational, financial, market, regulatory, or competitive. Rate likelihood and impact. Include specific mitigation strategies.`,
   },
   location: {
     tool: LOCATION_TOOL,
-    systemPrompt: (ctx) => `Analyze ${ctx.city}, ${ctx.state} as a location for a ${ctx.business_type}. Include demographics (population, median income, median age, growth rate), foot traffic (best neighborhoods/areas, avg rent per sqft, competitor density), and regulatory environment (key permits needed, timeline, notes). Score 1-10 and give a verdict.`,
+    systemPrompt: (ctx) => `Analyze ${ctx.city}, ${ctx.state} as a location for a ${ctx.business_type}. Include demographics, foot traffic, and regulatory environment. Score 1-10 and give a verdict.`,
   },
   moat: {
     tool: MOAT_TOOL,
-    systemPrompt: (ctx) => `Score competitive defensibility (moat) for a ${ctx.business_type} in ${ctx.city}, ${ctx.state} across 5 dimensions: Brand/Network Effects, Switching Costs, Cost Advantages, Proprietary Technology, Regulatory Barriers. Rate each 1-10 with rationale. Overall score, strongest dimension, weakest dimension, and strategic recommendation.`,
+    systemPrompt: (ctx) => `Score competitive defensibility for a ${ctx.business_type} in ${ctx.city}, ${ctx.state} across 5 dimensions: Brand/Network Effects, Switching Costs, Cost Advantages, Proprietary Technology, Regulatory Barriers. Rate each 1-10.`,
   },
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const { section, context } = await req.json();
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
+    const { section, context } = await req.json();
     if (!section || !context) {
       return new Response(JSON.stringify({ error: "Missing section or context" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -235,6 +253,27 @@ serve(async (req) => {
     }
 
     const { business_type, city, state, target_customers, insight_title, insight_evidence, price_tier } = context;
+
+    // ── DB cache check ──
+    const cacheInput = `analyze:${section}:${business_type}:${city}:${state}:${price_tier || ""}`;
+    const cacheKey = await hashKey(cacheInput);
+
+    const { data: cached } = await supabase
+      .from("result_cache")
+      .select("*")
+      .eq("cache_key", cacheKey)
+      .maybeSingle();
+
+    if (cached) {
+      const age = Date.now() - new Date(cached.created_at).getTime();
+      if (age < CACHE_TTL_MS) {
+        return new Response(JSON.stringify({ section, data: cached.result_data }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    const model = MODEL_BY_SECTION[section] || "google/gemini-2.5-flash";
     const systemPrompt = config.systemPrompt({ business_type, city, state });
 
     const userPrompt = `Business: ${business_type}
@@ -247,35 +286,36 @@ ${insight_evidence ? `Evidence:\n${insight_evidence}` : ""}
 
 Analyze this business opportunity for the "${section}" section.`;
 
-    const result = await callAI(LOVABLE_API_KEY, systemPrompt, userPrompt, config.tool);
+    const result = await callAI(LOVABLE_API_KEY, model, systemPrompt, userPrompt, config.tool);
 
     // Post-processing
     if (section === "opportunity" && result.tam && result.sam && result.som) {
       const vals = [result.tam.value, result.sam.value, result.som.value].sort((a: number, b: number) => b - a);
-      result.tam.value = vals[0];
-      result.sam.value = vals[1];
-      result.som.value = vals[2];
+      result.tam.value = vals[0]; result.sam.value = vals[1]; result.som.value = vals[2];
     }
-
     if (section === "customers" && result.segments) {
       result.segments = result.segments.slice(0, 4).sort((a: any, b: any) => b.pain_intensity - a.pain_intensity);
       result.segments.forEach((s: any) => { s.pain_intensity = Math.max(1, Math.min(10, Math.round(s.pain_intensity))); });
     }
-
     if (section === "competitors" && result.competitors) {
       const order = { high: 0, medium: 1, low: 2 };
       result.competitors = result.competitors.slice(0, 8).sort((a: any, b: any) => (order[a.threat_level as keyof typeof order] ?? 1) - (order[b.threat_level as keyof typeof order] ?? 1));
     }
-
     if (section === "rootcause" && result.root_causes) {
       const order = { easy: 0, medium: 1, hard: 2 };
       result.root_causes = result.root_causes.slice(0, 5).sort((a: any, b: any) => (order[a.difficulty as keyof typeof order] ?? 1) - (order[b.difficulty as keyof typeof order] ?? 1));
       result.root_causes.forEach((c: any, i: number) => { c.cause_number = i + 1; });
     }
-
     if (section === "moat" && result.dimensions) {
       result.dimensions.forEach((d: any) => { d.score = Math.max(1, Math.min(10, Math.round(d.score))); });
       result.overall_score = Math.max(1, Math.min(10, Math.round(result.overall_score)));
+    }
+
+    // ── Save to cache ──
+    if (cached) {
+      await supabase.from("result_cache").update({ result_data: result, created_at: new Date().toISOString() }).eq("id", cached.id);
+    } else {
+      await supabase.from("result_cache").insert({ cache_key: cacheKey, function_name: `analyze-${section}`, result_data: result });
     }
 
     return new Response(JSON.stringify({ section, data: result }), {

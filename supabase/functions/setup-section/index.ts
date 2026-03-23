@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -7,16 +8,20 @@ const corsHeaders = {
 };
 
 const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+
+async function hashKey(input: string): Promise<string> {
+  const data = new TextEncoder().encode(input.trim().toLowerCase().replace(/\s+/g, " "));
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
 
 async function callAI(apiKey: string, systemPrompt: string, userPrompt: string, tools: any[]) {
   const resp = await fetch(AI_GATEWAY, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "google/gemini-2.5-flash",
+      model: "google/gemini-2.5-flash-lite",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
@@ -34,7 +39,7 @@ async function callAI(apiKey: string, systemPrompt: string, userPrompt: string, 
   const data = await resp.json();
   const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
   if (toolCall) return JSON.parse(toolCall.function.arguments);
-  throw new Error("No tool call in response");
+  throw new Error("No structured response returned");
 }
 
 // ── COSTS TOOL ──
@@ -64,35 +69,65 @@ const COSTS_TOOL = [{
             required: ["id", "title", "philosophy", "approach", "team_size", "timeline_weeks", "cost_min", "cost_max", "best_for"],
           },
         },
-        breakdown: {
-          type: "object",
-          description: "Cost categories per tier keyed by tier ID (lean, mid, premium)",
-          additionalProperties: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                category: { type: "string" },
+        lean_breakdown: {
+          type: "array",
+          description: "Cost categories for lean tier",
+          items: {
+            type: "object",
+            properties: {
+              category: { type: "string" },
+              items: {
+                type: "array",
                 items: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      label: { type: "string" },
-                      min: { type: "number" },
-                      max: { type: "number" },
-                      note: { type: "string" },
-                    },
-                    required: ["label", "min", "max", "note"],
-                  },
+                  type: "object",
+                  properties: { label: { type: "string" }, min: { type: "number" }, max: { type: "number" }, note: { type: "string" } },
+                  required: ["label", "min", "max", "note"],
                 },
               },
-              required: ["category", "items"],
             },
+            required: ["category", "items"],
+          },
+        },
+        mid_breakdown: {
+          type: "array",
+          description: "Cost categories for mid tier",
+          items: {
+            type: "object",
+            properties: {
+              category: { type: "string" },
+              items: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: { label: { type: "string" }, min: { type: "number" }, max: { type: "number" }, note: { type: "string" } },
+                  required: ["label", "min", "max", "note"],
+                },
+              },
+            },
+            required: ["category", "items"],
+          },
+        },
+        premium_breakdown: {
+          type: "array",
+          description: "Cost categories for premium tier",
+          items: {
+            type: "object",
+            properties: {
+              category: { type: "string" },
+              items: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: { label: { type: "string" }, min: { type: "number" }, max: { type: "number" }, note: { type: "string" } },
+                  required: ["label", "min", "max", "note"],
+                },
+              },
+            },
+            required: ["category", "items"],
           },
         },
       },
-      required: ["tiers", "breakdown"],
+      required: ["tiers", "lean_breakdown", "mid_breakdown", "premium_breakdown"],
     },
   },
 }];
@@ -199,86 +234,42 @@ LEAN: 60-80% of base cost. Speed + DIY, founder-led, 16 weeks, 1 person.
 MID: 100% base cost. Balanced, 1-2 people, 24 weeks.
 PREMIUM: 120-180% of base. Full team, 2-3+ people, 32 weeks.
 
-Each tier needs 4-5 cost categories with 2-4 line items. Use realistic costs for ${ctx.city}, ${ctx.state}.`,
+Each tier needs 4-5 cost categories with 2-4 line items. Use realistic costs for ${ctx.city}, ${ctx.state}.
+
+IMPORTANT: Return breakdown for each tier as separate arrays (lean_breakdown, mid_breakdown, premium_breakdown), NOT as a nested object.`,
     userPrompt: (ctx) => `Business: ${ctx.business_type}
 Location: ${ctx.city}, ${ctx.state}
 Target customers: ${(ctx.target_customers || []).join(", ")}
-${ctx.tier ? `Selected tier: ${ctx.tier}` : ""}
 
 Generate cost tiers for this business.`,
   },
   suppliers: {
     tool: SUPPLIERS_TOOL,
-    systemPrompt: (ctx) => `You are a startup resource advisor. Recommend 8-12 vendors for launching a ${ctx.business_type} in ${ctx.city}, ${ctx.state}.
-
-For TIER "${ctx.tier || 'mid'}":
-- LEAN: Cheap/free tools, freelancer platforms, DIY-friendly
-- MID: Balanced cost/quality, established services
-- PREMIUM: Full-service, managed, high-touch support
-
-Categories: Engineering, Marketing, Legal, Operations, Infrastructure.
-Include real company names, websites, and specific cost indications.
-Focus on vendors useful for ${ctx.business_type} in ${ctx.city}.`,
-    userPrompt: (ctx) => `Business: ${ctx.business_type}
-Location: ${ctx.city}, ${ctx.state}
-Tier: ${ctx.tier || 'mid'}
-Target customers: ${(ctx.target_customers || []).join(", ")}
-
-Recommend 8-12 tier-appropriate vendors.`,
+    systemPrompt: (ctx) => `Recommend 8-12 vendors for launching a ${ctx.business_type} in ${ctx.city}, ${ctx.state} at the "${ctx.tier || 'mid'}" tier. Include real company names, websites, and specific cost indications.`,
+    userPrompt: (ctx) => `Business: ${ctx.business_type}\nLocation: ${ctx.city}, ${ctx.state}\nTier: ${ctx.tier || 'mid'}\nTarget customers: ${(ctx.target_customers || []).join(", ")}\n\nRecommend 8-12 tier-appropriate vendors.`,
   },
   team: {
     tool: TEAM_TOOL,
-    systemPrompt: (ctx) => `You are a startup hiring advisor. Create Year 1 hiring timeline for a ${ctx.business_type} startup (${ctx.tier || 'mid'} tier) in ${ctx.city}, ${ctx.state}.
-
-Hiring by tier:
-- LEAN: Max 2 people, mostly freelancers
-- MID: 1 FTE by Month 4, second hire by Month 8
-- PREMIUM: 2-3+ people by Month 12
-
-Include title, type (FTE/Contract/Advisory), salary range, priority (MUST_HAVE/NICE_TO_HAVE), hire month (1-12), and reason.
-Use realistic ${ctx.state} salary ranges. Sort by month ascending.`,
-    userPrompt: (ctx) => `Business: ${ctx.business_type}
-Location: ${ctx.city}, ${ctx.state}
-Tier: ${ctx.tier || 'mid'}
-Target customers: ${(ctx.target_customers || []).join(", ")}
-
-Plan Year 1 hiring for this startup.`,
+    systemPrompt: (ctx) => `Create Year 1 hiring timeline for a ${ctx.business_type} startup (${ctx.tier || 'mid'} tier) in ${ctx.city}, ${ctx.state}. Use realistic ${ctx.state} salary ranges.`,
+    userPrompt: (ctx) => `Business: ${ctx.business_type}\nLocation: ${ctx.city}, ${ctx.state}\nTier: ${ctx.tier || 'mid'}\nTarget customers: ${(ctx.target_customers || []).join(", ")}\n\nPlan Year 1 hiring.`,
   },
   timeline: {
     tool: TIMELINE_TOOL,
-    systemPrompt: (ctx) => `You are a startup launch strategist. Create a 4-phase roadmap for a ${ctx.business_type} in ${ctx.city}, ${ctx.state} (${ctx.tier || 'mid'} tier).
-
-Phases (fixed order):
-1. VALIDATION (4-12 weeks): Prove demand
-2. BUILD MVP (8-16 weeks): Create product
-3. LAUNCH (2-4 weeks): Go to market
-4. SCALE (rest of year): Grow revenue
-
-Total weeks should sum to ~52 (1 year).
-Budget allocation should sum to ~100%.
-Each phase needs 4-5 concrete milestones and 1 measurable success metric.
-
-Tier impacts:
-- LEAN: Faster validation, longer build, slower scale
-- MID: Balanced across phases
-- PREMIUM: Shorter validation, faster build, rapid scale`,
-    userPrompt: (ctx) => `Business: ${ctx.business_type}
-Location: ${ctx.city}, ${ctx.state}
-Tier: ${ctx.tier || 'mid'}
-Target customers: ${(ctx.target_customers || []).join(", ")}
-
-Create the 4-phase launch roadmap.`,
+    systemPrompt: (ctx) => `Create a 4-phase roadmap for a ${ctx.business_type} in ${ctx.city}, ${ctx.state} (${ctx.tier || 'mid'} tier). Phases: VALIDATION, BUILD MVP, LAUNCH, SCALE. Total ~52 weeks.`,
+    userPrompt: (ctx) => `Business: ${ctx.business_type}\nLocation: ${ctx.city}, ${ctx.state}\nTier: ${ctx.tier || 'mid'}\nTarget customers: ${(ctx.target_customers || []).join(", ")}\n\nCreate the 4-phase launch roadmap.`,
   },
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
     const { section, context } = await req.json();
     if (!section || !context) {
@@ -294,7 +285,47 @@ serve(async (req) => {
       });
     }
 
-    const result = await callAI(LOVABLE_API_KEY, config.systemPrompt(context), config.userPrompt(context), config.tool);
+    // ── DB cache check ──
+    const cacheInput = `setup:${section}:${context.business_type}:${context.city}:${context.state}:${context.tier || "mid"}`;
+    const cacheKey = await hashKey(cacheInput);
+
+    const { data: cached } = await supabase
+      .from("result_cache")
+      .select("*")
+      .eq("cache_key", cacheKey)
+      .maybeSingle();
+
+    if (cached) {
+      const age = Date.now() - new Date(cached.created_at).getTime();
+      if (age < CACHE_TTL_MS) {
+        return new Response(JSON.stringify({ section, data: cached.result_data }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    let result = await callAI(LOVABLE_API_KEY, config.systemPrompt(context), config.userPrompt(context), config.tool);
+
+    // Post-process costs: restructure breakdown from separate arrays into keyed object
+    if (section === "costs") {
+      const breakdown: Record<string, any[]> = {};
+      if (result.lean_breakdown) breakdown.lean = result.lean_breakdown;
+      if (result.mid_breakdown) breakdown.mid = result.mid_breakdown;
+      if (result.premium_breakdown) breakdown.premium = result.premium_breakdown;
+      // Fallback: if breakdown already exists as object, keep it
+      if (Object.keys(breakdown).length > 0) {
+        result = { tiers: result.tiers, breakdown };
+      } else if (!result.breakdown || typeof result.breakdown !== "object") {
+        result.breakdown = {};
+      }
+    }
+
+    // ── Save to cache ──
+    if (cached) {
+      await supabase.from("result_cache").update({ result_data: result, created_at: new Date().toISOString() }).eq("id", cached.id);
+    } else {
+      await supabase.from("result_cache").insert({ cache_key: cacheKey, function_name: `setup-${section}`, result_data: result });
+    }
 
     return new Response(JSON.stringify({ section, data: result }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
