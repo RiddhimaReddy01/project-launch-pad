@@ -24,6 +24,10 @@ interface IdeaState {
   setDiscoverResult: (result: DiscoverResult | null) => void;
   analyzeFindings: AnalyzeFinding[];
   setAnalyzeFindings: (findings: AnalyzeFinding[]) => void;
+  analyzeData: Record<string, any>;
+  setAnalyzeData: (data: Record<string, any>) => void;
+  setupData: Record<string, any>;
+  setSetupData: (data: Record<string, any>) => void;
 }
 
 const IdeaContext = createContext<IdeaState | null>(null);
@@ -35,9 +39,15 @@ export function IdeaProvider({ children }: { children: ReactNode }) {
   const [decomposeResult, setDecomposeResult] = useState<DecomposeResult | null>(null);
   const [discoverResult, setDiscoverResult] = useState<DiscoverResult | null>(null);
   const [analyzeFindings, setAnalyzeFindings] = useState<AnalyzeFinding[]>([]);
+  const [analyzeData, setAnalyzeData] = useState<Record<string, any>>({});
+  const [setupData, setSetupData] = useState<Record<string, any>>({});
 
   return (
-    <IdeaContext.Provider value={{ idea, setIdea, currentStep, setCurrentStep, selectedInsight, setSelectedInsight, decomposeResult, setDecomposeResult, discoverResult, setDiscoverResult, analyzeFindings, setAnalyzeFindings }}>
+    <IdeaContext.Provider value={{
+      idea, setIdea, currentStep, setCurrentStep, selectedInsight, setSelectedInsight,
+      decomposeResult, setDecomposeResult, discoverResult, setDiscoverResult,
+      analyzeFindings, setAnalyzeFindings, analyzeData, setAnalyzeData, setupData, setSetupData,
+    }}>
       {children}
     </IdeaContext.Provider>
   );
