@@ -404,7 +404,7 @@ export default function AnalyzeModule() {
                 className="rounded-[10px] px-5 py-2.5 transition-all duration-200 active:scale-[0.97]"
                 style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
               >
-                Compile {MODULE_DEFS.find(m => m.key === activeModule)?.label}
+                Run {MODULE_DEFS.find(m => m.key === activeModule)?.label}
               </button>
             </div>
           )}
