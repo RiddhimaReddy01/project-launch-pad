@@ -107,7 +107,7 @@ export default function ValidateModule() {
 
   const [phase, setPhase] = useState<'select' | 'generating' | 'toolkit'>('select');
   const [selectedMethods, setSelectedMethods] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState<TabKey>('landing');
+  const [activeTab, setActiveTab] = useState<TabKey | null>(null);
   const [result, setResult] = useState<ValidateResult | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [saving, setSaving] = useState(false);
