@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
 import { useAuth } from '@/context/AuthContext';
-import { useEffect } from 'react';
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
