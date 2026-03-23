@@ -19,6 +19,9 @@ const ENDPOINT_MAP: Record<string, string> = {
   "validate-idea": "/api/generate-validation",
 };
 
+// Functions where Lovable Cloud (better AI) should be tried FIRST
+const LOVABLE_FIRST = new Set(["decompose-idea"]);
+
 async function tryFetch(baseUrl: string, path: string, body: unknown, timeoutMs = 8000): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
