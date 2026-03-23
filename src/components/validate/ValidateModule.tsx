@@ -523,18 +523,30 @@ export default function ValidateModule() {
         const currentTab = ALL_TABS.find(t => t.key === activeTab);
         if (!currentTab) return null;
         return (
-          <div className="flex items-center gap-3 mb-6 rounded-[10px] px-4 py-3" style={{ backgroundColor: 'var(--surface-input)', border: '1px solid var(--divider-light)' }}>
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0 }}>Deploy</span>
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              {currentTab.deployGuide.instruction}
-            </span>
-            {currentTab.deployGuide.url && (
-              <a href={currentTab.deployGuide.url} target="_blank" rel="noopener noreferrer"
-                className="rounded-[6px] px-3 py-1.5 transition-all duration-200 whitespace-nowrap"
-                style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-primary)', backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', textDecoration: 'none', flexShrink: 0 }}>
-                {currentTab.deployGuide.tool.split(' / ')[0]}
-              </a>
-            )}
+          <div className="rounded-[10px] mb-6 overflow-hidden" style={{ border: '1px solid var(--divider-light)' }}>
+            {/* Target row */}
+            <div className="flex items-center gap-3 px-4 py-2.5" style={{ backgroundColor: 'rgba(91,140,126,0.04)', borderBottom: '1px solid var(--divider-light)' }}>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, color: 'var(--accent-teal)', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0 }}>Target</span>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, color: 'var(--text-primary)' }}>{currentTab.target}</span>
+            </div>
+            {/* Deploy row */}
+            <div className="flex items-center gap-3 px-4 py-2.5" style={{ backgroundColor: 'var(--surface-input)' }}>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0 }}>Deploy</span>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5, flex: 1 }}>
+                {currentTab.deployGuide.instruction}
+              </span>
+              {currentTab.deployGuide.urls.length > 0 && (
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  {currentTab.deployGuide.urls.map(u => (
+                    <a key={u.name} href={u.url} target="_blank" rel="noopener noreferrer"
+                      className="rounded-[6px] px-2.5 py-1 transition-all duration-200 whitespace-nowrap"
+                      style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 400, color: 'var(--text-primary)', backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', textDecoration: 'none' }}>
+                      {u.name}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         );
       })()}
