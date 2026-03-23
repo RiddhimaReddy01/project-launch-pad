@@ -2,7 +2,7 @@ import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { DecomposeResult } from '@/lib/decompose';
 import type { DiscoverResult } from '@/lib/discover';
 
-export type Step = 'discover' | 'analyze' | 'setup' | 'validate';
+export type Step = 'understand' | 'discover' | 'analyze' | 'setup' | 'validate';
 
 export interface AnalyzeFinding {
   id: string;
