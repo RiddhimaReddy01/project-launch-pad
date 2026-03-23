@@ -271,7 +271,7 @@ export default function ValidateModule() {
             method_id: mId,
             method_name: method?.name || mId,
             status: result.scorecard.some(m => m.actual > 0) ? 'running' : 'planned',
-            metrics: scorecardObj,
+            metrics: scorecardObj as any,
             assets_data: {
               landing_page: method?.outputs.includes('landing_page') ? result.landing_page : null,
               survey: method?.outputs.includes('survey') ? result.survey : null,
