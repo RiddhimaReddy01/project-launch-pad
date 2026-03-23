@@ -7,10 +7,10 @@ import DiscoverLoading from './DiscoverLoading';
 type Status = 'idle' | 'loading' | 'done' | 'error';
 
 const TYPE_TABS = [
-  { key: 'pain_point', label: 'Pain Points', icon: '🔴' },
-  { key: 'workaround', label: 'Workarounds', icon: '🔄' },
-  { key: 'demand_signal', label: 'Demand Signals', icon: '📈' },
-  { key: 'expectation', label: 'Expectations', icon: '💎' },
+  { key: 'pain_point', label: 'Pain Points', icon: 'P' },
+  { key: 'workaround', label: 'Workarounds', icon: 'W' },
+  { key: 'demand_signal', label: 'Demand Signals', icon: 'D' },
+  { key: 'expectation', label: 'Expectations', icon: 'E' },
 ] as const;
 
 export default function DiscoverModule() {
