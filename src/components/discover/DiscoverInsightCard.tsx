@@ -118,7 +118,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
   const [contentHeight, setContentHeight] = useState(0);
   const { setSelectedInsight, setCurrentStep, idea } = useIdea();
   const { user } = useAuth();
-  const config = TYPE_CONFIG[insight.type];
+  const config = getTypeConfig(insight.type);
 
   useEffect(() => {
     if (contentRef.current) setContentHeight(contentRef.current.scrollHeight);
