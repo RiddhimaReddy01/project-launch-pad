@@ -424,7 +424,7 @@ export default function ValidateModule() {
             border: 'none', cursor: selectedMethods.size > 0 ? 'pointer' : 'default',
           }}
         >
-          Generate Validation Kit
+          Build My Toolkit
         </button>
       </div>
 
