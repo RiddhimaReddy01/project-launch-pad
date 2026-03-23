@@ -670,17 +670,3 @@ function AccountTab({ user, onSignOut }: { user: any; onSignOut: () => void }) {
     </div>
   );
 }
-
-interface SavedIdea {
-  id: string;
-  idea_text: string;
-  title: string | null;
-  current_step: string;
-  progress: number | null;
-  created_at: string;
-  updated_at: string;
-  analysis_data: any;
-  discover_data: any;
-  setup_data: any;
-  validate_data: any;
-}
