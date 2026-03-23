@@ -182,7 +182,7 @@ export default function SetupModule() {
     if (state.status === 'loading') return <SectionSkeleton label={`Researching ${activeTab === 'costs' ? 'launch costs' : activeTab === 'suppliers' ? 'vendors' : activeTab === 'team' ? 'hiring options' : 'your roadmap'} for the ${selectedTier} strategy...`} />;
     if (state.status === 'error') return (
       <div className="flex flex-col items-center justify-center" style={{ minHeight: 200 }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>Could not generate this section.</p>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>We couldn't load this section right now.</p>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>{state.error || 'Try again'}</p>
         <button onClick={() => loadSection(activeTab)} className="rounded-[10px] px-5 py-2.5"
           style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}>
