@@ -11,21 +11,24 @@ const LEVEL_CONFIG = {
 const likelihoodVal = { low: 1, medium: 2, high: 3 };
 const impactVal = { low: 1, medium: 2, high: 3 };
 
-export default function RiskMatrix({ context, onData }: { context: AnalyzeContext; onData?: (data: RiskData) => void }) {
+export default function RiskMatrix({ context, onData, onError, shouldRun = true }: { context: AnalyzeContext; onData?: (data: RiskData) => void; onError?: (error: string) => void; shouldRun?: boolean }) {
   const [data, setData] = useState<RiskData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hoveredRisk, setHoveredRisk] = useState<number | null>(null);
 
   useEffect(() => {
+    if (!shouldRun || data) return;
     let cancelled = false;
+    setLoading(true);
+    setError(null);
     analyzeSection('risk', context)
       .then((result) => {
         if (!cancelled) { const d = result as RiskData; setData(d); onData?.(d); setLoading(false); }
       })
-      .catch((err) => { if (!cancelled) { setError(err.message); setLoading(false); } });
+      .catch((err) => { if (!cancelled) { setError(err.message); onError?.(err.message); setLoading(false); } });
     return () => { cancelled = true; };
-  }, []);
+  }, [shouldRun]);
 
   if (loading) return <SectionSkeleton label="Assessing business risks..." />;
   if (error) return (
