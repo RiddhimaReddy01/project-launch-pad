@@ -124,7 +124,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
     if (contentRef.current) setContentHeight(contentRef.current.scrollHeight);
   }, [expanded, showMethodology, showNoteInput]);
 
-  const platforms = [...new Set(insight.sources.map(s => s.platform))];
+  const platforms = [...new Set((insight.sources || []).map(s => s.platform))];
 
   const handlePin = async (e: React.MouseEvent) => {
     e.stopPropagation();
