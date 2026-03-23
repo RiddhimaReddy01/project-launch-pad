@@ -440,33 +440,45 @@ export default function AnalyzeModule() {
             </Suspense>
           )}
 
-          {/* Key findings */}
-          {keyFindings.length > 0 && (
+          {/* Section-specific key findings */}
+          {activeFindings.length > 0 && activeSec.status === 'completed' && (
             <div className="mt-12 rounded-[14px] p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>
-                Key findings to carry forward
-              </p>
+              <div className="flex items-center justify-between mb-1">
+                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
+                  Key findings — {MODULE_DEFS.find(m => m.key === activeModule)?.label}
+                </p>
+                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>
+                  {Array.from(selectedFindings).filter(f => activeFindings.some(af => af.text === f)).length} saved
+                </span>
+              </div>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>
-                Selected findings are saved and passed to the Validate tab
+                Save findings to your dashboard for validation
               </p>
               <div className="flex flex-col gap-1.5">
-                {keyFindings.map((finding, i) => {
-                  const isSelected = selectedFindings.has(finding);
+                {activeFindings.map((finding) => {
+                  const isSelected = selectedFindings.has(finding.text);
+                  const isSaving = savingFinding === finding.id;
                   return (
-                    <label key={i} className="flex items-start gap-3 rounded-[8px] p-3 cursor-pointer transition-colors duration-150" style={{ backgroundColor: isSelected ? 'rgba(26,26,26,0.02)' : 'transparent' }}>
-                      <div style={{
-                        width: 16, height: 16, borderRadius: 4, marginTop: 1, flexShrink: 0,
-                        border: isSelected ? 'none' : '1.5px solid var(--divider-section)',
-                        backgroundColor: isSelected ? 'var(--text-primary)' : 'transparent',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      }}>
-                        {isSelected && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4 7L8 3" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-                      </div>
-                      <input type="checkbox" checked={isSelected} onChange={() => toggleFinding(finding)} className="sr-only" />
-                      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: isSelected ? 400 : 300, color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)', lineHeight: 1.5 }}>
-                        {finding}
+                    <div key={finding.id} className="flex items-start gap-3 rounded-[8px] p-3 transition-colors duration-150" style={{ backgroundColor: isSelected ? 'rgba(45,139,117,0.03)' : 'transparent' }}>
+                      <span className="flex-1" style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: isSelected ? 400 : 300, color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)', lineHeight: 1.5 }}>
+                        {finding.text}
                       </span>
-                    </label>
+                      <button
+                        onClick={() => handleSaveFinding(finding)}
+                        disabled={isSaving}
+                        className="rounded-[6px] px-3 py-1 transition-all duration-200 flex-shrink-0"
+                        style={{
+                          fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400,
+                          backgroundColor: isSelected ? 'var(--text-primary)' : 'transparent',
+                          color: isSelected ? '#fff' : 'var(--text-muted)',
+                          border: isSelected ? 'none' : '1px solid var(--divider)',
+                          cursor: isSaving ? 'wait' : 'pointer',
+                          opacity: isSaving ? 0.6 : 1,
+                        }}
+                      >
+                        {isSaving ? '...' : isSelected ? 'Saved' : 'Save'}
+                      </button>
+                    </div>
                   );
                 })}
               </div>
