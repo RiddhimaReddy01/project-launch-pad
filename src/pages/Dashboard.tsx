@@ -54,7 +54,7 @@ export default function Dashboard() {
   const loadData = async () => {
     setLoading(true);
     const [ideasRes, expRes] = await Promise.all([
-      supabase.from('saved_ideas').select('*').order('updated_at', { ascending: false }),
+      supabase.from('saved_ideas').select('*, analysis_data').order('updated_at', { ascending: false }),
       supabase.from('experiments').select('*').order('created_at', { ascending: false }),
     ]);
 
