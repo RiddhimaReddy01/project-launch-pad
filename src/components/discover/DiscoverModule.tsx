@@ -50,8 +50,8 @@ export default function DiscoverModule() {
   // Auto-select first non-empty tab when results arrive
   useEffect(() => {
     if (result && !filter) {
-      const counts = getCounts(result);
-      const first = TYPE_TABS.find(t => (counts[t.key] || 0) > 0);
+      const tabs = buildTabs(result.insights);
+      const first = tabs[0];
       if (first) setFilter(first.key);
     }
   }, [result]);
