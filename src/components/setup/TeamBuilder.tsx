@@ -1,109 +1,107 @@
-import { useState } from 'react';
-import { MOCK_TEAM } from '@/data/setup-mock';
+import { useMemo } from 'react';
+import type { TeamResult, TeamMember } from '@/lib/setup';
 
-export default function TeamBuilder({ includedRoles, onToggleRole }: { includedRoles: Set<string>; onToggleRole: (id: string) => void }) {
-  const [hoveredRole, setHoveredRole] = useState<string | null>(null);
+const TYPE_STYLES: Record<string, { color: string; bg: string }> = {
+  FTE: { color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.06)' },
+  Contract: { color: 'var(--accent-amber)', bg: 'rgba(212,136,15,0.06)' },
+  Advisory: { color: '#3B82F6', bg: 'rgba(59,130,246,0.06)' },
+};
 
-  const teamCount = includedRoles.size;
+const PRIORITY_STYLES = {
+  MUST_HAVE: { color: 'var(--text-primary)', bg: 'rgba(26,26,26,0.06)', label: 'Must have' },
+  NICE_TO_HAVE: { color: 'var(--text-muted)', bg: 'rgba(26,26,26,0.03)', label: 'Nice to have' },
+};
+
+export default function TeamBuilder({ data, tier }: { data: TeamResult; tier: string }) {
+  const sorted = useMemo(() => [...data.team].sort((a, b) => a.month - b.month), [data.team]);
+  const mustHaveCost = useMemo(() => sorted.filter(t => t.priority === 'MUST_HAVE').reduce((s, t) => s + t.salary_min, 0), [sorted]);
+  const niceToHaveCost = useMemo(() => sorted.filter(t => t.priority === 'NICE_TO_HAVE').reduce((s, t) => s + t.salary_min, 0), [sorted]);
+
+  const fmt = (n: number) => n >= 1e3 ? `$${(n / 1e3).toFixed(0)}K` : `$${n}`;
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <p className="font-caption" style={{ fontSize: 11, letterSpacing: '0.06em' }}>
-          TEAM COMPOSITION
-        </p>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--accent-purple)' }}>
-          {teamCount} role{teamCount !== 1 ? 's' : ''} selected
-        </p>
+      {/* Summary */}
+      <div className="grid grid-cols-3 gap-3 mb-8">
+        <div className="rounded-[10px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Total Payroll</p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 20, fontWeight: 400, color: 'var(--text-primary)' }}>{fmt(data.total_payroll)}</p>
+        </div>
+        <div className="rounded-[10px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Must Have</p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 20, fontWeight: 400, color: 'var(--text-primary)' }}>{fmt(mustHaveCost)}</p>
+        </div>
+        <div className="rounded-[10px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Nice to Have</p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 20, fontWeight: 400, color: 'var(--text-muted)' }}>{fmt(niceToHaveCost)}</p>
+        </div>
       </div>
 
-      <div className="flex flex-col gap-3">
-        {MOCK_TEAM.map((role) => {
-          const included = includedRoles.has(role.id);
-          const hovered = hoveredRole === role.id;
-
-          return (
-            <div
-              key={role.id}
-              className="rounded-[12px] p-5 transition-all duration-200"
-              style={{
-                backgroundColor: included ? 'rgba(108,92,231,0.04)' : 'var(--surface-card)',
-                boxShadow: hovered ? '0 4px 12px rgba(0,0,0,0.06)' : '0 1px 3px rgba(0,0,0,0.04)',
-                border: included ? '1px solid rgba(108,92,231,0.15)' : '1px solid transparent',
-                transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
-              }}
-              onMouseEnter={() => setHoveredRole(role.id)}
-              onMouseLeave={() => setHoveredRole(null)}
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-2 flex-wrap">
-                    <p
-                      className="transition-colors duration-150"
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: 15,
-                        fontWeight: 400,
-                        color: hovered ? 'var(--accent-purple)' : 'var(--text-primary)',
-                      }}
-                    >
-                      {role.title}
-                    </p>
-                    <span
-                      className="rounded-[6px] px-2 py-0.5"
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: 11,
-                        fontWeight: 400,
-                        backgroundColor: role.type === 'full-time' ? 'rgba(45,139,117,0.06)' : role.type === 'part-time' ? 'rgba(59,130,246,0.06)' : 'rgba(212,136,15,0.06)',
-                        color: role.type === 'full-time' ? 'var(--accent-teal)' : role.type === 'part-time' ? 'var(--accent-blue)' : 'var(--accent-amber)',
-                      }}
-                    >
-                      {role.type}
+      {/* Gantt-style timeline */}
+      <div className="mb-8">
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 12 }}>
+          Hiring Timeline
+        </p>
+        <div className="rounded-[12px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+          {/* Month markers */}
+          <div className="flex mb-2" style={{ paddingLeft: 120 }}>
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="flex-1 text-center">
+                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, color: 'var(--text-muted)' }}>M{i + 1}</span>
+              </div>
+            ))}
+          </div>
+          {/* Bars */}
+          {sorted.map((member, i) => {
+            const startPct = ((member.month - 1) / 12) * 100;
+            const widthPct = ((13 - member.month) / 12) * 100;
+            const typeStyle = TYPE_STYLES[member.type] || TYPE_STYLES.FTE;
+            return (
+              <div key={i} className="flex items-center mb-1.5" style={{ height: 28 }}>
+                <div style={{ width: 120, flexShrink: 0 }}>
+                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {member.title}
+                  </p>
+                </div>
+                <div className="flex-1 relative" style={{ height: 20 }}>
+                  <div style={{ position: 'absolute', top: 0, bottom: 0, left: `${startPct}%`, width: `${widthPct}%`, borderRadius: 4, backgroundColor: typeStyle.bg, border: `1px solid ${typeStyle.color}30` }}>
+                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, color: typeStyle.color, paddingLeft: 6, lineHeight: '18px' }}>
+                      {member.salary_label}
                     </span>
                   </div>
-                  <p className="font-heading" style={{ fontSize: 26, marginBottom: 6, lineHeight: 1.25 }}>
-                    {role.salaryRange}
-                  </p>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 12 }}>
-                    {role.description}
-                  </p>
-                  <a
-                    href={role.linkedinSearch}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="transition-colors duration-150"
-                    style={{
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: 12,
-                      fontWeight: 400,
-                      color: 'var(--accent-purple)',
-                      textDecoration: 'none',
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
-                    onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
-                  >
-                    Search LinkedIn →
-                  </a>
                 </div>
-
-                {/* Include toggle */}
-                <button
-                  onClick={() => onToggleRole(role.id)}
-                  className="flex-shrink-0 rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.95]"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 12,
-                    fontWeight: 400,
-                    backgroundColor: included ? 'var(--accent-purple)' : 'rgba(108,92,231,0.06)',
-                    color: included ? '#fff' : 'var(--accent-purple)',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {included ? '✓ In plan' : 'Add to plan'}
-                </button>
               </div>
+            );
+          })}
+          {/* Legend */}
+          <div className="flex gap-4 mt-4 pt-3" style={{ borderTop: '1px solid var(--divider)' }}>
+            {Object.entries(TYPE_STYLES).map(([type, style]) => (
+              <div key={type} className="flex items-center gap-1.5">
+                <div style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: style.bg, border: `1px solid ${style.color}30` }} />
+                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: 'var(--text-muted)' }}>{type}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Role cards */}
+      <div className="flex flex-col gap-2">
+        {sorted.map((member, i) => {
+          const typeStyle = TYPE_STYLES[member.type] || TYPE_STYLES.FTE;
+          const prioStyle = PRIORITY_STYLES[member.priority] || PRIORITY_STYLES.NICE_TO_HAVE;
+          return (
+            <div key={i} className="rounded-[12px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{member.title}</span>
+                  <span className="rounded-full px-2 py-0.5" style={{ fontSize: 9, letterSpacing: '0.04em', backgroundColor: typeStyle.bg, color: typeStyle.color }}>{member.type}</span>
+                  <span className="rounded-full px-2 py-0.5" style={{ fontSize: 9, letterSpacing: '0.04em', backgroundColor: prioStyle.bg, color: prioStyle.color }}>{prioStyle.label}</span>
+                </div>
+                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>Month {member.month}</span>
+              </div>
+              <p className="font-heading" style={{ fontSize: 18, marginBottom: 6 }}>{member.salary_label}</p>
+              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{member.why_needed}</p>
             </div>
           );
         })}

@@ -3,25 +3,23 @@ import { useIdea } from '@/context/IdeaContext';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { setupSection, type SetupContext, type SetupCostsData, type SetupSuppliersData, type SetupTeamData, type SetupTimelineData } from '@/lib/setup';
-import type { LaunchTier, CostCategory, TimelinePhase, TeamRole, Supplier } from '@/data/setup-mock';
-import { MOCK_TIERS, MOCK_TIER_COSTS, MOCK_TEAM, MOCK_TIMELINE, MOCK_SUPPLIERS } from '@/data/setup-mock';
+import { setupSection, type SetupContext, type CostsResult, type SuppliersResult, type TeamResult, type TimelineResult, type TierDef } from '@/lib/setup';
+import SectionSkeleton from '@/components/analyze/SectionSkeleton';
 import CostBuilder from './CostBuilder';
 import Suppliers from './Suppliers';
 import TeamBuilder from './TeamBuilder';
 import LaunchTimeline from './LaunchTimeline';
-import PlanSummary from './PlanSummary';
-import SectionSkeleton from '@/components/analyze/SectionSkeleton';
 
-type Estimate = 'low' | 'mid' | 'high';
+type TierId = 'lean' | 'mid' | 'premium';
+
+const TIER_MONOS: Record<string, string> = { lean: 'L', mid: 'M', premium: 'P' };
 
 const TABS = [
-  { key: 'costs', label: 'Costs', subtitle: 'Launch budget by tier' },
-  { key: 'suppliers', label: 'Suppliers', subtitle: 'Local partners' },
-  { key: 'team', label: 'Team', subtitle: 'Hiring plan' },
-  { key: 'timeline', label: 'Timeline', subtitle: 'Launch phases' },
-  { key: 'summary', label: 'Summary', subtitle: 'Full plan overview' },
-] as const;
+  { key: 'costs' as const, label: 'Costs', mono: '$', subtitle: 'Launch budget by tier' },
+  { key: 'suppliers' as const, label: 'Suppliers', mono: 'S', subtitle: 'Tier-appropriate vendors' },
+  { key: 'team' as const, label: 'Team', mono: 'T', subtitle: 'Year 1 hiring plan' },
+  { key: 'timeline' as const, label: 'Timeline', mono: 'R', subtitle: '4-phase roadmap' },
+];
 
 type TabKey = typeof TABS[number]['key'];
 
@@ -32,21 +30,18 @@ interface SectionState<T> {
 }
 
 export default function SetupModule() {
-  const { idea, selectedInsight, decomposeResult } = useIdea();
+  const { idea, decomposeResult } = useIdea();
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const [selectedTier, setSelectedTier] = useState<TierId>('mid');
   const [activeTab, setActiveTab] = useState<TabKey>('costs');
-  const [selectedTier, setSelectedTier] = useState('recommended');
-  const [estimates, setEstimates] = useState<Record<string, Estimate>>({});
-  const [includedRoles, setIncludedRoles] = useState<Set<string>>(new Set());
-  const [phases, setPhases] = useState<TimelinePhase[]>([]);
+  const [exporting, setExporting] = useState(false);
 
-  // AI-generated data states
-  const [costsState, setCostsState] = useState<SectionState<SetupCostsData>>({ data: null, status: 'idle' });
-  const [suppliersState, setSuppliersState] = useState<SectionState<SetupSuppliersData>>({ data: null, status: 'idle' });
-  const [teamState, setTeamState] = useState<SectionState<SetupTeamData>>({ data: null, status: 'idle' });
-  const [timelineState, setTimelineState] = useState<SectionState<SetupTimelineData>>({ data: null, status: 'idle' });
+  const [costsState, setCostsState] = useState<SectionState<CostsResult>>({ data: null, status: 'idle' });
+  const [suppliersState, setSuppliersState] = useState<SectionState<SuppliersResult>>({ data: null, status: 'idle' });
+  const [teamState, setTeamState] = useState<SectionState<TeamResult>>({ data: null, status: 'idle' });
+  const [timelineState, setTimelineState] = useState<SectionState<TimelineResult>>({ data: null, status: 'idle' });
 
   const context: SetupContext | null = useMemo(() => {
     if (!decomposeResult) return null;
@@ -64,177 +59,253 @@ export default function SetupModule() {
     if (el) requestAnimationFrame(() => el.classList.add('visible'));
   }, []);
 
-  // Auto-load costs on mount
-  useEffect(() => {
-    if (context && costsState.status === 'idle') loadSection('costs');
-  }, [context]);
-
-  const loadSection = useCallback(async (section: 'costs' | 'suppliers' | 'team' | 'timeline') => {
+  const loadSection = useCallback(async (section: TabKey) => {
     if (!context) return;
     const setters = { costs: setCostsState, suppliers: setSuppliersState, team: setTeamState, timeline: setTimelineState };
     setters[section]({ data: null, status: 'loading' });
     try {
       const result = await setupSection(section, context);
       setters[section]({ data: result as any, status: 'completed' });
-
-      // Initialize derived state
-      if (section === 'team' && (result as SetupTeamData).team) {
-        setIncludedRoles(new Set((result as SetupTeamData).team.slice(0, 2).map(r => r.id)));
-      }
-      if (section === 'timeline' && (result as SetupTimelineData).phases) {
-        setPhases((result as SetupTimelineData).phases.map(p => ({ ...p, tasks: p.tasks.map(t => ({ ...t, completed: false })) })));
-      }
     } catch (err: any) {
       setters[section]({ data: null, status: 'error', error: err.message });
     }
   }, [context]);
 
-  // Load tab data on tab switch
+  // Auto-load costs on mount
+  useEffect(() => {
+    if (context && costsState.status === 'idle') loadSection('costs');
+  }, [context]);
+
+  // Load tab data on switch
   useEffect(() => {
     if (!context) return;
-    if (activeTab === 'suppliers' && suppliersState.status === 'idle') loadSection('suppliers');
-    if (activeTab === 'team' && teamState.status === 'idle') loadSection('team');
-    if (activeTab === 'timeline' && timelineState.status === 'idle') loadSection('timeline');
+    const states = { costs: costsState, suppliers: suppliersState, team: teamState, timeline: timelineState };
+    if (states[activeTab].status === 'idle') loadSection(activeTab);
   }, [activeTab, context]);
 
-  const handleEstimateChange = useCallback((itemLabel: string, est: Estimate) => {
-    setEstimates(prev => ({ ...prev, [itemLabel]: est }));
-  }, []);
+  // Re-fetch suppliers/team/timeline when tier changes
+  useEffect(() => {
+    if (!context) return;
+    if (suppliersState.status === 'completed') loadSection('suppliers');
+    if (teamState.status === 'completed') loadSection('team');
+    if (timelineState.status === 'completed') loadSection('timeline');
+  }, [selectedTier]);
 
-  const handleToggleRole = useCallback((id: string) => {
-    setIncludedRoles(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  }, []);
+  const handleSave = async () => {
+    if (!user) { toast.error('Sign in to save'); return; }
+    try {
+      const payload = {
+        tier: selectedTier,
+        costs: costsState.data,
+        suppliers: suppliersState.data,
+        team: teamState.data,
+        timeline: timelineState.data,
+        saved_at: new Date().toISOString(),
+      };
+      const { data: existing } = await supabase.from('saved_ideas').select('id').eq('user_id', user.id).eq('idea_text', idea).maybeSingle();
+      if (existing) await supabase.from('saved_ideas').update({ setup_data: payload as any }).eq('id', existing.id);
+      else await supabase.from('saved_ideas').insert({ user_id: user.id, idea_text: idea, setup_data: payload as any, current_step: 'setup' });
+      toast.success('Plan saved');
+    } catch { toast.error('Failed to save'); }
+  };
 
-  const handleToggleTask = useCallback((phaseId: string, taskId: string) => {
-    setPhases(prev => prev.map(p =>
-      p.id === phaseId ? { ...p, tasks: p.tasks.map(t => t.id === taskId ? { ...t, completed: !t.completed } : t) } : p
-    ));
-  }, []);
+  const handleExportPDF = useCallback(() => {
+    setExporting(true);
+    const printWin = window.open('', '_blank');
+    if (!printWin) { setExporting(false); return; }
+    const biz = context?.business_type || idea;
+    const loc = context ? `${context.city}, ${context.state}` : '';
 
-  // Use AI data or fallback to mock
-  const tiers = costsState.data?.tiers || MOCK_TIERS;
-  const tierCosts = costsState.data?.tierCosts || MOCK_TIER_COSTS;
-  const suppliers = suppliersState.data?.suppliers || MOCK_SUPPLIERS;
-  const team = teamState.data?.team || MOCK_TEAM;
-  const timelinePhases = phases.length > 0 ? phases : MOCK_TIMELINE;
+    let html = `<!DOCTYPE html><html><head><title>LaunchLens Setup — ${biz}</title>
+      <style>body{font-family:Inter,-apple-system,sans-serif;max-width:800px;margin:40px auto;padding:0 24px;color:#1a1a1a}
+      h1{font-size:24px;font-weight:400;margin-bottom:4px}h2{font-size:18px;font-weight:500;margin:28px 0 12px;border-bottom:1px solid #e5e5e5;padding-bottom:8px}
+      .meta{font-size:13px;color:#999;margin-bottom:32px}table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
+      td,th{text-align:left;padding:6px 10px;border-bottom:1px solid #eee}th{font-weight:500;color:#666}
+      .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px}@media print{body{margin:20px}}</style>
+    </head><body>
+      <h1>${biz}</h1><p class="meta">${loc} — ${selectedTier.toUpperCase()} Tier — Generated ${new Date().toLocaleDateString()}</p>`;
 
-  const currentTotal = useMemo(() => {
-    const categories = tierCosts[selectedTier] || [];
-    let total = 0;
-    categories.forEach(cat => cat.items.forEach(item => { total += item[estimates[item.label] || 'mid']; }));
-    return total;
-  }, [selectedTier, estimates, tierCosts]);
+    if (costsState.data) {
+      const tier = costsState.data.tiers.find(t => t.id === selectedTier);
+      html += `<h2>Cost Estimate</h2>`;
+      if (tier) html += `<p><strong>$${(tier.cost_min/1000).toFixed(0)}K – $${(tier.cost_max/1000).toFixed(0)}K</strong> · ${tier.philosophy}</p>`;
+      const cats = costsState.data.breakdown[selectedTier];
+      if (cats) {
+        html += `<table><tr><th>Category</th><th>Item</th><th>Range</th></tr>`;
+        cats.forEach(c => c.items.forEach(i => { html += `<tr><td>${c.category}</td><td>${i.label}</td><td>$${(i.min/1000).toFixed(0)}K – $${(i.max/1000).toFixed(0)}K</td></tr>`; }));
+        html += `</table>`;
+      }
+    }
+    if (suppliersState.data) {
+      html += `<h2>Recommended Vendors</h2><table><tr><th>Category</th><th>Name</th><th>Cost</th></tr>`;
+      suppliersState.data.suppliers.forEach(s => { html += `<tr><td>${s.category}</td><td>${s.name}</td><td>${s.cost}</td></tr>`; });
+      html += `</table>`;
+    }
+    if (teamState.data) {
+      html += `<h2>Year 1 Team</h2><table><tr><th>Role</th><th>Type</th><th>Month</th><th>Salary</th></tr>`;
+      teamState.data.team.forEach(t => { html += `<tr><td>${t.title}</td><td>${t.type}</td><td>M${t.month}</td><td>${t.salary_label}</td></tr>`; });
+      html += `</table>`;
+    }
+    if (timelineState.data) {
+      html += `<h2>Launch Roadmap</h2>`;
+      timelineState.data.phases.forEach(p => {
+        html += `<h3 style="font-size:14px;margin:16px 0 6px">${p.phase} — ${p.weeks} weeks (${p.budget_percent}% budget)</h3>`;
+        html += `<ul style="font-size:13px;line-height:1.8;color:#444">${p.milestones.map(m => `<li>${m}</li>`).join('')}</ul>`;
+        html += `<p style="font-size:12px;color:#666">Success: ${p.success_metric}</p>`;
+      });
+    }
 
-  const insightTitle = selectedInsight || idea;
+    html += `</body></html>`;
+    printWin.document.write(html);
+    printWin.document.close();
+    setTimeout(() => { printWin.print(); setExporting(false); }, 500);
+  }, [context, costsState.data, suppliersState.data, teamState.data, timelineState.data, selectedTier, idea]);
 
-  const renderTab = () => {
+  const completedCount = [costsState, suppliersState, teamState, timelineState].filter(s => s.status === 'completed').length;
+
+  if (!decomposeResult) return (
+    <div className="flex items-center justify-center" style={{ height: '60vh' }}>
+      <div className="text-center" style={{ maxWidth: 400 }}>
+        <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Complete the Discover step first</p>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+          Setup needs your business context from the decomposition step.
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderContent = () => {
+    const state = { costs: costsState, suppliers: suppliersState, team: teamState, timeline: timelineState }[activeTab];
+
+    if (state.status === 'loading') return <SectionSkeleton label={`Generating ${activeTab} plan for ${selectedTier} tier...`} />;
+    if (state.status === 'error') return (
+      <div className="flex flex-col items-center justify-center" style={{ minHeight: 200 }}>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>Could not generate this section.</p>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>{state.error || 'Try again'}</p>
+        <button onClick={() => loadSection(activeTab)} className="rounded-[10px] px-5 py-2.5"
+          style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}>
+          Retry
+        </button>
+      </div>
+    );
+    if (state.status === 'idle') return <SectionSkeleton label="Initializing..." />;
+
     switch (activeTab) {
-      case 'costs':
-        if (costsState.status === 'loading') return <SectionSkeleton label="Generating cost tiers for your business..." />;
-        if (costsState.status === 'error') return <ErrorState message={costsState.error} onRetry={() => loadSection('costs')} />;
-        return <CostBuilder selectedTier={selectedTier} onSelectTier={setSelectedTier} estimates={estimates} onEstimateChange={handleEstimateChange} />;
-      case 'suppliers':
-        if (suppliersState.status === 'loading') return <SectionSkeleton label="Finding local suppliers and partners..." />;
-        if (suppliersState.status === 'error') return <ErrorState message={suppliersState.error} onRetry={() => loadSection('suppliers')} />;
-        return <Suppliers />;
-      case 'team':
-        if (teamState.status === 'loading') return <SectionSkeleton label="Building your team plan..." />;
-        if (teamState.status === 'error') return <ErrorState message={teamState.error} onRetry={() => loadSection('team')} />;
-        return <TeamBuilder includedRoles={includedRoles} onToggleRole={handleToggleRole} />;
-      case 'timeline':
-        if (timelineState.status === 'loading') return <SectionSkeleton label="Planning your launch timeline..." />;
-        if (timelineState.status === 'error') return <ErrorState message={timelineState.error} onRetry={() => loadSection('timeline')} />;
-        return <LaunchTimeline phases={timelinePhases} onToggleTask={handleToggleTask} />;
-      case 'summary':
-        return <PlanSummary selectedTier={selectedTier} currentTotal={currentTotal} includedRoles={includedRoles} phases={timelinePhases} />;
+      case 'costs': return costsState.data ? <CostBuilder data={costsState.data} selectedTier={selectedTier} onSelectTier={setSelectedTier} /> : null;
+      case 'suppliers': return suppliersState.data ? <Suppliers data={suppliersState.data} tier={selectedTier} /> : null;
+      case 'team': return teamState.data ? <TeamBuilder data={teamState.data} tier={selectedTier} /> : null;
+      case 'timeline': return timelineState.data ? <LaunchTimeline data={timelineState.data} tier={selectedTier} context={context} /> : null;
     }
   };
 
   return (
-    <div ref={containerRef} className="scroll-reveal" style={{ maxWidth: 800, margin: '0 auto', padding: '0 24px' }}>
-      {/* Sticky context strip */}
-      <div className="sticky z-30 rounded-[12px] mb-12 p-5" style={{ top: 80, backgroundColor: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(16px)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-        <div className="flex flex-wrap items-start gap-x-10 gap-y-3">
-          <div className="min-w-0 flex-1">
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>IDEA</p>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.4 }}>{idea}</p>
-          </div>
-          <div className="min-w-0 flex-1">
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>SELECTED OPPORTUNITY</p>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.4 }}>{insightTitle}</p>
-          </div>
-          <div>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>MODEL</p>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--accent-purple)' }}>
-              {tiers.find(t => t.id === selectedTier)?.title || 'Recommended'}
-            </p>
-          </div>
+    <div ref={containerRef} className="scroll-reveal">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-10">
+        <div>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>SETUP</p>
+          <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>Launch Plan</p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+            AI-generated costs, vendors, team, and timeline for your {selectedTier} tier launch.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {completedCount > 0 && (
+            <>
+              <button onClick={handleSave} className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
+                style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}>
+                Save
+              </button>
+              <button onClick={handleExportPDF} disabled={exporting} className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
+                style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', border: '1px solid var(--divider)', cursor: 'pointer', backgroundColor: 'transparent' }}>
+                {exporting ? 'Exporting...' : 'Export PDF'}
+              </button>
+            </>
+          )}
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>{completedCount}/4</span>
         </div>
       </div>
 
-      {/* Intro */}
+      {/* Tier selector */}
       <div className="mb-10">
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 10 }}>LAUNCH PLAN</p>
-        <p className="font-heading" style={{ fontSize: 26, marginBottom: 12 }}>How would you actually start this?</p>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 300, lineHeight: 1.75, color: 'var(--text-secondary)', maxWidth: 540 }}>
-          AI-generated costs, suppliers, team, and timeline tailored to your business and location.
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 12 }}>
+          Select launch strategy
         </p>
-      </div>
+        <div className="grid grid-cols-3 gap-3">
+          {(['lean', 'mid', 'premium'] as const).map((tier) => {
+            const isSelected = selectedTier === tier;
+            const tierData = costsState.data?.tiers.find(t => t.id === tier);
+            const labels = {
+              lean: { title: 'Lean', sub: 'Speed + DIY', cost: tierData ? `$${(tierData.cost_min/1000).toFixed(0)}K–$${(tierData.cost_max/1000).toFixed(0)}K` : '$30–50K', weeks: tierData?.timeline_weeks || 16, team: tierData?.team_size || '1', best: tierData?.best_for || 'MVPs, services' },
+              mid: { title: 'Balanced', sub: 'Quality + team', cost: tierData ? `$${(tierData.cost_min/1000).toFixed(0)}K–$${(tierData.cost_max/1000).toFixed(0)}K` : '$75–100K', weeks: tierData?.timeline_weeks || 24, team: tierData?.team_size || '1–2', best: tierData?.best_for || 'Most startups' },
+              premium: { title: 'Premium', sub: 'Full buildout', cost: tierData ? `$${(tierData.cost_min/1000).toFixed(0)}K–$${(tierData.cost_max/1000).toFixed(0)}K` : '$150–200K', weeks: tierData?.timeline_weeks || 32, team: tierData?.team_size || '2–3+', best: tierData?.best_for || 'Complex products' },
+            }[tier];
 
-      {/* Tab switcher */}
-      <div className="mb-10">
-        <div className="flex gap-1 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider)' }}>
-          {TABS.map(tab => {
-            const isActive = activeTab === tab.key;
             return (
-              <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-                className="relative px-4 py-3 transition-all duration-200 active:scale-[0.97] whitespace-nowrap"
-                style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: isActive ? 400 : 300, color: isActive ? 'var(--accent-purple)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
-                {tab.label}
-                {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 1.5, backgroundColor: 'var(--accent-purple)', borderRadius: 1 }} />}
+              <button
+                key={tier}
+                onClick={() => setSelectedTier(tier)}
+                className="text-left rounded-[12px] p-5 transition-all duration-200 active:scale-[0.97]"
+                style={{
+                  backgroundColor: isSelected ? 'rgba(26,26,26,0.03)' : 'var(--surface-card)',
+                  border: isSelected ? '1.5px solid var(--text-primary)' : '1.5px solid var(--divider)',
+                  cursor: 'pointer',
+                }}
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    width: 24, height: 24, borderRadius: 6, fontSize: 11, fontWeight: 500,
+                    fontFamily: "'Inter', sans-serif",
+                    backgroundColor: isSelected ? 'var(--text-primary)' : 'var(--divider-light)',
+                    color: isSelected ? '#fff' : 'var(--text-muted)',
+                  }}>
+                    {TIER_MONOS[tier]}
+                  </span>
+                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: isSelected ? 500 : 400, color: 'var(--text-primary)' }}>
+                    {labels.title}
+                  </span>
+                </div>
+                <p className="font-heading" style={{ fontSize: 20, marginBottom: 4 }}>{labels.cost}</p>
+                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                  {labels.team} people · {labels.weeks} weeks
+                </p>
+                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginTop: 6 }}>
+                  {labels.best}
+                </p>
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Tab content */}
-      <div className="mb-16" style={{ minHeight: 300 }}>{renderTab()}</div>
-
-      {/* Bottom actions */}
-      <div className="flex flex-wrap items-center gap-3 mt-8 pt-8" style={{ borderTop: '1px solid var(--divider)' }}>
-        <button className="rounded-[12px] px-5 py-3 transition-all duration-200 active:scale-[0.97]"
-          style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, backgroundColor: 'rgba(108,92,231,0.06)', color: 'var(--accent-purple)', border: 'none', cursor: 'pointer' }}
-          onClick={async () => {
-            if (!user) { toast.error('Sign in to save'); return; }
-            try {
-              const payload = { tiers, tierCosts, team, suppliers, phases: timelinePhases, selectedTier, currentTotal, savedAt: new Date().toISOString() };
-              const { data: existing } = await supabase.from('saved_ideas').select('id').eq('user_id', user.id).eq('idea_text', idea).maybeSingle();
-              if (existing) await supabase.from('saved_ideas').update({ setup_data: payload as any }).eq('id', existing.id);
-              else await supabase.from('saved_ideas').insert({ user_id: user.id, idea_text: idea, setup_data: payload as any });
-              toast.success('Plan saved');
-            } catch { toast.error('Failed to save'); }
-          }}>
-          Save plan
-        </button>
+      {/* Tab navigation */}
+      <div className="flex gap-1 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider)' }}>
+        {TABS.map(tab => {
+          const isActive = activeTab === tab.key;
+          const state = { costs: costsState, suppliers: suppliersState, team: teamState, timeline: timelineState }[tab.key];
+          return (
+            <button key={tab.key} onClick={() => setActiveTab(tab.key)}
+              className="relative flex items-center gap-2 px-4 py-3 transition-all duration-200 whitespace-nowrap"
+              style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: isActive ? 400 : 300, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: 20, height: 20, borderRadius: 5, fontSize: 9, fontWeight: 500,
+                fontFamily: "'Inter', sans-serif",
+                backgroundColor: state.status === 'completed' ? 'var(--text-primary)' : isActive ? 'rgba(26,26,26,0.08)' : 'var(--divider-light)',
+                color: state.status === 'completed' ? '#fff' : 'var(--text-muted)',
+              }}>{tab.mono}</span>
+              {tab.label}
+              {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 1.5, backgroundColor: 'var(--text-primary)', borderRadius: 1 }} />}
+            </button>
+          );
+        })}
       </div>
-    </div>
-  );
-}
 
-function ErrorState({ message, onRetry }: { message?: string; onRetry: () => void }) {
-  return (
-    <div className="flex flex-col items-center justify-center" style={{ minHeight: 200 }}>
-      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>Could not generate this section.</p>
-      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>{message || 'Try again'}</p>
-      <button onClick={onRetry} className="rounded-[10px] px-5 py-2.5"
-        style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}>
-        Retry
-      </button>
+      {/* Content */}
+      <div style={{ minHeight: 300, maxWidth: 800 }}>
+        {renderContent()}
+      </div>
     </div>
   );
 }
