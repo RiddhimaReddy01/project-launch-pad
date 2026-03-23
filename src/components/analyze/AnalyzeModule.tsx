@@ -317,9 +317,9 @@ export default function AnalyzeModule() {
   if (!decomposeResult) return (
     <div className="flex items-center justify-center" style={{ height: '60vh' }}>
       <div className="text-center" style={{ maxWidth: 400 }}>
-        <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Select a module and compile your analysis</p>
+        <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Pick a module and run your analysis</p>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-          Choose which signals, insights, and prior outputs to include. Run only the analyses you need.
+          Choose which signals and insights to include, then run only the analyses you need.
         </p>
       </div>
     </div>
