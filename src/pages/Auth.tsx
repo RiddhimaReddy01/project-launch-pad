@@ -139,86 +139,71 @@ export default function Auth() {
           <div style={{ flex: 1, height: 1, backgroundColor: 'var(--divider-light)' }} />
         </div>
 
-        <form onSubmit={handleEmailAuth}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full rounded-[10px] outline-none transition-all duration-200 mb-3"
-            style={{
-              padding: '12px 14px',
-              border: '1px solid var(--divider-light)',
-              backgroundColor: 'var(--surface-bg)',
-              fontFamily: "'Inter', sans-serif",
-              fontSize: 14,
-              fontWeight: 300,
-              color: 'var(--text-primary)',
-            }}
-            onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent-purple)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(108,92,231,0.08)'; }}
-            onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--divider-light)'; e.currentTarget.style.boxShadow = 'none'; }}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-            className="w-full rounded-[10px] outline-none transition-all duration-200 mb-4"
-            style={{
-              padding: '12px 14px',
-              border: '1px solid var(--divider-light)',
-              backgroundColor: 'var(--surface-bg)',
-              fontFamily: "'Inter', sans-serif",
-              fontSize: 14,
-              fontWeight: 300,
-              color: 'var(--text-primary)',
-            }}
-            onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent-purple)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(108,92,231,0.08)'; }}
-            onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--divider-light)'; e.currentTarget.style.boxShadow = 'none'; }}
-          />
-
-          {error && (
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#E05252', marginBottom: 12 }}>
-              {error}
+        {forgotMode ? (
+          forgotSent ? (
+            <div className="text-center">
+              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 8 }}>Check your email</p>
+              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 20 }}>
+                We sent a password reset link to {email}.
+              </p>
+              <button onClick={() => { setForgotMode(false); setForgotSent(false); }} className="cursor-pointer"
+                style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: 'var(--accent-purple)', fontWeight: 400, background: 'none', border: 'none' }}>
+                Back to login
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleForgotPassword}>
+              <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required
+                className="w-full rounded-[10px] outline-none transition-all duration-200 mb-4"
+                style={{ padding: '12px 14px', border: '1px solid var(--divider-light)', backgroundColor: 'var(--surface-bg)', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-primary)' }} />
+              {error && <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#E05252', marginBottom: 12 }}>{error}</p>}
+              <button type="submit" disabled={loading} className="w-full rounded-[12px] mb-3"
+                style={{ padding: '12px 16px', backgroundColor: 'var(--text-primary)', color: '#fff', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, border: 'none', cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.7 : 1 }}>
+                {loading ? '...' : 'Send reset link'}
+              </button>
+              <p className="font-caption text-center" style={{ fontSize: 13 }}>
+                <span className="cursor-pointer" style={{ color: 'var(--accent-purple)', fontWeight: 400 }} onClick={() => { setForgotMode(false); setError(''); }}>
+                  Back to login
+                </span>
+              </p>
+            </form>
+          )
+        ) : (
+          <>
+            <form onSubmit={handleEmailAuth}>
+              <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required
+                className="w-full rounded-[10px] outline-none transition-all duration-200 mb-3"
+                style={{ padding: '12px 14px', border: '1px solid var(--divider-light)', backgroundColor: 'var(--surface-bg)', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-primary)' }}
+                onFocus={e => { e.currentTarget.style.borderColor = 'var(--accent-purple)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(108,92,231,0.08)'; }}
+                onBlur={e => { e.currentTarget.style.borderColor = 'var(--divider-light)'; e.currentTarget.style.boxShadow = 'none'; }} />
+              <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6}
+                className="w-full rounded-[10px] outline-none transition-all duration-200 mb-2"
+                style={{ padding: '12px 14px', border: '1px solid var(--divider-light)', backgroundColor: 'var(--surface-bg)', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-primary)' }}
+                onFocus={e => { e.currentTarget.style.borderColor = 'var(--accent-purple)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(108,92,231,0.08)'; }}
+                onBlur={e => { e.currentTarget.style.borderColor = 'var(--divider-light)'; e.currentTarget.style.boxShadow = 'none'; }} />
+              {!isSignUp && (
+                <p className="text-right mb-4">
+                  <span className="cursor-pointer" style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}
+                    onClick={() => { setForgotMode(true); setError(''); }}>
+                    Forgot password?
+                  </span>
+                </p>
+              )}
+              {error && <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#E05252', marginBottom: 12 }}>{error}</p>}
+              <button type="submit" disabled={loading} className="w-full rounded-[12px] transition-all duration-200 active:scale-[0.98]"
+                style={{ padding: '12px 16px', backgroundColor: 'var(--accent-purple)', color: '#FFFFFF', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, border: 'none', cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.7 : 1 }}>
+                {loading ? '...' : isSignUp ? 'Sign up' : 'Log in'}
+              </button>
+            </form>
+            <p className="font-caption" style={{ textAlign: 'center', marginTop: 20, fontSize: 13 }}>
+              {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+              <span className="cursor-pointer" style={{ color: 'var(--accent-purple)', fontWeight: 400 }}
+                onClick={() => { setIsSignUp(!isSignUp); setError(''); }}>
+                {isSignUp ? 'Log in' : 'Sign up'}
+              </span>
             </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-[12px] transition-all duration-200 active:scale-[0.98]"
-            style={{
-              padding: '12px 16px',
-              backgroundColor: 'var(--accent-purple)',
-              color: '#FFFFFF',
-              fontFamily: "'Inter', sans-serif",
-              fontSize: 14,
-              fontWeight: 400,
-              border: 'none',
-              cursor: loading ? 'wait' : 'pointer',
-              opacity: loading ? 0.7 : 1,
-            }}
-          >
-            {loading ? '...' : isSignUp ? 'Sign up' : 'Log in'}
-          </button>
-        </form>
-
-        <p
-          className="font-caption"
-          style={{ textAlign: 'center', marginTop: 20, fontSize: 13 }}
-        >
-          {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
-          <span
-            className="cursor-pointer"
-            style={{ color: 'var(--accent-purple)', fontWeight: 400 }}
-            onClick={() => { setIsSignUp(!isSignUp); setError(''); }}
-          >
-            {isSignUp ? 'Log in' : 'Sign up'}
-          </span>
-        </p>
+          </>
+        )}
       </div>
     </div>
   );
