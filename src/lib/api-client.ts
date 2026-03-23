@@ -24,10 +24,10 @@ const RENDER_ENDPOINTS: Record<string, string> = {
   "validate-idea": "/api/generate-validation",
 };
 
-// Functions where Lovable Cloud should be tried FIRST (better AI)
-const LOVABLE_FIRST = new Set(["decompose-idea"]);
+// Functions where Lovable Cloud is the ONLY option (no backend endpoint exists)
+const LOVABLE_ONLY = new Set<string>([]);
 
-async function tryFetch(baseUrl: string, path: string, body: unknown, timeoutMs = 15000): Promise<Response> {
+async function tryFetch(baseUrl: string, path: string, body: unknown, timeoutMs: number): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
