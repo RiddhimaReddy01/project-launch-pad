@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { MOCK_METHODS, type ValidationMethod } from '@/data/validate-mock';
 
 const EFFORT_COLORS: Record<string, string> = {
-  low: '#2D8B75',
-  medium: '#D4880F',
-  high: '#E05252',
+  low: 'var(--accent-teal)',
+  medium: 'var(--accent-amber)',
+  high: '#8C6060',
 };
 
 const SPEED_LABELS: Record<string, string> = {

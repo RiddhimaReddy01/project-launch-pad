@@ -4,7 +4,7 @@ import type { TeamResult, TeamMember } from '@/lib/setup';
 const TYPE_STYLES: Record<string, { color: string; bg: string }> = {
   FTE: { color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.06)' },
   Contract: { color: 'var(--accent-amber)', bg: 'rgba(212,136,15,0.06)' },
-  Advisory: { color: '#3B82F6', bg: 'rgba(59,130,246,0.06)' },
+  Advisory: { color: 'var(--accent-blue)', bg: 'rgba(59,130,246,0.06)' },
 };
 
 const PRIORITY_STYLES = {

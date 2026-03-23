@@ -3,10 +3,10 @@ import type { TimelineResult, TimelinePhase } from '@/lib/setup';
 import type { SetupContext } from '@/lib/setup';
 
 const PHASE_COLORS: Record<string, { color: string; bg: string }> = {
-  VALIDATION: { color: '#3B82F6', bg: 'rgba(59,130,246,0.06)' },
+  VALIDATION: { color: 'var(--accent-blue)', bg: 'rgba(59,130,246,0.06)' },
   'BUILD MVP': { color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.06)' },
   LAUNCH: { color: 'var(--accent-amber)', bg: 'rgba(212,136,15,0.06)' },
-  SCALE: { color: '#6C5CE7', bg: 'rgba(108,92,231,0.06)' },
+  SCALE: { color: 'var(--accent-primary)', bg: 'rgba(108,92,231,0.06)' },
 };
 
 function formatCurrency(n: number): string {

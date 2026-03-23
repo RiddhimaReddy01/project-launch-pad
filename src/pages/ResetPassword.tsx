@@ -80,7 +80,7 @@ export default function ResetPassword() {
                 required minLength={6}
                 className="w-full rounded-[10px] outline-none mb-4"
                 style={{ padding: '12px 14px', border: '1px solid var(--divider-light)', backgroundColor: 'var(--surface-bg)', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-primary)' }} />
-              {error && <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#E05252', marginBottom: 12 }}>{error}</p>}
+              {error && <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#8C6060', marginBottom: 12 }}>{error}</p>}
               <button type="submit" disabled={loading} className="w-full rounded-[12px]"
                 style={{ padding: '12px 16px', backgroundColor: 'var(--text-primary)', color: '#fff', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, border: 'none', cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.7 : 1 }}>
                 {loading ? 'Updating...' : 'Update password'}

@@ -87,7 +87,7 @@ export default function Competitors({ context, onData, onError, shouldRun = true
 
   const threatVal = { high: 3, medium: 2, low: 1 };
   const scatterData = data.competitors.map(c => ({ x: c.rating || 3, y: threatVal[c.threat_level], z: 200, name: c.name, threat: c.threat_level }));
-  const scatterColors = { high: '#EF4444', medium: '#D4880F', low: '#2D8B75' };
+  const scatterColors = { high: '#8C6B6B', medium: 'var(--accent-amber)', low: 'var(--accent-teal)' };
 
   return (
     <div>

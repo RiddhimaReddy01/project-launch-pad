@@ -90,7 +90,7 @@ export default function ScoreMethodology({ insight }: { insight: DiscoverInsight
                   fontFamily: "'Inter', sans-serif",
                   fontSize: 13,
                   fontWeight: 400,
-                  color: pct >= 70 ? 'var(--accent-teal)' : pct >= 40 ? 'var(--accent-amber)' : '#EF4444',
+                  color: pct >= 70 ? 'var(--accent-teal)' : pct >= 40 ? 'var(--accent-amber)' : '#8C6B6B',
                 }}>
                   {pct}%
                 </span>
@@ -115,7 +115,7 @@ export default function ScoreMethodology({ insight }: { insight: DiscoverInsight
           fontFamily: "'Inter', sans-serif",
           fontSize: 16,
           fontWeight: 400,
-          color: composite >= 7 ? 'var(--accent-teal)' : composite >= 4 ? 'var(--accent-amber)' : '#EF4444',
+          color: composite >= 7 ? 'var(--accent-teal)' : composite >= 4 ? 'var(--accent-amber)' : '#8C6B6B',
         }}>
           {composite.toFixed(1)}/10
         </span>

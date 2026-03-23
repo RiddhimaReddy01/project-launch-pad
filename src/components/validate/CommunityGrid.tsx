@@ -68,7 +68,7 @@ export default function CommunityGrid() {
               onClick={(e) => toggleUsed(ch.id, e)}
               style={{
                 fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400,
-                color: isUsed ? '#2D8B75' : 'var(--text-muted)',
+                color: isUsed ? 'var(--accent-teal)' : 'var(--text-muted)',
                 background: 'none', border: 'none', cursor: 'pointer',
                 transition: 'color 200ms ease-out',
               }}

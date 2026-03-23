@@ -12,7 +12,7 @@ function OpportunityGauge({ score }: { score: number }) {
   const color =
     score >= 70 ? 'var(--accent-teal)' :
     score >= 40 ? 'var(--accent-amber)' :
-    '#EF4444';
+    '#8C6B6B';
 
   return (
     <div className="flex flex-col items-center">

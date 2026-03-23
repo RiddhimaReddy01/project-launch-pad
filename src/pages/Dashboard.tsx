@@ -119,7 +119,7 @@ export default function Dashboard() {
         </span>
         <div className="flex items-center" style={{ gap: 16 }}>
           <span className="cursor-pointer transition-colors duration-200" style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }} onClick={() => navigate('/')}>New idea</span>
-          <span className="cursor-pointer" style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: '#E05252' }} onClick={signOut}>Sign out</span>
+          <span className="cursor-pointer" style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: '#8C6060' }} onClick={signOut}>Sign out</span>
         </div>
       </header>
 
@@ -206,9 +206,9 @@ function IdeasTab({ ideas, stepColors, onResume, onDelete, onNavigate }: {
 // ═══ FINDINGS TAB ═══
 function FindingsTab({ findings }: { findings: { text?: string; section?: string; idea_text: string; idea_id: string }[] }) {
   const sectionColors: Record<string, string> = {
-    opportunity: '#3B82F6', customers: '#2D8B75', competitors: '#D4880F',
-    rootcause: '#6C5CE7', costs: '#E05252', risk: '#E05252',
-    location: '#3B82F6', moat: '#2D8B75',
+    opportunity: 'var(--accent-blue)', customers: 'var(--accent-teal)', competitors: 'var(--accent-amber)',
+    rootcause: 'var(--accent-primary)', costs: '#8C6060', risk: '#8C6060',
+    location: 'var(--accent-blue)', moat: 'var(--accent-teal)',
   };
 
   if (findings.length === 0) return (
@@ -306,7 +306,7 @@ function ExperimentsTab({ experiments, statusStyles, onStatusChange, onDelete }:
                         <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>
                           {metMet}/{metCount} targets met
                         </span>
-                        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: metMet === metCount && metCount > 0 ? '#2D8B75' : 'var(--text-muted)' }}>
+                        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: metMet === metCount && metCount > 0 ? 'var(--accent-teal)' : 'var(--text-muted)' }}>
                           {metCount > 0 ? Math.round((metMet / metCount) * 100) : 0}%
                         </span>
                       </div>
@@ -315,7 +315,7 @@ function ExperimentsTab({ experiments, statusStyles, onStatusChange, onDelete }:
                         <div style={{
                           height: '100%', borderRadius: 2, transition: 'width 300ms ease-out',
                           width: `${metCount > 0 ? (metMet / metCount) * 100 : 0}%`,
-                          backgroundColor: metMet === metCount && metCount > 0 ? '#2D8B75' : metMet > 0 ? '#D4880F' : 'var(--divider-light)',
+                          backgroundColor: metMet === metCount && metCount > 0 ? 'var(--accent-teal)' : metMet > 0 ? 'var(--accent-amber)' : 'var(--divider-light)',
                         }} />
                       </div>
                       {/* Individual metrics */}
@@ -327,7 +327,7 @@ function ExperimentsTab({ experiments, statusStyles, onStatusChange, onDelete }:
                             <span key={key} className="rounded-[6px]" style={{
                               padding: '3px 8px', fontSize: 11, fontFamily: "'Inter', sans-serif",
                               backgroundColor: met ? 'rgba(45,139,117,0.06)' : 'var(--surface-input)',
-                              color: met ? '#2D8B75' : 'var(--text-secondary)',
+                              color: met ? 'var(--accent-teal)' : 'var(--text-secondary)',
                             }}>
                               {key}: {val.actual}/{val.target_label || val.target} {val.unit}
                             </span>

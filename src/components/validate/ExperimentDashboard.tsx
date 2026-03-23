@@ -6,7 +6,7 @@ type Verdict = 'awaiting' | 'go' | 'pivot' | 'kill';
 function MetricCard({ metric, onChange }: { metric: MetricTarget & { actual: number }; onChange: (val: number) => void }) {
   const [hovered, setHovered] = useState(false);
   const pct = Math.min((metric.actual / metric.target) * 100, 100);
-  const barColor = pct >= 100 ? '#2D8B75' : pct >= 50 ? '#D4880F' : 'var(--divider-light)';
+  const barColor = pct >= 100 ? 'var(--accent-teal)' : pct >= 50 ? 'var(--accent-amber)' : 'var(--divider-light)';
 
   return (
     <div
@@ -67,9 +67,9 @@ function DerivedSignals({ metrics }: { metrics: (MetricTarget & { actual: number
   const priceAcceptance = (price?.actual || 0) >= 10 ? 'Strong' : (price?.actual || 0) >= 7 ? 'Moderate' : 'Weak';
 
   const signals = [
-    { label: 'Demand strength', value: demandStrength, color: demandStrength === 'High' ? '#2D8B75' : demandStrength === 'Medium' ? '#D4880F' : '#E05252' },
+    { label: 'Demand strength', value: demandStrength, color: demandStrength === 'High' ? 'var(--accent-teal)' : demandStrength === 'Medium' ? 'var(--accent-amber)' : '#8C6060' },
     { label: 'Est. conversions', value: Math.round(conversionRate).toString(), color: 'var(--text-primary)' },
-    { label: 'Price acceptance', value: priceAcceptance, color: priceAcceptance === 'Strong' ? '#2D8B75' : priceAcceptance === 'Moderate' ? '#D4880F' : '#E05252' },
+    { label: 'Price acceptance', value: priceAcceptance, color: priceAcceptance === 'Strong' ? 'var(--accent-teal)' : priceAcceptance === 'Moderate' ? 'var(--accent-amber)' : '#8C6060' },
   ];
 
   return (
@@ -91,9 +91,9 @@ function DerivedSignals({ metrics }: { metrics: (MetricTarget & { actual: number
 function VerdictCard({ verdict, reasoning }: { verdict: Verdict; reasoning: string }) {
   const config: Record<Verdict, { label: string; color: string; bg: string }> = {
     awaiting: { label: 'Awaiting data', color: 'var(--text-muted)', bg: 'var(--surface-bg)' },
-    go: { label: 'GO', color: '#2D8B75', bg: 'rgba(45,139,117,0.06)' },
-    pivot: { label: 'PIVOT', color: '#D4880F', bg: 'rgba(212,136,15,0.06)' },
-    kill: { label: 'NOT WORTH IT', color: '#E05252', bg: 'rgba(224,82,82,0.06)' },
+    go: { label: 'GO', color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.06)' },
+    pivot: { label: 'PIVOT', color: 'var(--accent-amber)', bg: 'rgba(212,136,15,0.06)' },
+    kill: { label: 'NOT WORTH IT', color: '#8C6060', bg: 'rgba(224,82,82,0.06)' },
   };
   const c = config[verdict];
 
