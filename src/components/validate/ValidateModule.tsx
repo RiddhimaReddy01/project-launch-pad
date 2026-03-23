@@ -685,9 +685,6 @@ function WhatsAppSection({ data, onChange }: { data: ValidateResult['whatsapp'];
             style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75, whiteSpace: 'pre-line' }} />
         </div>
       </div>
-      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginTop: 12 }}>
-        Replace [SURVEY_LINK] with your actual survey URL before sharing.
-      </p>
     </div>
   );
 }
