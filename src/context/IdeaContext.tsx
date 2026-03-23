@@ -27,7 +27,7 @@ interface IdeaState {
   analyzeData: Record<string, any>;
   setAnalyzeData: (data: Record<string, any>) => void;
   setupData: Record<string, any>;
-  setSetupData: (data: Record<string, any>) => void;
+  setSetupData: React.Dispatch<React.SetStateAction<Record<string, any>>>;
 }
 
 const IdeaContext = createContext<IdeaState | null>(null);
