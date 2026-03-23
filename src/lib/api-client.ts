@@ -10,8 +10,10 @@
 
 import { supabase } from "@/integrations/supabase/client";
 
-const PRIMARY_API = "https://launchlens.com";
-const BACKUP_API = "https://launch-lean-ed28c2e7.onrender.com";
+const PRIMARY_API = "https://launch-lean-ed28c2e7.onrender.com";
+const BACKUP_API = "https://steven-impervious-lorretta.ngrok-free.dev";
+const PRIMARY_TIMEOUT = 5000;
+const BACKUP_TIMEOUT = 90000;
 
 // Map edge function names to Render API paths
 const RENDER_ENDPOINTS: Record<string, string> = {
@@ -22,10 +24,10 @@ const RENDER_ENDPOINTS: Record<string, string> = {
   "validate-idea": "/api/generate-validation",
 };
 
-// Functions where Lovable Cloud should be tried FIRST (better AI)
-const LOVABLE_FIRST = new Set(["decompose-idea"]);
+// Functions where Lovable Cloud is the ONLY option (no backend endpoint exists)
+const LOVABLE_ONLY = new Set<string>([]);
 
-async function tryFetch(baseUrl: string, path: string, body: unknown, timeoutMs = 15000): Promise<Response> {
+async function tryFetch(baseUrl: string, path: string, body: unknown, timeoutMs: number): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -225,12 +227,12 @@ async function tryLovableCloud<T>(functionName: string, body: unknown): Promise<
   return data as T;
 }
 
-async function tryExternalApi<T>(baseUrl: string, functionName: string, body: unknown): Promise<T> {
+async function tryExternalApi<T>(baseUrl: string, functionName: string, body: unknown, timeoutMs: number): Promise<T> {
   const path = RENDER_ENDPOINTS[functionName];
   if (!path) throw new Error(`No endpoint for ${functionName}`);
 
   const renderBody = transformRequestForRender(functionName, body);
-  const resp = await tryFetch(baseUrl, path, renderBody);
+  const resp = await tryFetch(baseUrl, path, renderBody, timeoutMs);
   const rawData = await resp.json();
   if (rawData?.error) throw new Error(rawData.error);
   if (rawData?.detail) throw new Error(JSON.stringify(rawData.detail));
@@ -240,40 +242,32 @@ async function tryExternalApi<T>(baseUrl: string, functionName: string, body: un
 
 /**
  * Invoke an API function with 3-tier fallback:
- *   1. PRIMARY (launchlens.com)
- *   2. BACKUP (Render)
- *   3. LOVABLE Cloud edge functions
- *   For decompose-idea: Lovable Cloud first (better AI), then Primary, then Backup.
+ *   1. PRIMARY: Render (5s timeout)
+ *   2. BACKUP:  Ngrok tunnel (90s timeout)
+ *   3. LOVABLE Cloud edge functions (features not on backend)
  */
 export async function invokeApi<T = unknown>(functionName: string, body: unknown): Promise<T> {
-  // For decompose, Lovable Cloud has better AI — try it first
-  if (LOVABLE_FIRST.has(functionName)) {
-    try {
-      return await tryLovableCloud<T>(functionName, body);
-    } catch (e) {
-      console.log(`[API] Lovable Cloud failed for ${functionName}:`, (e as Error).message);
-    }
-  }
-
-  // Try Primary API (launchlens.com)
-  try {
-    return await tryExternalApi<T>(PRIMARY_API, functionName, body);
-  } catch (e) {
-    console.log(`[API] Primary failed for ${functionName}:`, (e as Error).message);
-  }
-
-  // Try Backup API (Render)
-  try {
-    return await tryExternalApi<T>(BACKUP_API, functionName, body);
-  } catch (e) {
-    console.log(`[API] Backup failed for ${functionName}:`, (e as Error).message);
-  }
-
-  // Final fallback: Lovable Cloud
-  if (!LOVABLE_FIRST.has(functionName)) {
-    console.log(`[API] Falling back to Lovable Cloud for ${functionName}`);
+  // If no backend endpoint exists, go straight to Lovable Cloud
+  if (LOVABLE_ONLY.has(functionName) || !RENDER_ENDPOINTS[functionName]) {
+    console.log(`[API] Using Lovable Cloud for ${functionName} (no backend endpoint)`);
     return await tryLovableCloud<T>(functionName, body);
   }
 
-  throw new Error(`All API backends failed for ${functionName}`);
+  // Try Primary API (Render, 5s timeout)
+  try {
+    return await tryExternalApi<T>(PRIMARY_API, functionName, body, PRIMARY_TIMEOUT);
+  } catch (e) {
+    console.log(`[API] Primary (Render) failed for ${functionName}:`, (e as Error).message);
+  }
+
+  // Try Backup API (Ngrok, 90s timeout)
+  try {
+    return await tryExternalApi<T>(BACKUP_API, functionName, body, BACKUP_TIMEOUT);
+  } catch (e) {
+    console.log(`[API] Backup (Ngrok) failed for ${functionName}:`, (e as Error).message);
+  }
+
+  // Final fallback: Lovable Cloud
+  console.log(`[API] Falling back to Lovable Cloud for ${functionName}`);
+  return await tryLovableCloud<T>(functionName, body);
 }
