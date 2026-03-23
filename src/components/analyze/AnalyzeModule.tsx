@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { AnalyzeContext, SectionKey, OpportunityData, CustomersData, CompetitorsData, RootCauseData, CostsData, RiskData, LocationData, MoatData, SectionData } from '@/lib/analyze';
+import { analyzeSectionsParallel } from '@/lib/analyze';
 import SectionSkeleton from './SectionSkeleton';
 import ModuleRail, { type ModuleInfo } from './ModuleRail';
 import InputComposer, { type InputSelection, DEFAULT_INPUTS } from './InputComposer';
