@@ -221,23 +221,98 @@ export default function AnalyzeModule() {
   const activeSec = sections[activeModule];
   const shouldRun = activeSec.status === 'idle' || activeSec.status === 'loading';
 
-  // Key findings
-  const keyFindings: string[] = [];
-  const opp = sections.opportunity.data as OpportunityData | null;
-  if (opp) {
-    keyFindings.push(`SOM: ${opp.som.formatted} (${opp.som.confidence} confidence)`);
-    keyFindings.push(`TAM: ${opp.tam.formatted}`);
-  }
-  const cust = sections.customers.data as CustomersData | null;
-  if (cust?.segments) cust.segments.forEach(s => keyFindings.push(`Segment: ${s.name} (Pain ${s.pain_intensity}/10)`));
-  const comp = sections.competitors.data as CompetitorsData | null;
-  if (comp?.unfilled_gaps) comp.unfilled_gaps.forEach(g => keyFindings.push(`Gap: ${g}`));
-  const rc = sections.rootcause.data as RootCauseData | null;
-  if (rc?.root_causes) rc.root_causes.filter(c => c.difficulty === 'easy').forEach(c => keyFindings.push(`Quick win: ${c.title}`));
-  const moat = sections.moat.data as MoatData | null;
-  if (moat) keyFindings.push(`Moat score: ${moat.overall_score}/10`);
-  const risk = sections.risk.data as RiskData | null;
-  if (risk) keyFindings.push(`Risk: ${risk.overall_risk_level} — ${risk.summary}`);
+  // Section-specific key findings
+  const [savingFinding, setSavingFinding] = useState<string | null>(null);
+
+  const getSectionFindings = (sectionKey: SectionKey): { id: string; text: string; section: string }[] => {
+    const findings: { id: string; text: string; section: string }[] = [];
+    const sec = sections[sectionKey];
+    if (!sec.data) return findings;
+
+    switch (sectionKey) {
+      case 'opportunity': {
+        const d = sec.data as OpportunityData;
+        findings.push({ id: 'opp-som', text: `SOM: ${d.som.formatted} (${d.som.confidence} confidence)`, section: 'opportunity' });
+        findings.push({ id: 'opp-tam', text: `TAM: ${d.tam.formatted}`, section: 'opportunity' });
+        findings.push({ id: 'opp-sam', text: `SAM: ${d.sam.formatted}`, section: 'opportunity' });
+        if (d.funnel.repeat_customers) findings.push({ id: 'opp-repeat', text: `Estimated repeat customers: ${d.funnel.repeat_customers.toLocaleString()}`, section: 'opportunity' });
+        break;
+      }
+      case 'customers': {
+        const d = sec.data as CustomersData;
+        d.segments?.forEach((s, i) => findings.push({ id: `cust-${i}`, text: `${s.name} — Pain ${s.pain_intensity}/10, ~${s.estimated_size.toLocaleString()} people`, section: 'customers' }));
+        break;
+      }
+      case 'competitors': {
+        const d = sec.data as CompetitorsData;
+        d.unfilled_gaps?.forEach((g, i) => findings.push({ id: `gap-${i}`, text: g, section: 'competitors' }));
+        d.competitors?.filter(c => c.threat_level === 'high').forEach((c, i) => findings.push({ id: `threat-${i}`, text: `High threat: ${c.name} — ${c.key_gap}`, section: 'competitors' }));
+        break;
+      }
+      case 'rootcause': {
+        const d = sec.data as RootCauseData;
+        d.root_causes?.forEach((c, i) => findings.push({ id: `rc-${i}`, text: `${c.title}: ${c.your_move.slice(0, 120)}`, section: 'rootcause' }));
+        break;
+      }
+      case 'costs': {
+        const d = sec.data as CostsData;
+        findings.push({ id: 'cost-range', text: `Launch cost: $${(d.total_range.min / 1000).toFixed(0)}K – $${(d.total_range.max / 1000).toFixed(0)}K`, section: 'costs' });
+        if (d.note) findings.push({ id: 'cost-driver', text: `Key driver: ${d.note}`, section: 'costs' });
+        break;
+      }
+      case 'risk': {
+        const d = sec.data as RiskData;
+        findings.push({ id: 'risk-overall', text: `Overall risk: ${d.overall_risk_level} — ${d.summary}`, section: 'risk' });
+        d.risks?.filter(r => r.likelihood === 'high' || r.impact === 'high').forEach((r, i) => findings.push({ id: `risk-${i}`, text: `${r.risk}: ${r.mitigation.slice(0, 100)}`, section: 'risk' }));
+        break;
+      }
+      case 'location': {
+        const d = sec.data as LocationData;
+        findings.push({ id: 'loc-score', text: `Location score: ${d.score}/10 — ${d.verdict}`, section: 'location' });
+        break;
+      }
+      case 'moat': {
+        const d = sec.data as MoatData;
+        findings.push({ id: 'moat-score', text: `Moat score: ${d.overall_score}/10`, section: 'moat' });
+        findings.push({ id: 'moat-strong', text: `Strongest: ${d.strongest}`, section: 'moat' });
+        findings.push({ id: 'moat-weak', text: `Weakest: ${d.weakest}`, section: 'moat' });
+        break;
+      }
+    }
+    return findings;
+  };
+
+  const activeFindings = getSectionFindings(activeModule);
+
+  const handleSaveFinding = async (finding: { id: string; text: string; section: string }) => {
+    if (!user) { toast.error('Sign in to save findings'); return; }
+    setSavingFinding(finding.id);
+    try {
+      const next = new Set(selectedFindings);
+      if (next.has(finding.text)) { next.delete(finding.text); } else { next.add(finding.text); }
+      setSelectedFindings(next);
+
+      const allFindings = Array.from(next).map(text => {
+        const matchSection = activeFindings.find(af => af.text === text)?.section || activeModule;
+        return { text, section: matchSection };
+      });
+
+      const sectionData: any = {};
+      Object.entries(sections).forEach(([k, v]) => { if (v.data) sectionData[k] = v.data; });
+      const payload = { sections: sectionData, selected_findings: allFindings, saved_at: new Date().toISOString() };
+
+      const { data: existing } = await supabase
+        .from('saved_ideas').select('id').eq('user_id', user.id).eq('idea_text', idea).maybeSingle();
+
+      if (existing) {
+        await supabase.from('saved_ideas').update({ analysis_data: payload as any }).eq('id', existing.id);
+      } else {
+        await supabase.from('saved_ideas').insert({ user_id: user.id, idea_text: idea, analysis_data: payload as any, current_step: 'analyze' });
+      }
+      toast.success(next.has(finding.text) ? 'Finding saved' : 'Finding removed');
+    } catch { toast.error('Failed to save'); }
+    finally { setSavingFinding(null); }
+  };
 
   if (!decomposeResult) return (
     <div className="flex items-center justify-center" style={{ height: '60vh' }}>
