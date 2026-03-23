@@ -17,7 +17,7 @@ const STEPS: { key: Step; label: string }[] = [
   { key: 'validate', label: 'Validate' },
 ];
 
-function StepperDot({ step, index, currentIndex, onNavigate }: { step: typeof STEPS[number]; index: number; currentIndex: number; onNavigate: (step: Step) => void }) {
+function StepperDot({ step, index, currentIndex, onNavigate, locked }: { step: typeof STEPS[number]; index: number; currentIndex: number; onNavigate: (step: Step) => void; locked: boolean }) {
   const isActive = index === currentIndex;
   const isCompleted = index < currentIndex;
   const isFuture = index > currentIndex;
@@ -27,8 +27,13 @@ function StepperDot({ step, index, currentIndex, onNavigate }: { step: typeof ST
   return (
     <div
       className="flex flex-col items-center"
-      style={{ opacity: isFuture ? 0.55 : 1, transition: 'opacity 300ms ease-out', cursor: 'pointer' }}
-      onClick={() => onNavigate(step.key)}
+      style={{
+        opacity: locked ? 0.35 : isFuture ? 0.55 : 1,
+        transition: 'opacity 300ms ease-out',
+        cursor: locked ? 'not-allowed' : 'pointer',
+      }}
+      onClick={() => !locked && onNavigate(step.key)}
+      title={locked ? 'Complete Discover first' : ''}
     >
       <div
         style={{
@@ -53,13 +58,24 @@ function StepperDot({ step, index, currentIndex, onNavigate }: { step: typeof ST
 }
 
 export default function Research() {
-  const { idea, currentStep, setCurrentStep } = useIdea();
+  const { idea, currentStep, setCurrentStep, discoverResult } = useIdea();
   const { user } = useAuth();
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
 
   const currentIndex = STEPS.findIndex((s) => s.key === currentStep);
+
+  // Tabs after Discover require discoverResult
+  const isTabLocked = (step: Step): boolean => {
+    if (step === 'understand' || step === 'discover') return false;
+    return !discoverResult;
+  };
+
+  const handleNavigate = (step: Step) => {
+    if (isTabLocked(step)) return;
+    setCurrentStep(step);
+  };
 
   useEffect(() => {
     if (!idea && currentStep !== 'understand') navigate('/', { replace: true });
@@ -114,7 +130,7 @@ export default function Research() {
         </div>
       </header>
 
-      {/* Context strip — show idea when not on understand tab */}
+      {/* Context strip */}
       {currentStep !== 'understand' && idea && (
         <div
           className="sticky z-40"
@@ -139,7 +155,7 @@ export default function Research() {
         }} />
         <div className="relative flex items-start justify-between">
           {STEPS.map((step, i) => (
-            <StepperDot key={step.key} step={step} index={i} currentIndex={currentIndex} onNavigate={setCurrentStep} />
+            <StepperDot key={step.key} step={step} index={i} currentIndex={currentIndex} onNavigate={handleNavigate} locked={isTabLocked(step.key)} />
           ))}
         </div>
       </div>
