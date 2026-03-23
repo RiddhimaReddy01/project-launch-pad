@@ -57,6 +57,7 @@ export default function Auth() {
     } finally {
       setLoading(false);
     }
+  };
 
   const handleGoogle = async () => {
     setError('');
