@@ -56,7 +56,7 @@ export default function ValidationSummary({ selectedMethods }: Props) {
               cursor: 'pointer', transition: 'all 200ms ease-out',
             }}
           >
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--accent-purple)', marginBottom: 4 }}>
+            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--accent-primary)', marginBottom: 4 }}>
               {item.label}
             </p>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}>

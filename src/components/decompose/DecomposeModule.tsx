@@ -47,7 +47,7 @@ export default function DecomposeModule() {
             width: 18,
             height: 18,
             border: '2px solid var(--divider-light)',
-            borderTopColor: 'var(--accent-purple)',
+            borderTopColor: 'var(--accent-primary)',
             animation: 'spin 0.8s linear infinite',
           }}
         />
@@ -72,7 +72,7 @@ export default function DecomposeModule() {
             fontFamily: "'Inter', sans-serif",
             fontSize: 13,
             fontWeight: 400,
-            backgroundColor: 'var(--accent-purple)',
+            backgroundColor: 'var(--accent-primary)',
             color: '#fff',
             border: 'none',
             cursor: 'pointer',

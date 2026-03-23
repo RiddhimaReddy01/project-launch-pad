@@ -89,7 +89,7 @@ function NoteInput({ onSubmit, onCancel }: NoteInputProps) {
           onClick={() => { if (text.trim()) onSubmit(text.trim()); }}
           disabled={!text.trim()}
           className="rounded-[8px] px-3 py-1 disabled:opacity-40"
-          style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--accent-purple)', color: '#fff', border: 'none', cursor: 'pointer' }}
+          style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
         >
           Save note
         </button>
@@ -238,7 +238,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
 
             {/* Expand hint */}
             <div className="mt-3">
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--accent-purple)' }}>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--accent-primary)' }}>
                 {expanded ? 'Hide evidence' : `${insight.sources.length} sources — click to expand`}
               </span>
             </div>
@@ -261,7 +261,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
               style={{
                 fontSize: 10, fontFamily: "'Inter', sans-serif", fontWeight: 300,
                 backgroundColor: showMethodology ? 'rgba(108,92,231,0.08)' : 'var(--surface-input)',
-                color: showMethodology ? 'var(--accent-purple)' : 'var(--text-muted)',
+                color: showMethodology ? 'var(--accent-primary)' : 'var(--text-muted)',
                 border: 'none', cursor: 'pointer',
               }}
             >
@@ -284,7 +284,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
                     <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)' }}>{meta.label}</span>
                     <a href={source.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
                       className="transition-colors duration-150"
-                      style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'var(--accent-purple)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
+                      style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'var(--accent-primary)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
                       {source.author}
                     </a>
                     {source.upvotes != null && (
@@ -314,7 +314,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
             <button
               onClick={(e) => { e.stopPropagation(); setSelectedInsight(insight.title); setCurrentStep('analyze'); }}
               className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
-              style={{ fontSize: 13, fontFamily: "'Inter', sans-serif", fontWeight: 400, backgroundColor: 'var(--accent-purple)', color: '#fff', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 13, fontFamily: "'Inter', sans-serif", fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
             >
               Deep dive this opportunity
             </button>

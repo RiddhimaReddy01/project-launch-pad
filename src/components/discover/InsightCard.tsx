@@ -3,7 +3,7 @@ import type { Insight, Source } from '@/data/discover-mock';
 import { useIdea } from '@/context/IdeaContext';
 
 const TYPE_CONFIG: Record<Insight['type'], { label: string; color: string; bg: string }> = {
-  pain: { label: 'PAIN POINT', color: 'var(--accent-purple)', bg: 'rgba(108,92,231,0.06)' },
+  pain: { label: 'PAIN POINT', color: 'var(--accent-primary)', bg: 'rgba(108,92,231,0.06)' },
   want: { label: 'UNMET WANT', color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.06)' },
   gap: { label: 'MARKET GAP', color: 'var(--accent-blue)', bg: 'rgba(59,130,246,0.06)' },
 };
@@ -148,7 +148,7 @@ export default function InsightCard({ insight, sources, onSeeMentions }: Insight
                       fontFamily: "'Inter', sans-serif",
                       fontSize: 12,
                       fontWeight: 400,
-                      color: 'var(--accent-purple)',
+                      color: 'var(--accent-primary)',
                     }}
                   >
                     {ev.sourceName}
@@ -211,7 +211,7 @@ export default function InsightCard({ insight, sources, onSeeMentions }: Insight
                 fontSize: 13,
                 fontFamily: "'Inter', sans-serif",
                 fontWeight: 400,
-                backgroundColor: 'var(--accent-purple)',
+                backgroundColor: 'var(--accent-primary)',
                 color: '#FFFFFF',
               }}
             >

@@ -103,7 +103,7 @@ function ClickableSection({
                 fontSize: 13,
                 fontWeight: 300,
                 lineHeight: 1.5,
-                color: isActive ? 'var(--accent-purple)' : 'var(--text-secondary)',
+                color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
               }}>
                 {item}
               </p>

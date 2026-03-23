@@ -83,7 +83,7 @@ export default function MentionsPanel({ insight, onClose }: MentionsPanelProps) 
                       fontFamily: "'Inter', sans-serif",
                       fontSize: 12,
                       fontWeight: 400,
-                      color: 'var(--accent-purple)',
+                      color: 'var(--accent-primary)',
                     }}
                   >
                     {ev.sourceName} ↗

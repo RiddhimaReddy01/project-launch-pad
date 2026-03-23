@@ -57,7 +57,7 @@ export default function Hero() {
             color: 'var(--text-primary)',
           }}
           onFocus={(e) => {
-            e.currentTarget.style.borderColor = 'var(--accent-purple)';
+            e.currentTarget.style.borderColor = 'var(--accent-primary)';
             e.currentTarget.style.boxShadow = '0 0 0 3px rgba(108,92,231,0.08)';
           }}
           onBlur={(e) => {
@@ -74,7 +74,7 @@ export default function Hero() {
                 <span
                   className="cursor-pointer transition-colors duration-200"
                   style={{ color: '#6B6B6B' }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-purple)')}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-primary)')}
                   onMouseLeave={(e) => (e.currentTarget.style.color = '#6B6B6B')}
                   onClick={() => setIdea(s.value)}
                 >
@@ -88,7 +88,7 @@ export default function Hero() {
           <button
             className="font-button shrink-0 transition-all duration-200"
             style={{
-              backgroundColor: 'var(--accent-purple)',
+              backgroundColor: 'var(--accent-primary)',
               color: '#FFFFFF',
               fontSize: 14,
               borderRadius: 12,

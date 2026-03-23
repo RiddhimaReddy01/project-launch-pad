@@ -46,7 +46,7 @@ export default function DiscoverLoading() {
           className="rounded-full h-full transition-all duration-300 ease-out"
           style={{
             width: `${progress}%`,
-            backgroundColor: 'var(--accent-purple)',
+            backgroundColor: 'var(--accent-primary)',
           }}
         />
       </div>
@@ -81,7 +81,7 @@ export default function DiscoverLoading() {
                   style={{
                     width: 6,
                     height: 6,
-                    backgroundColor: 'var(--accent-purple)',
+                    backgroundColor: 'var(--accent-primary)',
                     animation: 'pulse 1.2s ease-in-out infinite',
                   }}
                 />

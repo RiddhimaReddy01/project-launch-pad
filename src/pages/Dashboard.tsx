@@ -134,9 +134,9 @@ export default function Dashboard() {
             <button key={tab} onClick={() => setActiveTab(tab)} style={{
               padding: '10px 20px', fontFamily: "'Inter', sans-serif", fontSize: 13,
               fontWeight: activeTab === tab ? 400 : 300,
-              color: activeTab === tab ? 'var(--accent-purple)' : 'var(--text-muted)',
+              color: activeTab === tab ? 'var(--accent-primary)' : 'var(--text-muted)',
               backgroundColor: 'transparent', border: 'none',
-              borderBottom: activeTab === tab ? '2px solid var(--accent-purple)' : '2px solid transparent',
+              borderBottom: activeTab === tab ? '2px solid var(--accent-primary)' : '2px solid transparent',
               cursor: 'pointer', marginBottom: -1, textTransform: 'capitalize',
             }}>
               {tab === 'ideas' ? `Ideas (${ideas.length})` : tab === 'findings' ? `Findings (${allFindings.length})` : `Experiments (${experiments.length})`}
@@ -168,7 +168,7 @@ function IdeasTab({ ideas, stepColors, onResume, onDelete, onNavigate }: {
       <p style={{ fontFamily: "'Instrument Serif', serif", fontSize: 22, color: 'var(--text-primary)', marginBottom: 8 }}>No saved ideas yet</p>
       <p className="font-caption" style={{ marginBottom: 24 }}>Research an idea and save it to see it here.</p>
       <button onClick={onNavigate} className="rounded-[12px] transition-all duration-200 active:scale-[0.97]"
-        style={{ padding: '10px 24px', backgroundColor: 'var(--accent-purple)', color: '#fff', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, border: 'none', cursor: 'pointer' }}>
+        style={{ padding: '10px 24px', backgroundColor: 'var(--accent-primary)', color: '#fff', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, border: 'none', cursor: 'pointer' }}>
         Start researching
       </button>
     </div>

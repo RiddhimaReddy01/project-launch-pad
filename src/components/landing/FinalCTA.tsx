@@ -11,7 +11,7 @@ export default function FinalCTA() {
         className="font-button transition-all duration-200"
         style={{
           marginTop: 28,
-          backgroundColor: 'var(--accent-purple)',
+          backgroundColor: 'var(--accent-primary)',
           color: '#FFFFFF',
           fontSize: 15,
           borderRadius: 14,
