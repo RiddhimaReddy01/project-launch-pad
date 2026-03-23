@@ -616,9 +616,6 @@ function LandingSection({ data, onChange }: { data: ValidateResult['landing_page
           </div>
         </div>
       </div>
-      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginTop: 12, textAlign: 'center' }}>
-        Click any text to edit inline. Use Carrd, Framer, or Typedream to deploy.
-      </p>
     </div>
   );
 }
