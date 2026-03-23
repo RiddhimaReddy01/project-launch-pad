@@ -156,6 +156,30 @@ export type Database = {
           },
         ]
       }
+      result_cache: {
+        Row: {
+          cache_key: string
+          created_at: string
+          function_name: string
+          id: string
+          result_data: Json
+        }
+        Insert: {
+          cache_key: string
+          created_at?: string
+          function_name: string
+          id?: string
+          result_data?: Json
+        }
+        Update: {
+          cache_key?: string
+          created_at?: string
+          function_name?: string
+          id?: string
+          result_data?: Json
+        }
+        Relationships: []
+      }
       saved_ideas: {
         Row: {
           analysis_data: Json | null
