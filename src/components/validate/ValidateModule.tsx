@@ -522,10 +522,10 @@ export default function ValidateModule() {
       <div style={{ minHeight: 300, maxWidth: 800 }}>
         {result && (
           <>
-            {activeTab === 'landing' && <LandingSection data={result.landing_page} onChange={(lp) => updateResult({ landing_page: lp })} />}
-            {activeTab === 'survey' && <SurveySection data={result.survey} onChange={(s) => updateResult({ survey: s })} />}
-            {activeTab === 'whatsapp' && <WhatsAppSection data={result.whatsapp} onChange={(w) => updateResult({ whatsapp: w })} />}
-            {activeTab === 'communities' && <CommunitiesSection data={result.communities} />}
+            {activeTab === 'landing' && result.landing_page && <LandingSection data={result.landing_page} onChange={(lp) => updateResult({ landing_page: lp })} />}
+            {activeTab === 'survey' && result.survey && <SurveySection data={result.survey} onChange={(s) => updateResult({ survey: s })} />}
+            {activeTab === 'whatsapp' && result.whatsapp && <WhatsAppSection data={result.whatsapp} onChange={(w) => updateResult({ whatsapp: w })} />}
+            {activeTab === 'communities' && result.communities && <CommunitiesSection data={result.communities} />}
             {activeTab === 'scorecard' && <ScorecardSection data={result.scorecard} onUpdate={updateScorecard} analyzeData={analyzeData} setupData={setupData} />}
           </>
         )}
