@@ -48,9 +48,9 @@ const ALL_TABS: { key: TabKey; label: string; mono: string; subtitle: string; ou
 ];
 
 const PLATFORM_COLORS: Record<string, string> = {
-  Reddit: '#FF4500', Facebook: '#1877F2', Discord: '#5865F2', LinkedIn: '#0A66C2',
-  Nextdoor: '#00B246', WhatsApp: '#25D366', Slack: '#4A154B', Twitter: '#1DA1F2',
-  Instagram: '#E4405F', TikTok: '#000000',
+  Reddit: '#8C6B6B', Facebook: '#7A8FA0', Discord: '#7A8FA0', LinkedIn: '#7A8FA0',
+  Nextdoor: '#5B8C7E', WhatsApp: '#5B8C7E', Slack: '#5A5A5A', Twitter: '#7A8FA0',
+  Instagram: '#8C6B6B', TikTok: '#5A5A5A',
 };
 
 // ═══ UTILITIES ═══
