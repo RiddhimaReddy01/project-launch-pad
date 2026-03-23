@@ -11,10 +11,9 @@ interface EditableCardProps {
   label: string;
   value: string;
   onSave: (val: string) => void;
-  mono?: boolean;
 }
 
-function EditableCard({ label, value, onSave, mono }: EditableCardProps) {
+function EditableCard({ label, value, onSave }: EditableCardProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -23,19 +22,11 @@ function EditableCard({ label, value, onSave, mono }: EditableCardProps) {
   useEffect(() => { if (editing && inputRef.current) inputRef.current.focus(); }, [editing]);
 
   return (
-    <div
-      className="rounded-[12px] p-4 transition-all duration-200"
-      style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
-    >
+    <div className="rounded-[12px] p-4 transition-all duration-200" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
       <div className="flex items-center justify-between mb-2">
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-          {label}
-        </span>
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>{label}</span>
         <button
-          onClick={() => {
-            if (editing) { onSave(draft); setEditing(false); }
-            else setEditing(true);
-          }}
+          onClick={() => { if (editing) { onSave(draft); setEditing(false); } else setEditing(true); }}
           style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--accent-primary)', background: 'none', border: 'none', cursor: 'pointer' }}
         >
           {editing ? 'Save' : 'Edit'}
@@ -48,19 +39,10 @@ function EditableCard({ label, value, onSave, mono }: EditableCardProps) {
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') { onSave(draft); setEditing(false); } }}
           className="w-full rounded-[8px] px-3 py-2"
-          style={{
-            fontFamily: mono ? "'SF Mono', 'Fira Code', monospace" : "'Inter', sans-serif",
-            fontSize: 14, fontWeight: 400, color: 'var(--text-primary)',
-            backgroundColor: 'var(--surface-input)', border: '1px solid var(--divider-light)', outline: 'none',
-          }}
+          style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', backgroundColor: 'var(--surface-input)', border: '1px solid var(--divider-light)', outline: 'none' }}
         />
       ) : (
-        <p style={{
-          fontFamily: mono ? "'SF Mono', 'Fira Code', monospace" : "'Inter', sans-serif",
-          fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.5,
-        }}>
-          {value || '—'}
-        </p>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.5 }}>{value || '—'}</p>
       )}
     </div>
   );
@@ -79,19 +61,11 @@ function EditableListCard({ label, items, onSave }: EditableListCardProps) {
   useEffect(() => { setDraft(items.join('\n')); }, [items]);
 
   return (
-    <div
-      className="rounded-[12px] p-4 transition-all duration-200"
-      style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
-    >
+    <div className="rounded-[12px] p-4 transition-all duration-200 col-span-1 md:col-span-2" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
       <div className="flex items-center justify-between mb-2">
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-          {label}
-        </span>
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>{label}</span>
         <button
-          onClick={() => {
-            if (editing) { onSave(draft.split('\n').map(s => s.trim()).filter(Boolean)); setEditing(false); }
-            else setEditing(true);
-          }}
+          onClick={() => { if (editing) { onSave(draft.split('\n').map(s => s.trim()).filter(Boolean)); setEditing(false); } else setEditing(true); }}
           style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--accent-primary)', background: 'none', border: 'none', cursor: 'pointer' }}
         >
           {editing ? 'Save' : 'Edit'}
@@ -103,22 +77,13 @@ function EditableListCard({ label, items, onSave }: EditableListCardProps) {
           onChange={(e) => setDraft(e.target.value)}
           rows={Math.max(3, items.length + 1)}
           className="w-full rounded-[8px] px-3 py-2 resize-none"
-          style={{
-            fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300,
-            color: 'var(--text-primary)', backgroundColor: 'var(--surface-input)',
-            border: '1px solid var(--divider-light)', outline: 'none', lineHeight: 1.6,
-          }}
+          style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-primary)', backgroundColor: 'var(--surface-input)', border: '1px solid var(--divider-light)', outline: 'none', lineHeight: 1.6 }}
+          placeholder="One per line"
         />
       ) : (
         <div className="flex flex-wrap gap-1.5">
           {items.map((item, i) => (
-            <span
-              key={i}
-              className="rounded-full px-3 py-1"
-              style={{ fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 300, backgroundColor: 'var(--surface-input)', color: 'var(--text-secondary)' }}
-            >
-              {item}
-            </span>
+            <span key={i} className="rounded-full px-3 py-1" style={{ fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 300, backgroundColor: 'var(--surface-input)', color: 'var(--text-secondary)' }}>{item}</span>
           ))}
           {items.length === 0 && <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>—</span>}
         </div>
@@ -130,8 +95,8 @@ function EditableListCard({ label, items, onSave }: EditableListCardProps) {
 function ResultSkeleton() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="rounded-[12px] p-4" style={{ backgroundColor: 'var(--surface-card)' }}>
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div key={i} className={`rounded-[12px] p-4 ${i === 3 ? 'md:col-span-2' : ''}`} style={{ backgroundColor: 'var(--surface-card)' }}>
           <div className="animate-pulse">
             <div className="rounded h-3 w-20 mb-3" style={{ backgroundColor: 'var(--divider-light)' }} />
             <div className="rounded h-5 w-3/4" style={{ backgroundColor: 'var(--divider-light)' }} />
@@ -232,13 +197,12 @@ export default function UnderstandModule() {
 
   return (
     <div>
-      {/* Section header */}
       <div className="mb-6">
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 20, fontWeight: 400, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
           Understand Your Idea
         </p>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginTop: 4 }}>
-          We break down your idea into structured research components
+          These four parameters shape all downstream research. Edit them to refine your results.
         </p>
       </div>
 
@@ -254,11 +218,7 @@ export default function UnderstandModule() {
             placeholder="e.g. A healthy meal prep delivery service in Austin, TX targeting busy professionals"
             rows={3}
             className="w-full mt-3 rounded-[10px] px-4 py-3 resize-none"
-            style={{
-              fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 300, lineHeight: 1.6,
-              color: 'var(--text-primary)', backgroundColor: 'var(--surface-input)',
-              border: '1px solid var(--divider-light)', outline: 'none',
-            }}
+            style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 300, lineHeight: 1.6, color: 'var(--text-primary)', backgroundColor: 'var(--surface-input)', border: '1px solid var(--divider-light)', outline: 'none' }}
             onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
             onBlur={(e) => e.currentTarget.style.borderColor = 'var(--divider-light)'}
           />
@@ -267,25 +227,18 @@ export default function UnderstandModule() {
               onClick={() => runDecompose()}
               disabled={!ideaDraft || ideaDraft.trim().split(/\s+/).length < 3}
               className="rounded-[10px] px-6 py-2.5 transition-all duration-200 active:scale-[0.97] disabled:opacity-40"
-              style={{
-                fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400,
-                backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer',
-              }}
+              style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
             >
-              Analyze idea →
+              Break down my idea →
             </button>
           </div>
         </div>
       )}
 
-      {/* Loading */}
       {status === 'loading' && (
         <>
           <div className="flex items-center justify-center gap-3 py-8">
-            <div
-              className="rounded-full"
-              style={{ width: 18, height: 18, border: '2px solid var(--divider-light)', borderTopColor: 'var(--accent-primary)', animation: 'spin 0.8s linear infinite' }}
-            />
+            <div className="rounded-full" style={{ width: 18, height: 18, border: '2px solid var(--divider-light)', borderTopColor: 'var(--accent-primary)', animation: 'spin 0.8s linear infinite' }} />
             <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)' }}>
               Breaking down your idea…
             </span>
@@ -294,7 +247,6 @@ export default function UnderstandModule() {
         </>
       )}
 
-      {/* Error */}
       {status === 'error' && (
         <div className="rounded-[14px] p-6 text-center" style={{ backgroundColor: 'rgba(140,96,96,0.04)' }}>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: 'var(--destructive)', marginBottom: 16 }}>{error}</p>
@@ -303,19 +255,19 @@ export default function UnderstandModule() {
             className="rounded-[10px] px-5 py-2.5 transition-all duration-200 active:scale-[0.97]"
             style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
           >
-            Retry
+            Try again
           </button>
         </div>
       )}
 
-      {/* Results — editable cards */}
+      {/* Results — only 4 user-facing editable cards */}
       {status === 'done' && result && (
         <div className="space-y-6">
-          {/* Sticky actions bar */}
+          {/* Actions bar */}
           <div className="flex items-center justify-between flex-wrap gap-3">
             {result.cached && (
               <span className="rounded-full px-3 py-1" style={{ fontSize: 11, fontFamily: "'Inter', sans-serif", backgroundColor: 'rgba(91,140,126,0.08)', color: 'var(--accent-teal)' }}>
-                Cached result
+                Instant result
               </span>
             )}
             <div className="flex items-center gap-3 ml-auto">
@@ -324,7 +276,7 @@ export default function UnderstandModule() {
                 className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
                 style={{ fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 300, backgroundColor: 'var(--surface-input)', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer' }}
               >
-                Regenerate
+                Re-analyze
               </button>
               {user && (
                 <button
@@ -344,7 +296,7 @@ export default function UnderstandModule() {
             </div>
           </div>
 
-          {/* Cards grid */}
+          {/* Only 4 cards: Business Type, Location, Price Tier, Target Customers */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <EditableCard
               label="Business Type"
@@ -369,17 +321,11 @@ export default function UnderstandModule() {
               items={result.stage2.target_customers}
               onSave={(v) => updateStage2('target_customers', v)}
             />
-            <EditableListCard
-              label="Search Queries"
-              items={result.stage2.search_queries}
-              onSave={(v) => updateStage2('search_queries', v)}
-            />
-            <EditableListCard
-              label="Source Domains"
-              items={result.stage2.source_domains}
-              onSave={(v) => updateStage2('source_domains', v)}
-            />
           </div>
+
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', textAlign: 'center', marginTop: 8 }}>
+            Edit any field above — your changes will flow into Discover, Analyze, and all downstream research.
+          </p>
 
           {/* Continue CTA */}
           <div className="flex justify-center pt-8">
