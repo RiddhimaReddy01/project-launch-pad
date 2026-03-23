@@ -29,7 +29,18 @@ export default function Dashboard() {
   const [ideas, setIdeas] = useState<SavedIdea[]>([]);
   const [experiments, setExperiments] = useState<Experiment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'ideas' | 'experiments'>('ideas');
+  const [activeTab, setActiveTab] = useState<'ideas' | 'findings' | 'experiments'>('ideas');
+
+  // Extract findings from saved ideas
+  const allFindings = ideas.flatMap(idea => {
+    const analysis = (idea as any).analysis_data;
+    if (!analysis?.selected_findings) return [];
+    return (analysis.selected_findings as { text: string; section: string }[]).map(f => ({
+      ...f,
+      idea_text: idea.idea_text,
+      idea_id: idea.id,
+    }));
+  });
 
   useEffect(() => {
     if (!authLoading && !user) navigate('/auth', { replace: true });
@@ -43,7 +54,7 @@ export default function Dashboard() {
   const loadData = async () => {
     setLoading(true);
     const [ideasRes, expRes] = await Promise.all([
-      supabase.from('saved_ideas').select('*').order('updated_at', { ascending: false }),
+      supabase.from('saved_ideas').select('*, analysis_data').order('updated_at', { ascending: false }),
       supabase.from('experiments').select('*').order('created_at', { ascending: false }),
     ]);
 
@@ -120,7 +131,7 @@ export default function Dashboard() {
 
         {/* Tabs */}
         <div className="flex" style={{ gap: 4, marginBottom: 32, borderBottom: '1px solid var(--divider-light)', paddingBottom: 0 }}>
-          {(['ideas', 'experiments'] as const).map(tab => (
+          {(['ideas', 'findings', 'experiments'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -138,7 +149,7 @@ export default function Dashboard() {
                 textTransform: 'capitalize',
               }}
             >
-              {tab === 'ideas' ? `Saved Ideas (${ideas.length})` : `Experiments (${experiments.length})`}
+              {tab === 'ideas' ? `Ideas (${ideas.length})` : tab === 'findings' ? `Findings (${allFindings.length})` : `Experiments (${experiments.length})`}
             </button>
           ))}
         </div>
@@ -226,6 +237,46 @@ export default function Dashboard() {
                   </div>
                 </div>
               ))}
+            </div>
+          )
+        ) : activeTab === 'findings' ? (
+          allFindings.length === 0 ? (
+            <div className="text-center" style={{ padding: 60 }}>
+              <p style={{ fontFamily: "'Instrument Serif', serif", fontSize: 22, color: 'var(--text-primary)', marginBottom: 8 }}>
+                No saved findings yet
+              </p>
+              <p className="font-caption">Save key findings from the Analyze tab to see them here.</p>
+            </div>
+          ) : (
+            <div className="flex flex-col" style={{ gap: 8 }}>
+              {allFindings.map((f, i) => {
+                const sectionColors: Record<string, string> = {
+                  opportunity: '#3B82F6', customers: '#2D8B75', competitors: '#D4880F',
+                  rootcause: '#6C5CE7', costs: '#E05252', risk: '#E05252',
+                  location: '#3B82F6', moat: '#2D8B75',
+                };
+                const color = sectionColors[f.section] || 'var(--text-muted)';
+                return (
+                  <div key={i} className="rounded-[12px] p-4" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                    <div className="flex items-start gap-3">
+                      <div style={{ width: 3, height: '100%', minHeight: 32, borderRadius: 2, backgroundColor: color, flexShrink: 0 }} />
+                      <div className="flex-1 min-w-0">
+                        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.5, marginBottom: 6 }}>
+                          {f.text}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <span className="rounded-full px-2 py-0.5" style={{ fontSize: 10, fontFamily: "'Inter', sans-serif", color, backgroundColor: `${color}10`, textTransform: 'capitalize' }}>
+                            {f.section.replace('rootcause', 'Root Cause')}
+                          </span>
+                          <span style={{ fontSize: 10, fontFamily: "'Inter', sans-serif", color: 'var(--text-muted)' }}>
+                            {f.idea_text.slice(0, 50)}{f.idea_text.length > 50 ? '...' : ''}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )
         ) : experiments.length === 0 ? (

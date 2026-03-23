@@ -155,13 +155,6 @@ export default function AnalyzeModule() {
     setActiveModule(key);
   };
 
-  const toggleFinding = (finding: string) => {
-    setSelectedFindings(prev => {
-      const next = new Set(prev);
-      next.has(finding) ? next.delete(finding) : next.add(finding);
-      return next;
-    });
-  };
 
   const handleSave = async () => {
     if (!user) { toast.error('Sign in to save analysis'); return; }
@@ -221,23 +214,98 @@ export default function AnalyzeModule() {
   const activeSec = sections[activeModule];
   const shouldRun = activeSec.status === 'idle' || activeSec.status === 'loading';
 
-  // Key findings
-  const keyFindings: string[] = [];
-  const opp = sections.opportunity.data as OpportunityData | null;
-  if (opp) {
-    keyFindings.push(`SOM: ${opp.som.formatted} (${opp.som.confidence} confidence)`);
-    keyFindings.push(`TAM: ${opp.tam.formatted}`);
-  }
-  const cust = sections.customers.data as CustomersData | null;
-  if (cust?.segments) cust.segments.forEach(s => keyFindings.push(`Segment: ${s.name} (Pain ${s.pain_intensity}/10)`));
-  const comp = sections.competitors.data as CompetitorsData | null;
-  if (comp?.unfilled_gaps) comp.unfilled_gaps.forEach(g => keyFindings.push(`Gap: ${g}`));
-  const rc = sections.rootcause.data as RootCauseData | null;
-  if (rc?.root_causes) rc.root_causes.filter(c => c.difficulty === 'easy').forEach(c => keyFindings.push(`Quick win: ${c.title}`));
-  const moat = sections.moat.data as MoatData | null;
-  if (moat) keyFindings.push(`Moat score: ${moat.overall_score}/10`);
-  const risk = sections.risk.data as RiskData | null;
-  if (risk) keyFindings.push(`Risk: ${risk.overall_risk_level} — ${risk.summary}`);
+  // Section-specific key findings
+  const [savingFinding, setSavingFinding] = useState<string | null>(null);
+
+  const getSectionFindings = (sectionKey: SectionKey): { id: string; text: string; section: string }[] => {
+    const findings: { id: string; text: string; section: string }[] = [];
+    const sec = sections[sectionKey];
+    if (!sec.data) return findings;
+
+    switch (sectionKey) {
+      case 'opportunity': {
+        const d = sec.data as OpportunityData;
+        findings.push({ id: 'opp-som', text: `SOM: ${d.som.formatted} (${d.som.confidence} confidence)`, section: 'opportunity' });
+        findings.push({ id: 'opp-tam', text: `TAM: ${d.tam.formatted}`, section: 'opportunity' });
+        findings.push({ id: 'opp-sam', text: `SAM: ${d.sam.formatted}`, section: 'opportunity' });
+        if (d.funnel.repeat_customers) findings.push({ id: 'opp-repeat', text: `Estimated repeat customers: ${d.funnel.repeat_customers.toLocaleString()}`, section: 'opportunity' });
+        break;
+      }
+      case 'customers': {
+        const d = sec.data as CustomersData;
+        d.segments?.forEach((s, i) => findings.push({ id: `cust-${i}`, text: `${s.name} — Pain ${s.pain_intensity}/10, ~${s.estimated_size.toLocaleString()} people`, section: 'customers' }));
+        break;
+      }
+      case 'competitors': {
+        const d = sec.data as CompetitorsData;
+        d.unfilled_gaps?.forEach((g, i) => findings.push({ id: `gap-${i}`, text: g, section: 'competitors' }));
+        d.competitors?.filter(c => c.threat_level === 'high').forEach((c, i) => findings.push({ id: `threat-${i}`, text: `High threat: ${c.name} — ${c.key_gap}`, section: 'competitors' }));
+        break;
+      }
+      case 'rootcause': {
+        const d = sec.data as RootCauseData;
+        d.root_causes?.forEach((c, i) => findings.push({ id: `rc-${i}`, text: `${c.title}: ${c.your_move.slice(0, 120)}`, section: 'rootcause' }));
+        break;
+      }
+      case 'costs': {
+        const d = sec.data as CostsData;
+        findings.push({ id: 'cost-range', text: `Launch cost: $${(d.total_range.min / 1000).toFixed(0)}K – $${(d.total_range.max / 1000).toFixed(0)}K`, section: 'costs' });
+        if (d.note) findings.push({ id: 'cost-driver', text: `Key driver: ${d.note}`, section: 'costs' });
+        break;
+      }
+      case 'risk': {
+        const d = sec.data as RiskData;
+        findings.push({ id: 'risk-overall', text: `Overall risk: ${d.overall_risk_level} — ${d.summary}`, section: 'risk' });
+        d.risks?.filter(r => r.likelihood === 'high' || r.impact === 'high').forEach((r, i) => findings.push({ id: `risk-${i}`, text: `${r.risk}: ${r.mitigation.slice(0, 100)}`, section: 'risk' }));
+        break;
+      }
+      case 'location': {
+        const d = sec.data as LocationData;
+        findings.push({ id: 'loc-score', text: `Location score: ${d.score}/10 — ${d.verdict}`, section: 'location' });
+        break;
+      }
+      case 'moat': {
+        const d = sec.data as MoatData;
+        findings.push({ id: 'moat-score', text: `Moat score: ${d.overall_score}/10`, section: 'moat' });
+        findings.push({ id: 'moat-strong', text: `Strongest: ${d.strongest}`, section: 'moat' });
+        findings.push({ id: 'moat-weak', text: `Weakest: ${d.weakest}`, section: 'moat' });
+        break;
+      }
+    }
+    return findings;
+  };
+
+  const activeFindings = getSectionFindings(activeModule);
+
+  const handleSaveFinding = async (finding: { id: string; text: string; section: string }) => {
+    if (!user) { toast.error('Sign in to save findings'); return; }
+    setSavingFinding(finding.id);
+    try {
+      const next = new Set(selectedFindings);
+      if (next.has(finding.text)) { next.delete(finding.text); } else { next.add(finding.text); }
+      setSelectedFindings(next);
+
+      const allFindings = Array.from(next).map(text => {
+        const matchSection = activeFindings.find(af => af.text === text)?.section || activeModule;
+        return { text, section: matchSection };
+      });
+
+      const sectionData: any = {};
+      Object.entries(sections).forEach(([k, v]) => { if (v.data) sectionData[k] = v.data; });
+      const payload = { sections: sectionData, selected_findings: allFindings, saved_at: new Date().toISOString() };
+
+      const { data: existing } = await supabase
+        .from('saved_ideas').select('id').eq('user_id', user.id).eq('idea_text', idea).maybeSingle();
+
+      if (existing) {
+        await supabase.from('saved_ideas').update({ analysis_data: payload as any }).eq('id', existing.id);
+      } else {
+        await supabase.from('saved_ideas').insert({ user_id: user.id, idea_text: idea, analysis_data: payload as any, current_step: 'analyze' });
+      }
+      toast.success(next.has(finding.text) ? 'Finding saved' : 'Finding removed');
+    } catch { toast.error('Failed to save'); }
+    finally { setSavingFinding(null); }
+  };
 
   if (!decomposeResult) return (
     <div className="flex items-center justify-center" style={{ height: '60vh' }}>
@@ -365,33 +433,45 @@ export default function AnalyzeModule() {
             </Suspense>
           )}
 
-          {/* Key findings */}
-          {keyFindings.length > 0 && (
+          {/* Section-specific key findings */}
+          {activeFindings.length > 0 && activeSec.status === 'completed' && (
             <div className="mt-12 rounded-[14px] p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>
-                Key findings to carry forward
-              </p>
+              <div className="flex items-center justify-between mb-1">
+                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
+                  Key findings — {MODULE_DEFS.find(m => m.key === activeModule)?.label}
+                </p>
+                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>
+                  {Array.from(selectedFindings).filter(f => activeFindings.some(af => af.text === f)).length} saved
+                </span>
+              </div>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>
-                Selected findings are saved and passed to the Validate tab
+                Save findings to your dashboard for validation
               </p>
               <div className="flex flex-col gap-1.5">
-                {keyFindings.map((finding, i) => {
-                  const isSelected = selectedFindings.has(finding);
+                {activeFindings.map((finding) => {
+                  const isSelected = selectedFindings.has(finding.text);
+                  const isSaving = savingFinding === finding.id;
                   return (
-                    <label key={i} className="flex items-start gap-3 rounded-[8px] p-3 cursor-pointer transition-colors duration-150" style={{ backgroundColor: isSelected ? 'rgba(26,26,26,0.02)' : 'transparent' }}>
-                      <div style={{
-                        width: 16, height: 16, borderRadius: 4, marginTop: 1, flexShrink: 0,
-                        border: isSelected ? 'none' : '1.5px solid var(--divider-section)',
-                        backgroundColor: isSelected ? 'var(--text-primary)' : 'transparent',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      }}>
-                        {isSelected && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4 7L8 3" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-                      </div>
-                      <input type="checkbox" checked={isSelected} onChange={() => toggleFinding(finding)} className="sr-only" />
-                      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: isSelected ? 400 : 300, color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)', lineHeight: 1.5 }}>
-                        {finding}
+                    <div key={finding.id} className="flex items-start gap-3 rounded-[8px] p-3 transition-colors duration-150" style={{ backgroundColor: isSelected ? 'rgba(45,139,117,0.03)' : 'transparent' }}>
+                      <span className="flex-1" style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: isSelected ? 400 : 300, color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)', lineHeight: 1.5 }}>
+                        {finding.text}
                       </span>
-                    </label>
+                      <button
+                        onClick={() => handleSaveFinding(finding)}
+                        disabled={isSaving}
+                        className="rounded-[6px] px-3 py-1 transition-all duration-200 flex-shrink-0"
+                        style={{
+                          fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400,
+                          backgroundColor: isSelected ? 'var(--text-primary)' : 'transparent',
+                          color: isSelected ? '#fff' : 'var(--text-muted)',
+                          border: isSelected ? 'none' : '1px solid var(--divider)',
+                          cursor: isSaving ? 'wait' : 'pointer',
+                          opacity: isSaving ? 0.6 : 1,
+                        }}
+                      >
+                        {isSaving ? '...' : isSelected ? 'Saved' : 'Save'}
+                      </button>
+                    </div>
                   );
                 })}
               </div>
