@@ -9,6 +9,10 @@ const CATEGORY_COLORS: Record<string, { color: string; bg: string }> = {
   Infrastructure: { color: 'var(--accent-blue)', bg: 'rgba(122,143,160,0.06)' },
 };
 
+function buildMapsUrl(name: string, location: string): string {
+  return `https://www.google.com/maps/search/${encodeURIComponent(name + ' ' + location)}`;
+}
+
 export default function Suppliers({ data, tier }: { data: SuppliersResult; tier: string }) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
@@ -71,12 +75,25 @@ export default function Suppliers({ data, tier }: { data: SuppliersResult; tier:
               <div className="rounded-[8px] p-3 mb-3" style={{ backgroundColor: 'rgba(45,139,117,0.02)', borderLeft: '2px solid var(--accent-teal)' }}>
                 <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{s.why_recommended}</p>
               </div>
-              {s.website && (
-                <a href={s.website} target="_blank" rel="noopener noreferrer"
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'var(--text-muted)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
-                  Visit website
+              <div className="flex items-center gap-3">
+                {s.website && (
+                  <a href={s.website} target="_blank" rel="noopener noreferrer"
+                    style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'var(--text-muted)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+                    Visit website
+                  </a>
+                )}
+                <a href={buildMapsUrl(s.name, s.location)} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 transition-all duration-200"
+                  style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'var(--accent-teal)', textDecoration: 'none' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.7'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  Find near me
                 </a>
-              )}
+              </div>
             </div>
           );
         })}

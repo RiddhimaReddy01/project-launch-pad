@@ -34,17 +34,38 @@ const SPEED_LABELS: Record<string, string> = { fast: 'Fast', medium: 'Medium', s
 
 type TabKey = 'landing' | 'survey' | 'whatsapp' | 'communities' | 'scorecard';
 
-const ALL_TABS: { key: TabKey; label: string; mono: string; subtitle: string; outputKey: string; deployGuide: { tool: string; url: string; instruction: string } }[] = [
+const ALL_TABS: { key: TabKey; label: string; mono: string; subtitle: string; outputKey: string; target: string; deployGuide: { tool: string; urls: { name: string; url: string }[]; instruction: string } }[] = [
   { key: 'landing', label: 'Landing Page', mono: 'L', subtitle: 'Pitch your idea', outputKey: 'landing_page',
-    deployGuide: { tool: 'Carrd / Framer / Typedream', url: 'https://carrd.co', instruction: 'Copy the headline, benefits, and CTA into a one-page builder. Connect a form to capture emails.' } },
+    target: '50+ email signups in 7 days',
+    deployGuide: { tool: 'One-page builder', urls: [
+      { name: 'Carrd', url: 'https://carrd.co' },
+      { name: 'Framer', url: 'https://framer.com' },
+      { name: 'Typedream', url: 'https://typedream.com' },
+    ], instruction: 'Copy the headline, benefits, and CTA into a one-page builder. Connect a form (Mailchimp, ConvertKit) to capture emails.' } },
   { key: 'survey', label: 'Survey', mono: 'S', subtitle: '7 discovery questions', outputKey: 'survey',
-    deployGuide: { tool: 'Google Forms / Typeform', url: 'https://forms.google.com', instruction: 'Copy questions into a form builder. Keep it under 3 minutes to complete.' } },
+    target: '30+ responses with 60%+ completion',
+    deployGuide: { tool: 'Form builder', urls: [
+      { name: 'Google Forms', url: 'https://forms.google.com' },
+      { name: 'Typeform', url: 'https://typeform.com' },
+      { name: 'Tally', url: 'https://tally.so' },
+    ], instruction: 'Copy questions into a form builder. Keep it under 3 minutes to complete. Share via communities and direct outreach.' } },
   { key: 'whatsapp', label: 'Message', mono: 'W', subtitle: 'Community outreach', outputKey: 'whatsapp',
-    deployGuide: { tool: 'WhatsApp / Slack / Discord', url: '', instruction: 'Replace [SURVEY_LINK] with your actual form URL, then share in the communities listed.' } },
-  { key: 'communities', label: 'Communities', mono: 'C', subtitle: '10 places to test', outputKey: 'communities',
-    deployGuide: { tool: 'Facebook / Reddit / Discord', url: '', instruction: 'Join each community and engage genuinely before sharing your survey or landing page.' } },
+    target: '10+ replies from 50 messages sent',
+    deployGuide: { tool: 'Messaging platforms', urls: [
+      { name: 'WhatsApp', url: 'https://web.whatsapp.com' },
+      { name: 'Slack', url: 'https://slack.com' },
+      { name: 'Discord', url: 'https://discord.com' },
+    ], instruction: 'Replace [SURVEY_LINK] with your actual form URL. Share in communities below. Send to 5-10 people first to test the message.' } },
+  { key: 'communities', label: 'Communities', mono: 'C', subtitle: 'Places to test', outputKey: 'communities',
+    target: '5+ communities engaged, 3+ with warm reception',
+    deployGuide: { tool: 'Social platforms', urls: [
+      { name: 'Reddit', url: 'https://reddit.com' },
+      { name: 'Facebook Groups', url: 'https://facebook.com/groups' },
+      { name: 'Discord', url: 'https://discord.com' },
+    ], instruction: 'Join each community and engage genuinely for 2-3 days before sharing your survey or landing page. Follow community rules.' } },
   { key: 'scorecard', label: 'Scorecard', mono: 'T', subtitle: 'Track progress', outputKey: 'scorecard',
-    deployGuide: { tool: 'Dashboard', url: '', instruction: 'Update metrics as responses come in. Save to persist to your account.' } },
+    target: 'Hit 70%+ of targets for a GO verdict',
+    deployGuide: { tool: 'Dashboard', urls: [], instruction: 'Update metrics as responses come in. Save to persist progress to your dashboard.' } },
 ];
 
 const PLATFORM_COLORS: Record<string, string> = {
@@ -502,18 +523,30 @@ export default function ValidateModule() {
         const currentTab = ALL_TABS.find(t => t.key === activeTab);
         if (!currentTab) return null;
         return (
-          <div className="flex items-center gap-3 mb-6 rounded-[10px] px-4 py-3" style={{ backgroundColor: 'var(--surface-input)', border: '1px solid var(--divider-light)' }}>
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0 }}>Deploy</span>
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              {currentTab.deployGuide.instruction}
-            </span>
-            {currentTab.deployGuide.url && (
-              <a href={currentTab.deployGuide.url} target="_blank" rel="noopener noreferrer"
-                className="rounded-[6px] px-3 py-1.5 transition-all duration-200 whitespace-nowrap"
-                style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-primary)', backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', textDecoration: 'none', flexShrink: 0 }}>
-                {currentTab.deployGuide.tool.split(' / ')[0]}
-              </a>
-            )}
+          <div className="rounded-[10px] mb-6 overflow-hidden" style={{ border: '1px solid var(--divider-light)' }}>
+            {/* Target row */}
+            <div className="flex items-center gap-3 px-4 py-2.5" style={{ backgroundColor: 'rgba(91,140,126,0.04)', borderBottom: '1px solid var(--divider-light)' }}>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, color: 'var(--accent-teal)', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0 }}>Target</span>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, color: 'var(--text-primary)' }}>{currentTab.target}</span>
+            </div>
+            {/* Deploy row */}
+            <div className="flex items-center gap-3 px-4 py-2.5" style={{ backgroundColor: 'var(--surface-input)' }}>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0 }}>Deploy</span>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5, flex: 1 }}>
+                {currentTab.deployGuide.instruction}
+              </span>
+              {currentTab.deployGuide.urls.length > 0 && (
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  {currentTab.deployGuide.urls.map(u => (
+                    <a key={u.name} href={u.url} target="_blank" rel="noopener noreferrer"
+                      className="rounded-[6px] px-2.5 py-1 transition-all duration-200 whitespace-nowrap"
+                      style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 400, color: 'var(--text-primary)', backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', textDecoration: 'none' }}>
+                      {u.name}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         );
       })()}

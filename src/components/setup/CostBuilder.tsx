@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import type { CostsResult, TierDef } from '@/lib/setup';
 
@@ -16,6 +16,23 @@ export default function CostBuilder({ data, selectedTier, onSelectTier }: { data
 
   const totalMin = useMemo(() => categories.reduce((s, c) => s + c.items.reduce((ss, i) => ss + i.min, 0), 0), [categories]);
   const totalMax = useMemo(() => categories.reduce((s, c) => s + c.items.reduce((ss, i) => ss + i.max, 0), 0), [categories]);
+
+  const handleExportCSV = useCallback(() => {
+    const rows: string[][] = [['Category', 'Item', 'Min ($)', 'Max ($)', 'Notes']];
+    categories.forEach(c => c.items.forEach(i => {
+      rows.push([c.category, i.label, String(i.min), String(i.max), i.note]);
+    }));
+    rows.push([]);
+    rows.push(['TOTAL', '', String(totalMin), String(totalMax), `${selectedTier.toUpperCase()} Tier`]);
+    const csv = rows.map(r => r.map(cell => `"${cell.replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `launchlens-budget-${selectedTier}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [categories, totalMin, totalMax, selectedTier]);
 
   if (!data?.tiers || !data?.breakdown) {
     return <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: 'var(--text-muted)' }}>Loading cost data...</p>;
@@ -35,9 +52,15 @@ export default function CostBuilder({ data, selectedTier, onSelectTier }: { data
     <div>
       {/* Total range banner */}
       <div className="rounded-[12px] p-6 mb-8" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 10 }}>
-          Estimated Launch Cost — {selectedTier.toUpperCase()} Tier
-        </p>
+        <div className="flex items-center justify-between mb-3">
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
+            Estimated Launch Cost — {selectedTier.toUpperCase()} Tier
+          </p>
+          <button onClick={handleExportCSV} className="rounded-[6px] px-3 py-1.5 transition-all duration-200"
+            style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', backgroundColor: 'var(--surface-input)', border: '1px solid var(--divider-light)', cursor: 'pointer' }}>
+            ↓ Download Spreadsheet
+          </button>
+        </div>
         <div className="flex items-baseline gap-3 mb-3">
           <span className="font-heading" style={{ fontSize: 28 }}>{formatCurrency(totalMin)}</span>
           <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)' }}>to</span>

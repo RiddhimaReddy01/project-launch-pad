@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 import { useIdea } from '@/context/IdeaContext';
@@ -9,11 +9,63 @@ const suggestions = [
   { label: 'Thai food Dallas', value: 'An authentic Thai street food restaurant in Dallas' },
 ];
 
+const PLACEHOLDER_TEXTS = [
+  'A mobile pet grooming service in Austin...',
+  'An AI-powered resume builder for students...',
+  'A farm-to-table meal prep delivery in Denver...',
+  'A coworking space for freelancers in Brooklyn...',
+];
+
+function useTypewriter(texts: string[], speed = 55, pause = 2000) {
+  const [display, setDisplay] = useState('');
+  const indexRef = useRef(0);
+  const charRef = useRef(0);
+  const dirRef = useRef<'type' | 'pause' | 'erase'>('type');
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+
+    const tick = () => {
+      const currentText = texts[indexRef.current];
+
+      if (dirRef.current === 'type') {
+        charRef.current++;
+        setDisplay(currentText.slice(0, charRef.current));
+        if (charRef.current >= currentText.length) {
+          dirRef.current = 'pause';
+          timeout = setTimeout(tick, pause);
+        } else {
+          timeout = setTimeout(tick, speed + Math.random() * 30);
+        }
+      } else if (dirRef.current === 'pause') {
+        dirRef.current = 'erase';
+        timeout = setTimeout(tick, speed);
+      } else {
+        charRef.current--;
+        setDisplay(currentText.slice(0, charRef.current));
+        if (charRef.current <= 0) {
+          indexRef.current = (indexRef.current + 1) % texts.length;
+          dirRef.current = 'type';
+          timeout = setTimeout(tick, 400);
+        } else {
+          timeout = setTimeout(tick, 25);
+        }
+      }
+    };
+
+    timeout = setTimeout(tick, 600);
+    return () => clearTimeout(timeout);
+  }, [texts, speed, pause]);
+
+  return display;
+}
+
 export default function Hero() {
   const [idea, setIdea] = useState('');
   const { setIdea: setGlobalIdea } = useIdea();
   const navigate = useNavigate();
   const headlineRef = useScrollReveal();
+  const placeholder = useTypewriter(PLACEHOLDER_TEXTS);
 
   const handleStart = () => {
     if (!idea.trim()) return;
@@ -41,7 +93,7 @@ export default function Hero() {
         <textarea
           value={idea}
           onChange={(e) => setIdea(e.target.value)}
-          placeholder="Describe your idea in one sentence..."
+          placeholder={placeholder || 'Describe your idea in one sentence...'}
           rows={1}
           className="w-full resize-none outline-none transition-all duration-200"
           style={{
@@ -58,7 +110,7 @@ export default function Hero() {
           }}
           onFocus={(e) => {
             e.currentTarget.style.borderColor = 'var(--accent-primary)';
-            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(108,92,231,0.08)';
+            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(26,26,26,0.06)';
           }}
           onBlur={(e) => {
             e.currentTarget.style.borderColor = 'var(--divider-light)';
