@@ -412,10 +412,10 @@ export default function AnalyzeModule() {
           {activeSec.status === 'error' && (
             <div className="flex flex-col items-center justify-center" style={{ minHeight: 300 }}>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>
-                This analysis could not be completed.
+                This section couldn't load right now.
               </p>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>
-                {activeSec.error || 'Try again with fewer inputs or a different signal set.'}
+                {activeSec.error || 'Give it another shot — sometimes a retry does the trick.'}
               </p>
               <button
                 onClick={() => setSections(prev => ({ ...prev, [activeModule]: { ...prev[activeModule], status: 'loading', error: undefined } }))}
