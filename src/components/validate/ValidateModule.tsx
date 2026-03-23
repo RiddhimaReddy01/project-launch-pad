@@ -469,9 +469,9 @@ export default function ValidateModule() {
         </div>
       </div>
 
-      {/* Tab navigation */}
+      {/* Tab navigation — only show tabs for selected methods */}
       <div className="flex gap-1 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider)' }}>
-        {TABS.map(tab => {
+        {visibleTabs.map(tab => {
           const isActive = activeTab === tab.key;
           return (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
@@ -489,7 +489,28 @@ export default function ValidateModule() {
         })}
       </div>
 
-      {/* Content */}
+      {/* Deploy guide for active tab */}
+      {activeTab && (() => {
+        const currentTab = ALL_TABS.find(t => t.key === activeTab);
+        if (!currentTab) return null;
+        return (
+          <div className="flex items-center gap-3 mb-6 rounded-[10px] px-4 py-3" style={{ backgroundColor: 'var(--surface-input)', border: '1px solid var(--divider-light)' }}>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0 }}>Deploy</span>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              {currentTab.deployGuide.instruction}
+            </span>
+            {currentTab.deployGuide.url && (
+              <a href={currentTab.deployGuide.url} target="_blank" rel="noopener noreferrer"
+                className="rounded-[6px] px-3 py-1.5 transition-all duration-200 whitespace-nowrap"
+                style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-primary)', backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', textDecoration: 'none', flexShrink: 0 }}>
+                {currentTab.deployGuide.tool.split(' / ')[0]}
+              </a>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* Content — only render sections for visible tabs */}
       <div style={{ minHeight: 300, maxWidth: 800 }}>
         {result && (
           <>
