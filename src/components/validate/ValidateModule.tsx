@@ -246,13 +246,44 @@ export default function ValidateModule() {
         selected_methods: Array.from(selectedMethods),
         saved_at: new Date().toISOString(),
       };
+      // Upsert saved idea
       const { data: existing } = await supabase.from('saved_ideas').select('id').eq('user_id', user.id).eq('idea_text', idea).maybeSingle();
+      let ideaId: string;
       if (existing) {
         await supabase.from('saved_ideas').update({ validate_data: payload as any, current_step: 'validate' }).eq('id', existing.id);
+        ideaId = existing.id;
       } else {
-        await supabase.from('saved_ideas').insert({ user_id: user.id, idea_text: idea, validate_data: payload as any, current_step: 'validate' });
+        const { data: newIdea } = await supabase.from('saved_ideas').insert({ user_id: user.id, idea_text: idea, validate_data: payload as any, current_step: 'validate' }).select('id').single();
+        ideaId = newIdea?.id || '';
       }
-      toast.success('Validation saved to dashboard');
+
+      // Create experiment records for each selected method
+      if (ideaId) {
+        // Remove old experiments for this idea to avoid duplicates
+        await supabase.from('experiments').delete().eq('idea_id', ideaId).eq('user_id', user.id);
+
+        const scorecardObj = Object.fromEntries(result.scorecard.map(m => [m.label, { target: m.target, actual: m.actual, unit: m.unit, target_label: m.target_label }]));
+        const methodEntries = Array.from(selectedMethods).map(mId => {
+          const method = ALL_METHODS.find(am => am.id === mId);
+          return {
+            idea_id: ideaId,
+            user_id: user.id,
+            method_id: mId,
+            method_name: method?.name || mId,
+            status: result.scorecard.some(m => m.actual > 0) ? 'running' : 'planned',
+            metrics: scorecardObj,
+            assets_data: {
+              landing_page: method?.outputs.includes('landing_page') ? result.landing_page : null,
+              survey: method?.outputs.includes('survey') ? result.survey : null,
+              whatsapp: method?.outputs.includes('whatsapp') ? result.whatsapp : null,
+              communities: method?.outputs.includes('communities') ? result.communities : null,
+            },
+          };
+        });
+        await supabase.from('experiments').insert(methodEntries);
+      }
+
+      toast.success('Validation & experiments saved to dashboard');
     } catch { toast.error('Failed to save'); }
     setSaving(false);
   };
