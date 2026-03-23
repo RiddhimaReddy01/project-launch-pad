@@ -11,11 +11,15 @@ function formatCurrency(n: number): string {
 export default function CostBuilder({ data, selectedTier, onSelectTier }: { data: CostsResult; selectedTier: string; onSelectTier: (tier: any) => void }) {
   const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
 
-  const tier = data.tiers.find(t => t.id === selectedTier);
-  const categories = data.breakdown[selectedTier] || [];
+  const tier = data?.tiers?.find(t => t.id === selectedTier);
+  const categories = data?.breakdown?.[selectedTier] || [];
 
   const totalMin = useMemo(() => categories.reduce((s, c) => s + c.items.reduce((ss, i) => ss + i.min, 0), 0), [categories]);
   const totalMax = useMemo(() => categories.reduce((s, c) => s + c.items.reduce((ss, i) => ss + i.max, 0), 0), [categories]);
+
+  if (!data?.tiers || !data?.breakdown) {
+    return <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: 'var(--text-muted)' }}>Loading cost data...</p>;
+  }
 
   const chartData = categories.map(c => ({
     category: c.category,
