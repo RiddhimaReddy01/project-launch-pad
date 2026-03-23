@@ -6,12 +6,24 @@ import DiscoverLoading from './DiscoverLoading';
 
 type Status = 'idle' | 'loading' | 'done' | 'error';
 
-const TYPE_TABS = [
-  { key: 'pain_point', label: 'Pain Points', icon: 'P' },
-  { key: 'workaround', label: 'Workarounds', icon: 'W' },
-  { key: 'demand_signal', label: 'Demand Signals', icon: 'D' },
-  { key: 'expectation', label: 'Expectations', icon: 'E' },
-] as const;
+const KNOWN_TABS: Record<string, { label: string; icon: string }> = {
+  pain_point: { label: 'Pain Points', icon: 'P' },
+  workaround: { label: 'Workarounds', icon: 'W' },
+  demand_signal: { label: 'Demand Signals', icon: 'D' },
+  expectation: { label: 'Expectations', icon: 'E' },
+  market_gap: { label: 'Market Gaps', icon: 'G' },
+  opportunity: { label: 'Opportunities', icon: 'O' },
+  trend: { label: 'Trends', icon: 'T' },
+};
+
+function buildTabs(insights: { type: string }[]) {
+  const types = [...new Set(insights.map(i => i.type))];
+  return types.map(key => ({
+    key,
+    label: KNOWN_TABS[key]?.label || key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+    icon: KNOWN_TABS[key]?.icon || '•',
+  }));
+}
 
 export default function DiscoverModule() {
   const { decomposeResult, setDiscoverResult: setContextDiscover } = useIdea();
@@ -38,8 +50,8 @@ export default function DiscoverModule() {
   // Auto-select first non-empty tab when results arrive
   useEffect(() => {
     if (result && !filter) {
-      const counts = getCounts(result);
-      const first = TYPE_TABS.find(t => (counts[t.key] || 0) > 0);
+      const tabs = buildTabs(result.insights);
+      const first = tabs[0];
       if (first) setFilter(first.key);
     }
   }, [result]);
@@ -80,7 +92,7 @@ export default function DiscoverModule() {
   }
 
   const counts = result ? getCounts(result) : {};
-  const visibleTabs = TYPE_TABS.filter(t => (counts[t.key] || 0) > 0);
+  const visibleTabs = result ? buildTabs(result.insights) : [];
 
   const filtered = result?.insights.filter(
     (i) => filter === null || i.type === filter

@@ -11,7 +11,7 @@ export interface DiscoverSource {
 
 export interface DiscoverInsight {
   title: string;
-  type: "pain_point" | "workaround" | "demand_signal" | "expectation";
+  type: string;
   description: string;
   frequency_score: number;
   severity_score: number;
