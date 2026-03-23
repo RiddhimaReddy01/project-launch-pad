@@ -206,7 +206,7 @@ export default function UnderstandModule() {
         .maybeSingle();
 
       const payload = {
-        analysis_data: { decompose: { stage1: result.stage1, stage2: result.stage2 } },
+        analysis_data: JSON.parse(JSON.stringify({ decompose: { stage1: result.stage1, stage2: result.stage2 } })),
         current_step: 'understand',
         updated_at: new Date().toISOString(),
       };
@@ -219,7 +219,7 @@ export default function UnderstandModule() {
           idea_text: idea,
           title: result.stage1.business_type,
           ...payload,
-        });
+        } as any);
       }
       setSaveStatus('saved');
       toast.success('Understanding saved');
