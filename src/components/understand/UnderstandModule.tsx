@@ -296,7 +296,7 @@ export default function UnderstandModule() {
 
       {/* Error */}
       {status === 'error' && (
-        <div className="rounded-[14px] p-6 text-center" style={{ backgroundColor: 'rgba(239,68,68,0.04)' }}>
+        <div className="rounded-[14px] p-6 text-center" style={{ backgroundColor: 'rgba(140,96,96,0.04)' }}>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: 'var(--destructive)', marginBottom: 16 }}>{error}</p>
           <button
             onClick={() => { hasRun.current = false; runDecompose(); }}
@@ -314,7 +314,7 @@ export default function UnderstandModule() {
           {/* Sticky actions bar */}
           <div className="flex items-center justify-between flex-wrap gap-3">
             {result.cached && (
-              <span className="rounded-full px-3 py-1" style={{ fontSize: 11, fontFamily: "'Inter', sans-serif", backgroundColor: 'rgba(45,139,117,0.08)', color: 'var(--accent-teal)' }}>
+              <span className="rounded-full px-3 py-1" style={{ fontSize: 11, fontFamily: "'Inter', sans-serif", backgroundColor: 'rgba(91,140,126,0.08)', color: 'var(--accent-teal)' }}>
                 Cached result
               </span>
             )}
@@ -333,7 +333,7 @@ export default function UnderstandModule() {
                   className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
                   style={{
                     fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 400,
-                    backgroundColor: saveStatus === 'saved' ? 'rgba(45,139,117,0.08)' : 'var(--surface-input)',
+                    backgroundColor: saveStatus === 'saved' ? 'rgba(91,140,126,0.08)' : 'var(--surface-input)',
                     color: saveStatus === 'saved' ? 'var(--accent-teal)' : 'var(--text-secondary)',
                     border: 'none', cursor: 'pointer',
                   }}
@@ -389,7 +389,7 @@ export default function UnderstandModule() {
               style={{
                 fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 400,
                 backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer',
-                boxShadow: '0 2px 12px rgba(108,92,231,0.25)',
+                boxShadow: '0 2px 12px rgba(26,26,26,0.12)',
               }}
             >
               Continue to Discover →

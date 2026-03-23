@@ -64,7 +64,7 @@ function CopyButton({ text }: { text: string }) {
       style={{
         fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400,
         color: copied ? 'var(--accent-teal)' : 'var(--text-muted)',
-        backgroundColor: copied ? 'rgba(45,139,117,0.06)' : 'var(--surface-input)',
+        backgroundColor: copied ? 'rgba(91,140,126,0.06)' : 'var(--surface-input)',
         border: 'none', cursor: 'pointer',
       }}
     >
@@ -753,9 +753,9 @@ function ScorecardSection({ data, onUpdate, analyzeData, setupData }: {
     if (!hasData) return { label: 'Awaiting data', color: 'var(--text-muted)', bg: 'var(--surface-bg)', reasoning: 'Enter your validation results above to get a recommendation.' };
 
     const metPct = data.filter(m => m.target > 0 && m.actual >= m.target).length / Math.max(data.filter(m => m.target > 0).length, 1);
-    if (metPct >= 0.7) return { label: 'GO', color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.06)', reasoning: 'Strong signals across your validation metrics. Move forward with confidence.' };
-    if (metPct >= 0.4) return { label: 'PIVOT', color: 'var(--accent-amber)', bg: 'rgba(212,136,15,0.06)', reasoning: 'Mixed signals. Refine your positioning or target a narrower segment before investing further.' };
-    return { label: 'RECONSIDER', color: '#8C6060', bg: 'rgba(224,82,82,0.06)', reasoning: 'Weak demand signals. Consider a fundamentally different approach or target market.' };
+    if (metPct >= 0.7) return { label: 'GO', color: 'var(--accent-teal)', bg: 'rgba(91,140,126,0.06)', reasoning: 'Strong signals across your validation metrics. Move forward with confidence.' };
+    if (metPct >= 0.4) return { label: 'PIVOT', color: 'var(--accent-amber)', bg: 'rgba(166,139,91,0.06)', reasoning: 'Mixed signals. Refine your positioning or target a narrower segment before investing further.' };
+    return { label: 'RECONSIDER', color: '#8C6060', bg: 'rgba(140,96,96,0.06)', reasoning: 'Weak demand signals. Consider a fundamentally different approach or target market.' };
   }, [data]);
 
   // Context summary

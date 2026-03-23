@@ -114,7 +114,7 @@ export default function DecomposeModule() {
                   fontFamily: "'Inter', sans-serif",
                   fontSize: 11,
                   fontWeight: 400,
-                  backgroundColor: 'rgba(212,136,15,0.08)',
+                  backgroundColor: 'rgba(166,139,91,0.08)',
                   color: 'var(--accent-amber)',
                 }}
               >

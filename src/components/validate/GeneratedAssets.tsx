@@ -154,7 +154,7 @@ function MarketplaceAsset() {
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: 16 }}>{ml.description}</p>
         <span style={{
           fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400,
-          color: 'var(--accent-teal)', padding: '4px 10px', borderRadius: 6, backgroundColor: 'rgba(45,139,117,0.06)',
+          color: 'var(--accent-teal)', padding: '4px 10px', borderRadius: 6, backgroundColor: 'rgba(91,140,126,0.06)',
         }}>
           {ml.pricing}
         </span>

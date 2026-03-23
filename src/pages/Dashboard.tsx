@@ -326,7 +326,7 @@ function ExperimentsTab({ experiments, statusStyles, onStatusChange, onDelete }:
                           return (
                             <span key={key} className="rounded-[6px]" style={{
                               padding: '3px 8px', fontSize: 11, fontFamily: "'Inter', sans-serif",
-                              backgroundColor: met ? 'rgba(45,139,117,0.06)' : 'var(--surface-input)',
+                              backgroundColor: met ? 'rgba(91,140,126,0.06)' : 'var(--surface-input)',
                               color: met ? 'var(--accent-teal)' : 'var(--text-secondary)',
                             }}>
                               {key}: {val.actual}/{val.target_label || val.target} {val.unit}

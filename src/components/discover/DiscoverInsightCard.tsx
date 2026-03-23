@@ -324,7 +324,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
               className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
               style={{
                 fontSize: 13, fontFamily: "'Inter', sans-serif", fontWeight: 300,
-                backgroundColor: saved ? 'rgba(45,139,117,0.08)' : 'var(--surface-input)',
+                backgroundColor: saved ? 'rgba(91,140,126,0.08)' : 'var(--surface-input)',
                 color: saved ? 'var(--accent-teal)' : 'var(--text-secondary)',
                 border: 'none', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.6 : 1,
               }}
@@ -336,7 +336,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
               className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
               style={{
                 fontSize: 13, fontFamily: "'Inter', sans-serif", fontWeight: 300,
-                backgroundColor: noteSaved ? 'rgba(45,139,117,0.08)' : 'var(--surface-input)',
+                backgroundColor: noteSaved ? 'rgba(91,140,126,0.08)' : 'var(--surface-input)',
                 color: noteSaved ? 'var(--accent-teal)' : 'var(--text-secondary)',
                 border: 'none', cursor: 'pointer',
               }}

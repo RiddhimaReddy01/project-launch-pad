@@ -121,7 +121,7 @@ export default function DiscoverModule() {
                 style={{
                   fontSize: 11,
                   fontFamily: "'Inter', sans-serif",
-                  backgroundColor: 'rgba(45,139,117,0.08)',
+                  backgroundColor: 'rgba(91,140,126,0.08)',
                   color: 'var(--accent-teal)',
                 }}
               >
@@ -155,7 +155,7 @@ export default function DiscoverModule() {
       {/* Error */}
       {status === 'error' && (
         <div className="text-center py-16">
-          <div className="rounded-[12px] p-6 mb-4 inline-block" style={{ backgroundColor: 'rgba(239,68,68,0.06)' }}>
+          <div className="rounded-[12px] p-6 mb-4 inline-block" style={{ backgroundColor: 'rgba(140,96,96,0.06)' }}>
             <p style={{ fontSize: 14, fontFamily: "'Inter', sans-serif", color: 'var(--destructive)' }}>
               {error}
             </p>

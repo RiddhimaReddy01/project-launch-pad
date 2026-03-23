@@ -91,9 +91,9 @@ function DerivedSignals({ metrics }: { metrics: (MetricTarget & { actual: number
 function VerdictCard({ verdict, reasoning }: { verdict: Verdict; reasoning: string }) {
   const config: Record<Verdict, { label: string; color: string; bg: string }> = {
     awaiting: { label: 'Awaiting data', color: 'var(--text-muted)', bg: 'var(--surface-bg)' },
-    go: { label: 'GO', color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.06)' },
-    pivot: { label: 'PIVOT', color: 'var(--accent-amber)', bg: 'rgba(212,136,15,0.06)' },
-    kill: { label: 'NOT WORTH IT', color: '#8C6060', bg: 'rgba(224,82,82,0.06)' },
+    go: { label: 'GO', color: 'var(--accent-teal)', bg: 'rgba(91,140,126,0.06)' },
+    pivot: { label: 'PIVOT', color: 'var(--accent-amber)', bg: 'rgba(166,139,91,0.06)' },
+    kill: { label: 'NOT WORTH IT', color: '#8C6060', bg: 'rgba(140,96,96,0.06)' },
   };
   const c = config[verdict];
 
