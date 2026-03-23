@@ -109,7 +109,7 @@ export default function ValidateModule() {
     if (selectedInsight) ctx.insight_title = selectedInsight;
     if (discoverResult?.insights) {
       ctx.customer_quotes = discoverResult.insights
-        .flatMap(i => i.sources?.map(s => s.snippet).filter(Boolean) || [])
+        .flatMap(i => i.sources?.map(s => s.text).filter(Boolean) || [])
         .slice(0, 8);
       ctx.insight_evidence = discoverResult.insights
         .slice(0, 5)
