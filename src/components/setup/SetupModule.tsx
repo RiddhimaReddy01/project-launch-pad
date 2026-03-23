@@ -179,7 +179,7 @@ export default function SetupModule() {
   const renderContent = () => {
     const state = { costs: costsState, suppliers: suppliersState, team: teamState, timeline: timelineState }[activeTab];
 
-    if (state.status === 'loading') return <SectionSkeleton label={`Generating ${activeTab} plan for ${selectedTier} tier...`} />;
+    if (state.status === 'loading') return <SectionSkeleton label={`Researching ${activeTab === 'costs' ? 'launch costs' : activeTab === 'suppliers' ? 'vendors' : activeTab === 'team' ? 'hiring options' : 'your roadmap'} for the ${selectedTier} strategy...`} />;
     if (state.status === 'error') return (
       <div className="flex flex-col items-center justify-center" style={{ minHeight: 200 }}>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>Could not generate this section.</p>
