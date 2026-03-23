@@ -1,6 +1,8 @@
-export default function SectionSkeleton({ label }: { label?: string }) {
+import { forwardRef } from 'react';
+
+const SectionSkeleton = forwardRef<HTMLDivElement, { label?: string }>(({ label }, ref) => {
   return (
-    <div style={{ padding: '48px 0' }}>
+    <div ref={ref} style={{ padding: '48px 0' }}>
       {label && (
         <p style={{
           fontFamily: "'Inter', sans-serif",
@@ -42,4 +44,8 @@ export default function SectionSkeleton({ label }: { label?: string }) {
       </div>
     </div>
   );
-}
+});
+
+SectionSkeleton.displayName = 'SectionSkeleton';
+
+export default SectionSkeleton;
