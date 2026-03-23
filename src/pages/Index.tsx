@@ -12,7 +12,7 @@ function SocialProof() {
   const stats = [
     { value: '2,400+', label: 'Ideas researched' },
     { value: '12 min', label: 'Average time to insights' },
-    { value: '89%', label: 'Said they'd use it again' },
+    { value: '89%', label: 'Would use it again' },
   ];
 
   return (
