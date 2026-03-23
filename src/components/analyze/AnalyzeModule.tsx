@@ -155,13 +155,6 @@ export default function AnalyzeModule() {
     setActiveModule(key);
   };
 
-  const toggleFinding = (finding: string) => {
-    setSelectedFindings(prev => {
-      const next = new Set(prev);
-      next.has(finding) ? next.delete(finding) : next.add(finding);
-      return next;
-    });
-  };
 
   const handleSave = async () => {
     if (!user) { toast.error('Sign in to save analysis'); return; }

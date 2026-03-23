@@ -131,7 +131,7 @@ export default function Dashboard() {
 
         {/* Tabs */}
         <div className="flex" style={{ gap: 4, marginBottom: 32, borderBottom: '1px solid var(--divider-light)', paddingBottom: 0 }}>
-          {(['ideas', 'experiments'] as const).map(tab => (
+          {(['ideas', 'findings', 'experiments'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -149,7 +149,7 @@ export default function Dashboard() {
                 textTransform: 'capitalize',
               }}
             >
-              {tab === 'ideas' ? `Saved Ideas (${ideas.length})` : `Experiments (${experiments.length})`}
+              {tab === 'ideas' ? `Ideas (${ideas.length})` : tab === 'findings' ? `Findings (${allFindings.length})` : `Experiments (${experiments.length})`}
             </button>
           ))}
         </div>
