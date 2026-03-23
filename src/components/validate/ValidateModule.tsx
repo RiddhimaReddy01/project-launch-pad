@@ -34,17 +34,38 @@ const SPEED_LABELS: Record<string, string> = { fast: 'Fast', medium: 'Medium', s
 
 type TabKey = 'landing' | 'survey' | 'whatsapp' | 'communities' | 'scorecard';
 
-const ALL_TABS: { key: TabKey; label: string; mono: string; subtitle: string; outputKey: string; deployGuide: { tool: string; url: string; instruction: string } }[] = [
+const ALL_TABS: { key: TabKey; label: string; mono: string; subtitle: string; outputKey: string; target: string; deployGuide: { tool: string; urls: { name: string; url: string }[]; instruction: string } }[] = [
   { key: 'landing', label: 'Landing Page', mono: 'L', subtitle: 'Pitch your idea', outputKey: 'landing_page',
-    deployGuide: { tool: 'Carrd / Framer / Typedream', url: 'https://carrd.co', instruction: 'Copy the headline, benefits, and CTA into a one-page builder. Connect a form to capture emails.' } },
+    target: '50+ email signups in 7 days',
+    deployGuide: { tool: 'One-page builder', urls: [
+      { name: 'Carrd', url: 'https://carrd.co' },
+      { name: 'Framer', url: 'https://framer.com' },
+      { name: 'Typedream', url: 'https://typedream.com' },
+    ], instruction: 'Copy the headline, benefits, and CTA into a one-page builder. Connect a form (Mailchimp, ConvertKit) to capture emails.' } },
   { key: 'survey', label: 'Survey', mono: 'S', subtitle: '7 discovery questions', outputKey: 'survey',
-    deployGuide: { tool: 'Google Forms / Typeform', url: 'https://forms.google.com', instruction: 'Copy questions into a form builder. Keep it under 3 minutes to complete.' } },
+    target: '30+ responses with 60%+ completion',
+    deployGuide: { tool: 'Form builder', urls: [
+      { name: 'Google Forms', url: 'https://forms.google.com' },
+      { name: 'Typeform', url: 'https://typeform.com' },
+      { name: 'Tally', url: 'https://tally.so' },
+    ], instruction: 'Copy questions into a form builder. Keep it under 3 minutes to complete. Share via communities and direct outreach.' } },
   { key: 'whatsapp', label: 'Message', mono: 'W', subtitle: 'Community outreach', outputKey: 'whatsapp',
-    deployGuide: { tool: 'WhatsApp / Slack / Discord', url: '', instruction: 'Replace [SURVEY_LINK] with your actual form URL, then share in the communities listed.' } },
-  { key: 'communities', label: 'Communities', mono: 'C', subtitle: '10 places to test', outputKey: 'communities',
-    deployGuide: { tool: 'Facebook / Reddit / Discord', url: '', instruction: 'Join each community and engage genuinely before sharing your survey or landing page.' } },
+    target: '10+ replies from 50 messages sent',
+    deployGuide: { tool: 'Messaging platforms', urls: [
+      { name: 'WhatsApp', url: 'https://web.whatsapp.com' },
+      { name: 'Slack', url: 'https://slack.com' },
+      { name: 'Discord', url: 'https://discord.com' },
+    ], instruction: 'Replace [SURVEY_LINK] with your actual form URL. Share in communities below. Send to 5-10 people first to test the message.' } },
+  { key: 'communities', label: 'Communities', mono: 'C', subtitle: 'Places to test', outputKey: 'communities',
+    target: '5+ communities engaged, 3+ with warm reception',
+    deployGuide: { tool: 'Social platforms', urls: [
+      { name: 'Reddit', url: 'https://reddit.com' },
+      { name: 'Facebook Groups', url: 'https://facebook.com/groups' },
+      { name: 'Discord', url: 'https://discord.com' },
+    ], instruction: 'Join each community and engage genuinely for 2-3 days before sharing your survey or landing page. Follow community rules.' } },
   { key: 'scorecard', label: 'Scorecard', mono: 'T', subtitle: 'Track progress', outputKey: 'scorecard',
-    deployGuide: { tool: 'Dashboard', url: '', instruction: 'Update metrics as responses come in. Save to persist to your account.' } },
+    target: 'Hit 70%+ of targets for a GO verdict',
+    deployGuide: { tool: 'Dashboard', urls: [], instruction: 'Update metrics as responses come in. Save to persist progress to your dashboard.' } },
 ];
 
 const PLATFORM_COLORS: Record<string, string> = {
