@@ -3,7 +3,7 @@ import type { Insight, Source } from '@/data/discover-mock';
 import { useIdea } from '@/context/IdeaContext';
 
 const TYPE_CONFIG: Record<Insight['type'], { label: string; color: string; bg: string }> = {
-  pain: { label: 'PAIN POINT', color: 'var(--accent-primary)', bg: 'rgba(108,92,231,0.06)' },
+  pain: { label: 'PAIN POINT', color: 'var(--accent-primary)', bg: 'rgba(26,26,26,0.04)' },
   want: { label: 'UNMET WANT', color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.06)' },
   gap: { label: 'MARKET GAP', color: 'var(--accent-blue)', bg: 'rgba(59,130,246,0.06)' },
 };

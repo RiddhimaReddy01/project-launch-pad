@@ -8,10 +8,10 @@ import ScoreDonut from './ScoreDonut';
 import ScoreMethodology from './ScoreMethodology';
 
 const TYPE_CONFIG = {
-  pain_point: { label: 'PAIN POINT', color: '#EF4444', bg: 'rgba(239,68,68,0.06)', icon: 'P' },
-  workaround: { label: 'WORKAROUND', color: 'var(--accent-amber)', bg: 'rgba(212,136,15,0.06)', icon: 'W' },
-  demand_signal: { label: 'DEMAND SIGNAL', color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.06)', icon: 'D' },
-  expectation: { label: 'EXPECTATION', color: 'var(--accent-blue)', bg: 'rgba(59,130,246,0.06)', icon: 'E' },
+  pain_point: { label: 'PAIN POINT', color: '#8C6B6B', bg: 'rgba(140,107,107,0.06)', icon: 'P' },
+  workaround: { label: 'WORKAROUND', color: 'var(--accent-amber)', bg: 'rgba(166,139,91,0.06)', icon: 'W' },
+  demand_signal: { label: 'DEMAND SIGNAL', color: 'var(--accent-teal)', bg: 'rgba(91,140,126,0.06)', icon: 'D' },
+  expectation: { label: 'EXPECTATION', color: 'var(--accent-blue)', bg: 'rgba(122,143,160,0.06)', icon: 'E' },
 };
 
 const PLATFORM_META: Record<string, { label: string }> = {
@@ -260,7 +260,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
               className="rounded-full px-2.5 py-1 transition-colors duration-150"
               style={{
                 fontSize: 10, fontFamily: "'Inter', sans-serif", fontWeight: 300,
-                backgroundColor: showMethodology ? 'rgba(108,92,231,0.08)' : 'var(--surface-input)',
+                backgroundColor: showMethodology ? 'rgba(26,26,26,0.06)' : 'var(--surface-input)',
                 color: showMethodology ? 'var(--accent-primary)' : 'var(--text-muted)',
                 border: 'none', cursor: 'pointer',
               }}
