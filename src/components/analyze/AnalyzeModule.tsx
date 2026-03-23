@@ -392,10 +392,10 @@ export default function AnalyzeModule() {
           {activeSec.status === 'idle' && (
             <div className="flex flex-col items-center justify-center" style={{ minHeight: 300 }}>
               <p className="font-heading" style={{ fontSize: 20, marginBottom: 8, textAlign: 'center' }}>
-                Ready to analyze
+                Ready to research
               </p>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', textAlign: 'center', maxWidth: 360, lineHeight: 1.6, marginBottom: 20 }}>
-                Configure your inputs in the composer panel, then compile this analysis module.
+                Set up your inputs in the panel on the right, then hit the button below.
               </p>
               <button
                 onClick={() => {
