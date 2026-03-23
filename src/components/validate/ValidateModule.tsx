@@ -204,13 +204,31 @@ export default function ValidateModule() {
     });
   }, [analyzeData, setupData]);
 
+  // Filter tabs based on selected methods' outputs
+  const visibleTabs = useMemo(() => {
+    const selectedOutputs = new Set<string>();
+    selectedMethods.forEach(mId => {
+      const method = ALL_METHODS.find(m => m.id === mId);
+      method?.outputs.forEach(o => selectedOutputs.add(o));
+    });
+    // Always include scorecard
+    selectedOutputs.add('scorecard');
+    return ALL_TABS.filter(tab => selectedOutputs.has(tab.outputKey));
+  }, [selectedMethods]);
+
+  // Auto-set activeTab to first visible tab when toolkit opens
+  useEffect(() => {
+    if (phase === 'toolkit' && visibleTabs.length > 0 && (!activeTab || !visibleTabs.find(t => t.key === activeTab))) {
+      setActiveTab(visibleTabs[0].key);
+    }
+  }, [phase, visibleTabs, activeTab]);
+
   const generate = useCallback(async () => {
     if (!context) return;
     setPhase('generating');
     setErrorMsg('');
     try {
       const data = await generateValidation(context);
-      // Apply derived scorecard targets
       data.scorecard = deriveScorecard(data.scorecard);
       setResult(data);
       setPhase('toolkit');
