@@ -168,7 +168,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
   };
 
   const scoreColor = insight.composite_score >= 7 ? 'var(--accent-teal)' :
-    insight.composite_score >= 4 ? 'var(--accent-amber)' : '#EF4444';
+    insight.composite_score >= 4 ? 'var(--accent-amber)' : '#8C6B6B';
 
   return (
     <div

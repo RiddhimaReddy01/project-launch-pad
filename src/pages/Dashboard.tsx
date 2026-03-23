@@ -106,8 +106,8 @@ export default function Dashboard() {
 
   const statusStyles: Record<string, { color: string; bg: string }> = {
     planned: { color: 'var(--text-muted)', bg: 'var(--surface-input)' },
-    running: { color: '#D4880F', bg: 'rgba(212,136,15,0.06)' },
-    completed: { color: '#2D8B75', bg: 'rgba(45,139,117,0.06)' },
+    running: { color: 'var(--accent-amber)', bg: 'rgba(166,139,91,0.06)' },
+    completed: { color: 'var(--accent-teal)', bg: 'rgba(91,140,126,0.06)' },
   };
 
   return (

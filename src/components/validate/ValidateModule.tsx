@@ -29,7 +29,7 @@ const ALL_METHODS: ValidationMethod[] = [
   { id: 'teardown', name: 'Competitor Teardown', description: 'Side-by-side comparison highlighting your differentiation', effort: 'low', speed: 'fast', outputs: ['landing_page', 'scorecard'] },
 ];
 
-const EFFORT_COLORS: Record<string, string> = { low: '#2D8B75', medium: '#D4880F', high: '#E05252' };
+const EFFORT_COLORS: Record<string, string> = { low: 'var(--accent-teal)', medium: 'var(--accent-amber)', high: '#8C6B6B' };
 const SPEED_LABELS: Record<string, string> = { fast: 'Fast', medium: 'Medium', slow: 'Slow' };
 
 type TabKey = 'landing' | 'survey' | 'whatsapp' | 'communities' | 'scorecard';
