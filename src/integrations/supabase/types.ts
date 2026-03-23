@@ -121,6 +121,41 @@ export type Database = {
         }
         Relationships: []
       }
+      project_notes: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          project_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          project_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          project_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_notes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "saved_ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_ideas: {
         Row: {
           analysis_data: Json | null
@@ -129,7 +164,11 @@ export type Database = {
           discover_data: Json | null
           id: string
           idea_text: string
+          last_section: string | null
+          progress: number | null
           setup_data: Json | null
+          status: string | null
+          title: string | null
           updated_at: string
           user_id: string
           validate_data: Json | null
@@ -141,7 +180,11 @@ export type Database = {
           discover_data?: Json | null
           id?: string
           idea_text: string
+          last_section?: string | null
+          progress?: number | null
           setup_data?: Json | null
+          status?: string | null
+          title?: string | null
           updated_at?: string
           user_id: string
           validate_data?: Json | null
@@ -153,12 +196,139 @@ export type Database = {
           discover_data?: Json | null
           id?: string
           idea_text?: string
+          last_section?: string | null
+          progress?: number | null
           setup_data?: Json | null
+          status?: string | null
+          title?: string | null
           updated_at?: string
           user_id?: string
           validate_data?: Json | null
         }
         Relationships: []
+      }
+      saved_insights: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          project_id: string | null
+          section_type: string
+          source_data: Json | null
+          tags: string[] | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          project_id?: string | null
+          section_type?: string
+          source_data?: Json | null
+          tags?: string[] | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          project_id?: string | null
+          section_type?: string
+          source_data?: Json | null
+          tags?: string[] | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_insights_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "saved_ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      section_history: {
+        Row: {
+          created_at: string
+          id: string
+          project_id: string
+          section_data: Json
+          section_key: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          project_id: string
+          section_data?: Json
+          section_key: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          project_id?: string
+          section_data?: Json
+          section_key?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "section_history_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "saved_ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      validation_assets: {
+        Row: {
+          asset_data: Json
+          asset_type: string
+          created_at: string
+          id: string
+          method_id: string | null
+          project_id: string
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          asset_data?: Json
+          asset_type: string
+          created_at?: string
+          id?: string
+          method_id?: string | null
+          project_id: string
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          asset_data?: Json
+          asset_type?: string
+          created_at?: string
+          id?: string
+          method_id?: string | null
+          project_id?: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "validation_assets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "saved_ideas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
