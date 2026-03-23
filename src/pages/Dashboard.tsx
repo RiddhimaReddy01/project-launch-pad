@@ -350,10 +350,3 @@ function ExperimentsTab({ experiments, statusStyles, onStatusChange, onDelete }:
     </div>
   );
 }
-
-interface ExperimentMetric {
-  target: number;
-  actual: number;
-  unit: string;
-  target_label: string;
-}
