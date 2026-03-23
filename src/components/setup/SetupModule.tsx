@@ -208,7 +208,7 @@ export default function SetupModule() {
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>SETUP</p>
           <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>Launch Plan</p>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-            AI-generated costs, vendors, team, and timeline for your {selectedTier} tier launch.
+            Your costs, vendors, team plan, and roadmap — tailored to the {selectedTier} launch strategy.
           </p>
         </div>
         <div className="flex items-center gap-2">
