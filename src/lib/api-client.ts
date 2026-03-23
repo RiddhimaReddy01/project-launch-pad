@@ -1,6 +1,6 @@
 /**
  * 3-tier fallback API client:
- *   1. PRIMARY: https://launchlens.com (Cloudflare Tunnel) — currently CORS-blocked, skipped
+ *   1. PRIMARY: https://launchlens.com (Cloudflare Tunnel)
  *   2. BACKUP:  https://launch-lean-ed28c2e7.onrender.com (Render)
  *   3. LOVABLE: Lovable Cloud edge functions (supabase.functions.invoke)
  *
@@ -10,7 +10,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 
-// const PRIMARY_API = "https://launchlens.com"; // CORS-blocked, disabled
+const PRIMARY_API = "https://launchlens.com";
 const BACKUP_API = "https://launch-lean-ed28c2e7.onrender.com";
 
 // Map edge function names to Render API paths
