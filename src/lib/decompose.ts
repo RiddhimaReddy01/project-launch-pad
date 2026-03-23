@@ -37,7 +37,29 @@ export async function decomposeIdea(idea: string): Promise<DecomposeResult> {
   }
 
   // Call API with 3-tier fallback
-  const result = await invokeApi<DecomposeResult>("decompose-idea", { idea });
+  const raw = await invokeApi<any>("decompose-idea", { idea });
+
+  // Normalize: Render backend returns flat format, edge function returns stage1/stage2
+  let result: DecomposeResult;
+  if (raw.stage1 && raw.stage2) {
+    result = raw as DecomposeResult;
+  } else {
+    // Flat format from Render backend
+    result = {
+      cached: raw.cached ?? false,
+      stage1: {
+        business_type: raw.business_type || "",
+        location: raw.location || { city: "", state: "" },
+      },
+      stage2: {
+        target_customers: raw.target_customers || [],
+        price_tier: raw.price_tier || "",
+        search_queries: raw.search_queries || [],
+        source_domains: raw.source_domains || [],
+        subreddits: raw.subreddits || [],
+      },
+    };
+  }
 
   // Store in memory cache
   memCache.set(key, { result, timestamp: Date.now() });
