@@ -663,9 +663,6 @@ function SurveySection({ data, onChange }: { data: ValidateResult['survey']; onC
           </div>
         ))}
       </div>
-      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginTop: 12 }}>
-        Use Google Forms or Typeform to deploy. Keep it under 3 minutes.
-      </p>
     </div>
   );
 }
