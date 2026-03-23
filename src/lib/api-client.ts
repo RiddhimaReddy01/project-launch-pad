@@ -271,4 +271,3 @@ export async function invokeApi<T = unknown>(functionName: string, body: unknown
   console.log(`[API] Falling back to Lovable Cloud for ${functionName}`);
   return await tryLovableCloud<T>(functionName, body);
 }
-}
