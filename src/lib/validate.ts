@@ -40,10 +40,10 @@ export interface ScorecardMetric {
 }
 
 export interface ValidateResult {
-  landing_page: LandingPageOutput;
-  survey: SurveyQuestion[];
-  whatsapp: WhatsAppOutput;
-  communities: Community[];
+  landing_page: LandingPageOutput | null;
+  survey: SurveyQuestion[] | null;
+  whatsapp: WhatsAppOutput | null;
+  communities: Community[] | null;
   scorecard: ScorecardMetric[];
 }
 
@@ -63,13 +63,19 @@ export interface ValidateContext {
   timeline_summary?: string;
 }
 
-export async function generateValidation(context: ValidateContext): Promise<ValidateResult> {
+export async function generateValidation(
+  context: ValidateContext,
+  requiredOutputs?: string[]
+): Promise<ValidateResult> {
   const { data, error } = await supabase.functions.invoke('validate-idea', {
-    body: { context },
+    body: {
+      context,
+      required_outputs: requiredOutputs,
+    },
   });
 
-  if (error) throw new Error(error.message || 'Failed to generate validation assets');
-  if (!data) throw new Error('No data returned');
+  if (error) throw new Error(error.message || 'Something went wrong while building your validation kit');
+  if (!data) throw new Error('No results returned — please try again');
 
   return data as ValidateResult;
 }

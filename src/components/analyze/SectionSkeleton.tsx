@@ -14,7 +14,6 @@ export default function SectionSkeleton({ label }: { label?: string }) {
         </p>
       )}
       <div className="flex flex-col items-center gap-4">
-        {/* Animated pulse bars */}
         {[260, 180, 220].map((w, i) => (
           <div
             key={i}
@@ -25,6 +24,7 @@ export default function SectionSkeleton({ label }: { label?: string }) {
               maxWidth: '100%',
               borderRadius: 6,
               backgroundColor: 'var(--divider)',
+              animationDelay: `${i * 150}ms`,
             }}
           />
         ))}
@@ -36,6 +36,7 @@ export default function SectionSkeleton({ label }: { label?: string }) {
             borderRadius: 12,
             backgroundColor: 'var(--surface-input)',
             marginTop: 16,
+            animationDelay: '450ms',
           }}
         />
       </div>
