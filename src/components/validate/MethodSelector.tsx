@@ -8,9 +8,9 @@ const EFFORT_COLORS: Record<string, string> = {
 };
 
 const SPEED_LABELS: Record<string, string> = {
-  fast: '⚡ Fast',
-  medium: '⏱ Medium',
-  slow: '🐢 Slow',
+  fast: 'Fast',
+  medium: 'Medium',
+  slow: 'Slow',
 };
 
 interface Props {

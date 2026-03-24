@@ -4,7 +4,7 @@ const SCORE_EXPLANATIONS = [
   {
     key: 'frequency_score' as const,
     label: 'Frequency',
-    icon: '📊',
+    icon: '',
     getDesc: (v: number) => {
       if (v >= 0.7) return 'This issue appears very frequently — mentioned across multiple threads, reviews, and discussions.';
       if (v >= 0.4) return 'Moderately discussed — appears in several sources but not dominant.';
@@ -15,7 +15,7 @@ const SCORE_EXPLANATIONS = [
   {
     key: 'severity_score' as const,
     label: 'Severity',
-    icon: '🔥',
+    icon: '',
     getDesc: (v: number) => {
       if (v >= 0.7) return 'Highly severe — users describe this as a major frustration or dealbreaker.';
       if (v >= 0.4) return 'Moderate impact — users are annoyed but working around it.';
@@ -26,7 +26,7 @@ const SCORE_EXPLANATIONS = [
   {
     key: 'willingness_to_pay' as const,
     label: 'Willingness to Pay',
-    icon: '💰',
+    icon: '',
     getDesc: (v: number) => {
       if (v >= 0.7) return 'Strong pay signal — users explicitly mention budgets, price comparisons, or willingness to switch.';
       if (v >= 0.4) return 'Some pay signal — indirect mentions of value or cost.';
@@ -37,7 +37,7 @@ const SCORE_EXPLANATIONS = [
   {
     key: 'market_size_signal' as const,
     label: 'Market Size',
-    icon: '🌍',
+    icon: '',
     getDesc: (v: number) => {
       if (v >= 0.7) return 'Large potential market — this issue affects many people across demographics.';
       if (v >= 0.4) return 'Medium market — affects a meaningful but specific segment.';
@@ -84,7 +84,7 @@ export default function ScoreMethodology({ insight }: { insight: DiscoverInsight
             <div key={key} className="rounded-[8px] p-3" style={{ backgroundColor: 'var(--surface-card)' }}>
               <div className="flex items-center justify-between mb-1.5">
                 <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-primary)' }}>
-                  {icon} {label}
+                  {label}
                 </span>
                 <span style={{
                   fontFamily: "'Outfit', sans-serif",
