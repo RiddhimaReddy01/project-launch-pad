@@ -32,7 +32,7 @@ export default function CostBuilder({ data, selectedTier, onSelectTier }: { data
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `launchlens-budget-${selectedTier}.csv`;
+    a.download = `launch-lean-budget-${selectedTier}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }, [categories, totalMin, totalMax, selectedTier]);

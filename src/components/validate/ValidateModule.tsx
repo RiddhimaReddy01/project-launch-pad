@@ -301,7 +301,7 @@ export default function ValidateModule() {
     if (!printWin) { setExporting(false); return; }
     const biz = context?.business_type || idea;
     const loc = context ? `${context.city}, ${context.state}` : '';
-    let html = `<!DOCTYPE html><html><head><title>LaunchLens Validation - ${biz}</title>
+    let html = `<!DOCTYPE html><html><head><title>Launch Lean Validation - ${biz}</title>
       <style>body{font-family:Inter,-apple-system,sans-serif;max-width:800px;margin:40px auto;padding:0 24px;color:#1a1a1a}
       h1{font-size:24px;font-weight:400;margin-bottom:4px}h2{font-size:18px;font-weight:500;margin:28px 0 12px;border-bottom:1px solid #e5e5e5;padding-bottom:8px}
       .meta{font-size:13px;color:#999;margin-bottom:32px}table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}

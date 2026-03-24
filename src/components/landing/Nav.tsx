@@ -24,7 +24,7 @@ export default function Nav() {
       
       <span style={{ fontSize: 18, cursor: 'pointer' }} onClick={() => navigate('/')}>
         <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400 }}>Launch</span>
-        <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontWeight: 400 }}>{'\u200B'}Lens</span>
+        <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontWeight: 400 }}>{'\u200B'}Lean</span>
       </span>
       <span
         onClick={() => navigate(user ? '/dashboard' : '/auth')}

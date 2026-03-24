@@ -584,7 +584,7 @@ function generatePrintHTML(context: AnalyzeContext | null, sections: any, findin
       <ul style="font-size:13px;line-height:1.8;color:#444">${findings.map(f => `<li>${f}</li>`).join('')}</ul>
     </div>` : '';
   return `<!DOCTYPE html><html><head>
-    <title>LaunchLens Analysis — ${context.business_type}</title>
+    <title>Launch Lean Analysis — ${context.business_type}</title>
     <style>body{font-family:Inter,-apple-system,sans-serif;max-width:800px;margin:40px auto;padding:0 24px;color:#1a1a1a}h1{font-size:24px;font-weight:400;margin-bottom:4px}.meta{font-size:13px;color:#999;margin-bottom:32px}@media print{body{margin:20px}}</style>
   </head><body>
     <h1>${context.business_type}</h1>
