@@ -77,8 +77,14 @@ export default function SetupModule() {
     setters[section]({ data: null, status: 'loading' });
     try {
       const result = await setupSection(section, idea, selectedTier.toUpperCase());
+      // Treat empty arrays as failures
+      const isEmpty = (section === 'suppliers' && (!(result as any).suppliers?.length)) ||
+                      (section === 'team' && (!(result as any).team?.length));
+      if (isEmpty) {
+        setters[section]({ data: null, status: 'error', error: 'No data returned — try again or switch tiers' });
+        return;
+      }
       setters[section]({ data: result as any, status: 'completed' });
-      // Push to shared context for Validate tab
       setSetupData(prev => ({ ...prev, tier: selectedTier, [section]: result }));
     } catch (err: any) {
       setters[section]({ data: null, status: 'error', error: err.message });
