@@ -99,7 +99,7 @@ export default function SetupModule() {
 
   // Re-fetch suppliers/team/timeline when tier changes
   useEffect(() => {
-    if (!context) return;
+    if (!idea) return;
     if (suppliersState.status === 'completed') loadSection('suppliers');
     if (teamState.status === 'completed') loadSection('team');
     if (timelineState.status === 'completed') loadSection('timeline');
