@@ -60,12 +60,12 @@ interface ValidationAsset {
 
 type DashboardTab = 'overview' | 'projects' | 'insights' | 'validation' | 'account';
 
-const TAB_LABELS: Record<DashboardTab, string> = {
-  overview: 'Overview',
-  projects: 'My Projects',
-  insights: 'Saved Insights',
-  validation: 'Validation Tracker',
-  account: 'Account',
+const TAB_LABELS: Record<DashboardTab, { label: string; icon: string }> = {
+  overview: { label: 'Overview', icon: '📊' },
+  projects: { label: 'My Projects', icon: '📁' },
+  insights: { label: 'Saved Insights', icon: '💡' },
+  validation: { label: 'Validation', icon: '🧪' },
+  account: { label: 'Account', icon: '👤' },
 };
 
 const STATUS_FLOW = ['planned', 'running', 'completed'] as const;
@@ -86,10 +86,7 @@ export default function Dashboard() {
     if (!authLoading && !user) navigate('/auth', { replace: true });
   }, [user, authLoading, navigate]);
 
-  useEffect(() => {
-    if (!user) return;
-    loadData();
-  }, [user]);
+  useEffect(() => { if (user) loadData(); }, [user]);
 
   const loadData = async () => {
     setLoading(true);
@@ -102,7 +99,7 @@ export default function Dashboard() {
     if (ideasRes.data) setIdeas(ideasRes.data as unknown as SavedIdea[]);
     if (expRes.data && ideasRes.data) {
       const ideasMap = Object.fromEntries((ideasRes.data as unknown as SavedIdea[]).map(i => [i.id, i.idea_text]));
-      setExperiments((expRes.data as unknown as Experiment[]).map(e => ({ ...e, idea_text: ideasMap[e.idea_id] || 'Unknown idea' })));
+      setExperiments((expRes.data as unknown as Experiment[]).map(e => ({ ...e, idea_text: ideasMap[e.idea_id] || 'Unknown' })));
     }
     if (insightsRes.data) setInsights(insightsRes.data as unknown as SavedInsight[]);
     if (assetsRes.data) setAssets(assetsRes.data as unknown as ValidationAsset[]);
@@ -115,135 +112,99 @@ export default function Dashboard() {
     navigate('/research');
   };
 
-  const deleteIdea = async (id: string) => {
-    await supabase.from('saved_ideas').delete().eq('id', id);
-    toast.success('Project removed');
-    loadData();
-  };
-
-  const deleteInsight = async (id: string) => {
-    await supabase.from('saved_insights').delete().eq('id', id);
-    toast.success('Insight removed');
-    loadData();
-  };
-
+  const deleteIdea = async (id: string) => { await supabase.from('saved_ideas').delete().eq('id', id); toast.success('Removed'); loadData(); };
+  const deleteInsight = async (id: string) => { await supabase.from('saved_insights').delete().eq('id', id); toast.success('Removed'); loadData(); };
   const updateExperimentStatus = async (exp: Experiment) => {
-    const currentIdx = STATUS_FLOW.indexOf(exp.status as any);
-    const nextStatus = STATUS_FLOW[(currentIdx + 1) % STATUS_FLOW.length];
+    const nextStatus = STATUS_FLOW[(STATUS_FLOW.indexOf(exp.status as any) + 1) % STATUS_FLOW.length];
     await supabase.from('experiments').update({ status: nextStatus }).eq('id', exp.id);
     toast.success(`Status → ${nextStatus}`);
     loadData();
   };
-
-  const deleteExperiment = async (id: string) => {
-    await supabase.from('experiments').delete().eq('id', id);
-    toast.success('Experiment removed');
-    loadData();
-  };
+  const deleteExperiment = async (id: string) => { await supabase.from('experiments').delete().eq('id', id); toast.success('Removed'); loadData(); };
 
   if (authLoading || !user) return null;
 
-  const stepColors: Record<string, string> = {
-    understand: 'var(--text-primary)',
-    discover: 'var(--accent-blue)',
-    analyze: 'var(--accent-amber)',
-    setup: 'var(--accent-teal)',
-    validate: 'var(--text-primary)',
-  };
-
-  const statusStyles: Record<string, { color: string; bg: string }> = {
-    planned: { color: 'var(--text-muted)', bg: 'var(--surface-input)' },
-    running: { color: 'var(--accent-amber)', bg: 'rgba(166,139,91,0.06)' },
-    completed: { color: 'var(--accent-teal)', bg: 'rgba(91,140,126,0.06)' },
-  };
-
   const filteredIdeas = ideas.filter(i =>
-    !searchQuery || i.idea_text.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (i.title || '').toLowerCase().includes(searchQuery.toLowerCase())
+    !searchQuery || i.idea_text.toLowerCase().includes(searchQuery.toLowerCase()) || (i.title || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Overview stats
   const activeProjects = ideas.filter(i => i.current_step !== 'validate').length;
   const completedProjects = ideas.filter(i => i.current_step === 'validate').length;
-  const totalExperiments = experiments.length;
-  const runningExperiments = experiments.filter(e => e.status === 'running').length;
-
-  // Most recent project
   const latestProject = ideas[0] || null;
+
+  const stepColors: Record<string, string> = {
+    understand: 'var(--text-primary)', discover: 'var(--accent-blue)',
+    analyze: 'var(--accent-amber)', setup: 'var(--accent-primary)', validate: 'var(--accent-primary)',
+  };
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface-bg)' }}>
       <header className="flex items-center justify-between px-6" style={{ height: 64, borderBottom: '1px solid var(--divider)' }}>
         <span className="cursor-pointer" style={{ fontSize: 18 }} onClick={() => navigate('/')}>
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400 }}>Launch</span>
-          <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontWeight: 400 }}>{'\u200B'}Lens</span>
+          <span className="font-body" style={{ fontWeight: 600 }}>Launch</span>
+          <span className="font-heading" style={{ fontSize: 18, fontStyle: 'italic' }}>{'\u200B'}Lens</span>
         </span>
-        <div className="flex items-center" style={{ gap: 16 }}>
-          <span className="cursor-pointer transition-colors duration-200" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }} onClick={() => navigate('/')}>New idea</span>
-          <span className="cursor-pointer" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: '#8C6060' }} onClick={signOut}>Sign out</span>
+        <div className="flex items-center gap-4">
+          <span className="cursor-pointer font-caption transition-colors duration-200 hover:text-[var(--text-primary)]" onClick={() => navigate('/')}>+ New idea</span>
+          <span className="cursor-pointer font-caption" style={{ color: 'var(--error)' }} onClick={signOut}>Sign out</span>
         </div>
       </header>
 
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px 120px' }}>
-        <p className="font-caption" style={{ fontSize: 11, letterSpacing: '0.06em', marginBottom: 10 }}>DASHBOARD</p>
-        <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 6 }}>Welcome back</h1>
-        <p className="font-caption" style={{ fontSize: 13, marginBottom: 32 }}>{user.email}</p>
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '40px 24px 120px' }}>
+        <p className="font-section-label mb-2">DASHBOARD</p>
+        <h1 className="font-heading" style={{ fontSize: 28, marginBottom: 6 }}>Welcome back</h1>
+        <p className="font-caption" style={{ marginBottom: 32 }}>{user.email}</p>
 
         {/* Tabs */}
-        <div className="flex overflow-x-auto" style={{ gap: 0, marginBottom: 32, borderBottom: '1px solid var(--divider-light)', paddingBottom: 0 }}>
+        <div className="flex overflow-x-auto hide-scrollbar" style={{ gap: 0, marginBottom: 32, borderBottom: '1px solid var(--divider)' }}>
           {(Object.keys(TAB_LABELS) as DashboardTab[]).map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} style={{
-              padding: '10px 18px', fontFamily: "'Outfit', sans-serif", fontSize: 13, whiteSpace: 'nowrap',
-              fontWeight: activeTab === tab ? 400 : 300,
-              color: activeTab === tab ? 'var(--accent-primary)' : 'var(--text-muted)',
-              backgroundColor: 'transparent', border: 'none',
-              borderBottom: activeTab === tab ? '2px solid var(--accent-primary)' : '2px solid transparent',
-              cursor: 'pointer', marginBottom: -1,
-            }}>
-              {TAB_LABELS[tab]}
+            <button key={tab} onClick={() => setActiveTab(tab)}
+              className="font-body whitespace-nowrap transition-all duration-200"
+              style={{
+                padding: '10px 18px', fontSize: 13,
+                fontWeight: activeTab === tab ? 400 : 300,
+                color: activeTab === tab ? 'var(--accent-primary)' : 'var(--text-muted)',
+                backgroundColor: 'transparent', border: 'none',
+                borderBottom: activeTab === tab ? '2px solid var(--accent-primary)' : '2px solid transparent',
+                cursor: 'pointer', marginBottom: -1,
+              }}>
+              {TAB_LABELS[tab].icon} {TAB_LABELS[tab].label}
             </button>
           ))}
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center" style={{ padding: 60 }}>
-            <div className="rounded-full" style={{ width: 18, height: 18, border: '2px solid var(--divider-light)', borderTopColor: 'var(--accent-primary)', animation: 'spin 0.8s linear infinite' }} />
+            <p className="font-caption">Loading your data…</p>
           </div>
         ) : (
           <>
             {activeTab === 'overview' && (
               <OverviewTab
-                stats={{ activeProjects, completedProjects, totalExperiments, runningExperiments, totalInsights: insights.length }}
+                stats={{ activeProjects, completedProjects, totalExperiments: experiments.length, runningExperiments: experiments.filter(e => e.status === 'running').length, totalInsights: insights.length }}
                 latestProject={latestProject}
                 recentExperiments={experiments.slice(0, 3)}
-                statusStyles={statusStyles}
                 onResume={resumeIdea}
                 onNewIdea={() => navigate('/')}
               />
             )}
             {activeTab === 'projects' && (
               <>
-                <div className="mb-4">
-                  <input
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search projects…"
-                    className="w-full rounded-[10px] px-4 py-2.5"
-                    style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider-light)', color: 'var(--text-primary)', outline: 'none' }}
-                  />
-                </div>
+                <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search projects…"
+                  className="w-full card-base px-4 py-2.5 font-body mb-4" style={{ fontSize: 13, fontWeight: 300, color: 'var(--text-primary)', outline: 'none' }} />
                 <ProjectsTab ideas={filteredIdeas} stepColors={stepColors} onResume={resumeIdea} onDelete={deleteIdea} onNavigate={() => navigate('/')} />
               </>
             )}
-            {activeTab === 'insights' && (
-              <InsightsTab insights={insights} onDelete={deleteInsight} />
-            )}
-            {activeTab === 'validation' && (
-              <ValidationTab experiments={experiments} statusStyles={statusStyles} onStatusChange={updateExperimentStatus} onDelete={deleteExperiment} />
-            )}
-            {activeTab === 'account' && (
-              <AccountTab user={user} onSignOut={signOut} />
-            )}
+            {activeTab === 'insights' && <InsightsTab insights={insights} onDelete={deleteInsight} />}
+            {activeTab === 'validation' && <ValidationTab experiments={experiments} onStatusChange={updateExperimentStatus} onDelete={deleteExperiment} onUpdateMetric={async (expId, metricKey, actual) => {
+              const exp = experiments.find(e => e.id === expId);
+              if (!exp?.metrics) return;
+              const updated = { ...exp.metrics, [metricKey]: { ...exp.metrics[metricKey], actual } };
+              await supabase.from('experiments').update({ metrics: updated as any }).eq('id', expId);
+              toast.success('Metric updated');
+              loadData();
+            }} />}
+            {activeTab === 'account' && <AccountTab user={user} onSignOut={signOut} />}
           </>
         )}
       </div>
@@ -251,86 +212,64 @@ export default function Dashboard() {
   );
 }
 
-// ═══ OVERVIEW TAB ═══
-function OverviewTab({ stats, latestProject, recentExperiments, statusStyles, onResume, onNewIdea }: {
+// ═══ OVERVIEW ═══
+function OverviewTab({ stats, latestProject, recentExperiments, onResume, onNewIdea }: {
   stats: { activeProjects: number; completedProjects: number; totalExperiments: number; runningExperiments: number; totalInsights: number };
-  latestProject: SavedIdea | null;
-  recentExperiments: Experiment[];
-  statusStyles: Record<string, { color: string; bg: string }>;
-  onResume: (idea: SavedIdea) => void;
-  onNewIdea: () => void;
+  latestProject: SavedIdea | null; recentExperiments: Experiment[];
+  onResume: (idea: SavedIdea) => void; onNewIdea: () => void;
 }) {
   const statCards = [
-    { label: 'Active Projects', value: stats.activeProjects },
-    { label: 'Completed', value: stats.completedProjects },
-    { label: 'Experiments', value: stats.totalExperiments },
-    { label: 'Saved Insights', value: stats.totalInsights },
+    { label: 'Active Projects', value: stats.activeProjects, color: 'var(--accent-primary)' },
+    { label: 'Completed', value: stats.completedProjects, color: 'var(--accent-primary)' },
+    { label: 'Experiments', value: stats.totalExperiments, color: 'var(--accent-amber)' },
+    { label: 'Saved Insights', value: stats.totalInsights, color: 'var(--accent-blue)' },
   ];
 
   return (
-    <div className="space-y-8">
-      {/* Stats grid */}
+    <div className="space-y-6 stagger-children">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {statCards.map(s => (
-          <div key={s.label} className="rounded-[12px] p-4" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-            <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 2 }}>{s.value}</p>
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>{s.label}</p>
+          <div key={s.label} className="card-base p-4">
+            <p className="font-heading" style={{ fontSize: 28, marginBottom: 2 }}>{s.value}</p>
+            <p className="font-caption" style={{ fontSize: 11 }}>{s.label}</p>
+            <div style={{ height: 2, width: 24, backgroundColor: s.color, borderRadius: 1, marginTop: 8, opacity: 0.5 }} />
           </div>
         ))}
       </div>
 
-      {/* Resume CTA */}
       {latestProject ? (
-        <div className="rounded-[14px] p-6" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 8 }}>Pick up where you left off</p>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>{latestProject.idea_text}</p>
+        <div className="card-base p-6">
+          <p className="font-section-label mb-2">PICK UP WHERE YOU LEFT OFF</p>
+          <p className="font-body" style={{ fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>{latestProject.idea_text}</p>
           <div className="flex items-center gap-3 mt-3">
-            <span className="rounded-full px-2.5 py-0.5" style={{ fontSize: 11, fontFamily: "'Outfit', sans-serif", color: 'var(--accent-teal)', backgroundColor: 'rgba(91,140,126,0.08)', textTransform: 'capitalize' }}>
-              {latestProject.current_step}
-            </span>
-            <span style={{ fontSize: 11, fontFamily: "'Outfit', sans-serif", color: 'var(--text-muted)' }}>
-              Updated {new Date(latestProject.updated_at).toLocaleDateString()}
-            </span>
+            <span className="badge badge-green" style={{ textTransform: 'capitalize' }}>{latestProject.current_step}</span>
+            <span className="font-caption" style={{ fontSize: 11 }}>Updated {new Date(latestProject.updated_at).toLocaleDateString()}</span>
           </div>
-          <button
-            onClick={() => onResume(latestProject)}
-            className="mt-4 rounded-[10px] px-5 py-2.5 transition-all duration-200 active:scale-[0.97]"
-            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
-          >
-            Resume research →
-          </button>
+          <button onClick={() => onResume(latestProject)} className="btn-primary mt-4">Resume research →</button>
         </div>
       ) : (
-        <div className="rounded-[14px] p-6 text-center" style={{ backgroundColor: 'var(--surface-card)' }}>
-          <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, color: 'var(--text-primary)', marginBottom: 8 }}>Start your first project</p>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>Enter a business idea and we'll help you research it end-to-end.</p>
-          <button
-            onClick={onNewIdea}
-            className="rounded-[10px] px-5 py-2.5 transition-all duration-200 active:scale-[0.97]"
-            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
-          >
-            New idea →
-          </button>
+        <div className="card-base p-6 text-center">
+          <p className="font-heading" style={{ fontSize: 20, marginBottom: 8 }}>Start your first project</p>
+          <p className="font-caption mb-4">Enter a business idea and we'll help you research it end-to-end.</p>
+          <button onClick={onNewIdea} className="btn-primary">New idea →</button>
         </div>
       )}
 
-      {/* Recent experiments */}
       {recentExperiments.length > 0 && (
         <div>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 10 }}>Recent Experiments</p>
+          <p className="font-section-label mb-3">RECENT EXPERIMENTS</p>
           <div className="flex flex-col gap-2">
-            {recentExperiments.map(exp => {
-              const sc = statusStyles[exp.status] || statusStyles.planned;
-              return (
-                <div key={exp.id} className="rounded-[10px] p-4 flex items-center justify-between" style={{ backgroundColor: 'var(--surface-card)' }}>
-                  <div>
-                    <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>{exp.method_name}</p>
-                    <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>{(exp as any).idea_text?.slice(0, 50)}</p>
-                  </div>
-                  <span className="rounded-full px-2.5 py-0.5" style={{ fontSize: 11, fontFamily: "'Outfit', sans-serif", color: sc.color, backgroundColor: sc.bg, textTransform: 'capitalize' }}>{exp.status}</span>
+            {recentExperiments.map(exp => (
+              <div key={exp.id} className="card-base p-4 flex items-center justify-between">
+                <div>
+                  <p className="font-body" style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>{exp.method_name}</p>
+                  <p className="font-caption" style={{ fontSize: 11 }}>{(exp as any).idea_text?.slice(0, 50)}</p>
                 </div>
-              );
-            })}
+                <span className={`badge ${exp.status === 'completed' ? 'badge-green' : exp.status === 'running' ? 'badge-amber' : 'badge-muted'}`} style={{ textTransform: 'capitalize' }}>
+                  {exp.status}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -338,55 +277,49 @@ function OverviewTab({ stats, latestProject, recentExperiments, statusStyles, on
   );
 }
 
-// ═══ PROJECTS TAB ═══
+// ═══ PROJECTS ═══
 function ProjectsTab({ ideas, stepColors, onResume, onDelete, onNavigate }: {
-  ideas: SavedIdea[]; stepColors: Record<string, string>;
-  onResume: (idea: SavedIdea) => void; onDelete: (id: string) => void; onNavigate: () => void;
+  ideas: SavedIdea[]; stepColors: Record<string, string>; onResume: (idea: SavedIdea) => void; onDelete: (id: string) => void; onNavigate: () => void;
 }) {
   if (ideas.length === 0) return (
     <div className="text-center" style={{ padding: 60 }}>
-      <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, color: 'var(--text-primary)', marginBottom: 8 }}>No projects yet</p>
-      <p className="font-caption" style={{ marginBottom: 24 }}>Research an idea and save it to see it here.</p>
-      <button onClick={onNavigate} className="rounded-[12px] transition-all duration-200 active:scale-[0.97]"
-        style={{ padding: '10px 24px', backgroundColor: 'var(--accent-primary)', color: '#fff', fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, border: 'none', cursor: 'pointer' }}>
-        Start researching
-      </button>
+      <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>No projects yet</p>
+      <p className="font-caption mb-6">Research an idea and save it to see it here.</p>
+      <button onClick={onNavigate} className="btn-primary">Start researching</button>
     </div>
   );
 
   return (
-    <div className="flex flex-col" style={{ gap: 10 }}>
+    <div className="flex flex-col gap-3 stagger-children">
       {ideas.map(idea => {
-        const progress = idea.progress || 0;
         const stepLabel = idea.current_step || 'discover';
+        const sections = idea.analysis_data?.sections ? Object.keys(idea.analysis_data.sections).length : 0;
+        const hasDiscover = !!idea.discover_data;
+        const hasSetup = !!idea.setup_data;
+        const hasValidate = !!idea.validate_data;
+        const progress = Math.round(((hasDiscover ? 1 : 0) + Math.min(sections, 5) + (hasSetup ? 1 : 0) + (hasValidate ? 1 : 0)) / 8 * 100);
+
         return (
-          <div key={idea.id} className="rounded-[12px] p-5 transition-all duration-200 cursor-pointer"
-            style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
-            onClick={() => onResume(idea)}
-            onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-            onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+          <div key={idea.id} className="card-base card-interactive p-5" onClick={() => onResume(idea)}>
             <div className="flex items-start justify-between">
               <div style={{ flex: 1 }}>
-                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 6 }}>
+                <p className="font-body" style={{ fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 6 }}>
                   {idea.title || idea.idea_text}
                 </p>
-                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 8 }}>
-                  {idea.idea_text.length > 100 ? idea.idea_text.slice(0, 100) + '…' : idea.idea_text}
-                </p>
-                <div className="flex items-center flex-wrap" style={{ gap: 10 }}>
-                  <span className="rounded-full" style={{ padding: '2px 10px', fontSize: 11, fontFamily: "'Outfit', sans-serif", fontWeight: 400, color: stepColors[stepLabel] || 'var(--text-muted)', backgroundColor: `${stepColors[stepLabel] || '#999'}10`, textTransform: 'capitalize' }}>
-                    {stepLabel}
-                  </span>
-                  {progress > 0 && (
-                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>{progress}% complete</span>
-                  )}
+                <div className="flex items-center flex-wrap gap-2 mb-3">
+                  <span className="badge badge-green" style={{ textTransform: 'capitalize' }}>{stepLabel}</span>
                   <span className="font-caption" style={{ fontSize: 11 }}>{new Date(idea.updated_at).toLocaleDateString()}</span>
+                </div>
+                {/* Progress bar */}
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 rounded-full overflow-hidden" style={{ height: 3, backgroundColor: 'var(--divider-light)' }}>
+                    <div className="animate-progress" style={{ height: '100%', width: `${progress}%`, backgroundColor: 'var(--accent-primary)', borderRadius: 99, transition: 'width 500ms ease-out' }} />
+                  </div>
+                  <span className="font-caption" style={{ fontSize: 10 }}>{progress}%</span>
                 </div>
               </div>
               <button onClick={(e) => { e.stopPropagation(); onDelete(idea.id); }}
-                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}>
-                ✕
-              </button>
+                className="font-caption" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}>✕</button>
             </div>
           </div>
         );
@@ -395,89 +328,78 @@ function ProjectsTab({ ideas, stepColors, onResume, onDelete, onNavigate }: {
   );
 }
 
-// ═══ INSIGHTS TAB ═══
+// ═══ INSIGHTS ═══
 function InsightsTab({ insights, onDelete }: { insights: SavedInsight[]; onDelete: (id: string) => void }) {
   if (insights.length === 0) return (
     <div className="text-center" style={{ padding: 60 }}>
-      <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, color: 'var(--text-primary)', marginBottom: 8 }}>No saved insights yet</p>
+      <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>No saved insights yet</p>
       <p className="font-caption">Pin key findings from any project to collect them here.</p>
     </div>
   );
 
-  const sectionColors: Record<string, string> = {
-    opportunity: 'var(--accent-blue)', customers: 'var(--accent-teal)', competitors: 'var(--accent-amber)',
-    rootcause: 'var(--accent-primary)', discover: 'var(--accent-blue)', general: 'var(--text-muted)',
+  const sectionBadge: Record<string, string> = {
+    opportunity: 'badge-blue', customers: 'badge-green', competitors: 'badge-amber',
+    rootcause: 'badge-purple', discover: 'badge-blue', general: 'badge-muted',
   };
 
   return (
-    <div className="flex flex-col" style={{ gap: 8 }}>
-      {insights.map(insight => {
-        const color = sectionColors[insight.section_type] || 'var(--text-muted)';
-        return (
-          <div key={insight.id} className="rounded-[12px] p-4" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-            <div className="flex items-start justify-between">
-              <div className="flex items-start gap-3 flex-1 min-w-0">
-                <div style={{ width: 3, minHeight: 32, borderRadius: 2, backgroundColor: color, flexShrink: 0, marginTop: 2 }} />
-                <div className="flex-1 min-w-0">
-                  <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>{insight.title}</p>
-                  <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 6 }}>{insight.content}</p>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="rounded-full px-2 py-0.5" style={{ fontSize: 10, fontFamily: "'Outfit', sans-serif", color, backgroundColor: `${color}10`, textTransform: 'capitalize' }}>
-                      {insight.section_type}
-                    </span>
-                    {insight.tags?.map(tag => (
-                      <span key={tag} className="rounded-full px-2 py-0.5" style={{ fontSize: 10, fontFamily: "'Outfit', sans-serif", color: 'var(--text-muted)', backgroundColor: 'var(--surface-input)' }}>
-                        {tag}
-                      </span>
-                    ))}
-                    <span style={{ fontSize: 10, fontFamily: "'Outfit', sans-serif", color: 'var(--text-muted)' }}>
-                      {new Date(insight.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
+    <div className="flex flex-col gap-2 stagger-children">
+      {insights.map(insight => (
+        <div key={insight.id} className="card-base p-4">
+          <div className="flex items-start justify-between">
+            <div className="flex items-start gap-3 flex-1 min-w-0">
+              <div style={{ width: 3, minHeight: 32, borderRadius: 2, backgroundColor: 'var(--accent-primary)', flexShrink: 0, marginTop: 2 }} />
+              <div className="flex-1 min-w-0">
+                <p className="font-body" style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>{insight.title}</p>
+                <p className="font-body" style={{ fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 6 }}>{insight.content}</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className={`badge ${sectionBadge[insight.section_type] || 'badge-muted'}`} style={{ textTransform: 'capitalize' }}>{insight.section_type}</span>
+                  {insight.tags?.map(tag => <span key={tag} className="badge badge-muted">{tag}</span>)}
+                  <span className="font-caption" style={{ fontSize: 10 }}>{new Date(insight.created_at).toLocaleDateString()}</span>
                 </div>
               </div>
-              <button onClick={() => onDelete(insight.id)}
-                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', flexShrink: 0 }}>
-                ✕
-              </button>
             </div>
+            <button onClick={() => onDelete(insight.id)} className="font-caption" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}>✕</button>
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 }
 
-// ═══ VALIDATION TAB ═══
-function ValidationTab({ experiments, statusStyles, onStatusChange, onDelete }: {
+// ═══ VALIDATION TAB — FULL REBUILD ═══
+function ValidationTab({ experiments, onStatusChange, onDelete, onUpdateMetric }: {
   experiments: Experiment[];
-  statusStyles: Record<string, { color: string; bg: string }>;
   onStatusChange: (exp: Experiment) => void;
   onDelete: (id: string) => void;
+  onUpdateMetric: (expId: string, metricKey: string, actual: number) => void;
 }) {
+  const [expandedExp, setExpandedExp] = useState<string | null>(null);
+  const [editingMetric, setEditingMetric] = useState<{ expId: string; key: string } | null>(null);
+  const [editValue, setEditValue] = useState('');
+
   if (experiments.length === 0) return (
     <div className="text-center" style={{ padding: 60 }}>
-      <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, color: 'var(--text-primary)', marginBottom: 8 }}>No experiments yet</p>
-      <p className="font-caption">Save your validation toolkit to start tracking experiments here.</p>
+      <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>No experiments yet</p>
+      <p className="font-caption mb-4">Run a validation toolkit on any idea to start tracking experiments.</p>
     </div>
   );
 
-  // Scorecard summary
-  const totalMetrics = experiments.reduce((sum, exp) => {
+  // Aggregate scorecard
+  const allMetrics = experiments.flatMap(exp => {
     const m = exp.metrics as Record<string, ExperimentMetric> | null;
-    return sum + (m ? Object.keys(m).length : 0);
-  }, 0);
-  const metMetrics = experiments.reduce((sum, exp) => {
-    const m = exp.metrics as Record<string, ExperimentMetric> | null;
-    if (!m) return sum;
-    return sum + Object.values(m).filter(v => v.target > 0 && v.actual >= v.target).length;
-  }, 0);
+    return m ? Object.entries(m).map(([k, v]) => ({ key: k, ...v, expId: exp.id })) : [];
+  });
+  const totalMetrics = allMetrics.length;
+  const metMetrics = allMetrics.filter(m => m.target > 0 && m.actual >= m.target).length;
   const completedExp = experiments.filter(e => e.status === 'completed').length;
+  const runningExp = experiments.filter(e => e.status === 'running').length;
   const overallPct = totalMetrics > 0 ? Math.round((metMetrics / totalMetrics) * 100) : 0;
 
   // Verdict
   const verdict = overallPct >= 70 ? 'GO' : overallPct >= 40 ? 'PIVOT' : completedExp > 0 ? 'RECONSIDER' : 'IN PROGRESS';
-  const verdictColor = verdict === 'GO' ? 'var(--accent-teal)' : verdict === 'PIVOT' ? 'var(--accent-amber)' : verdict === 'RECONSIDER' ? '#8C6060' : 'var(--text-muted)';
+  const verdictColor = verdict === 'GO' ? 'var(--accent-primary)' : verdict === 'PIVOT' ? 'var(--accent-amber)' : verdict === 'RECONSIDER' ? 'var(--error)' : 'var(--text-muted)';
+  const verdictBadge = verdict === 'GO' ? 'badge-green' : verdict === 'PIVOT' ? 'badge-amber' : verdict === 'RECONSIDER' ? 'badge-purple' : 'badge-muted';
 
   // Group by idea
   const grouped = experiments.reduce<Record<string, Experiment[]>>((acc, exp) => {
@@ -487,104 +409,164 @@ function ValidationTab({ experiments, statusStyles, onStatusChange, onDelete }: 
     return acc;
   }, {});
 
+  const handleStartEdit = (expId: string, key: string, current: number) => {
+    setEditingMetric({ expId, key });
+    setEditValue(String(current));
+  };
+
+  const handleSaveEdit = () => {
+    if (editingMetric) {
+      onUpdateMetric(editingMetric.expId, editingMetric.key, Number(editValue) || 0);
+      setEditingMetric(null);
+    }
+  };
+
   return (
-    <div className="space-y-8">
-      {/* Scorecard */}
-      <div className="rounded-[14px] p-6" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-        <div className="flex items-center justify-between mb-4">
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Validation Scorecard</p>
-          <span className="rounded-full px-3 py-1" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 500, color: verdictColor, backgroundColor: `${verdictColor}10`, letterSpacing: '0.04em' }}>
+    <div className="space-y-6 stagger-children">
+      {/* Verdict Engine — Hero Card */}
+      <div className="card-base p-6" style={{ borderColor: verdictColor, borderWidth: '1px 1px 1px 4px' }}>
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <p className="font-section-label mb-1">VERDICT ENGINE</p>
+            <p className="font-heading" style={{ fontSize: 22 }}>Validation Progress</p>
+          </div>
+          <span className={`badge ${verdictBadge}`} style={{ fontSize: 13, padding: '4px 14px', fontWeight: 500, letterSpacing: '0.04em' }}>
             {verdict}
           </span>
         </div>
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          <div>
-            <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, color: 'var(--text-primary)' }}>{overallPct}%</p>
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>Targets met</p>
-          </div>
-          <div>
-            <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, color: 'var(--text-primary)' }}>{completedExp}/{experiments.length}</p>
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>Experiments done</p>
-          </div>
-          <div>
-            <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, color: 'var(--text-primary)' }}>{metMetrics}/{totalMetrics}</p>
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>Metrics hit</p>
-          </div>
+
+        {/* Stats row */}
+        <div className="grid grid-cols-4 gap-3 mb-4">
+          {[
+            { label: 'Overall', value: `${overallPct}%`, sub: 'targets met' },
+            { label: 'Completed', value: `${completedExp}/${experiments.length}`, sub: 'experiments' },
+            { label: 'Running', value: String(runningExp), sub: 'active now' },
+            { label: 'Metrics Hit', value: `${metMetrics}/${totalMetrics}`, sub: 'tracked' },
+          ].map(s => (
+            <div key={s.label} className="text-center">
+              <p className="font-heading" style={{ fontSize: 24 }}>{s.value}</p>
+              <p className="font-caption" style={{ fontSize: 10 }}>{s.sub}</p>
+            </div>
+          ))}
         </div>
-        <div style={{ height: 4, borderRadius: 2, backgroundColor: 'var(--divider-light)', overflow: 'hidden' }}>
-          <div style={{ height: '100%', borderRadius: 2, width: `${overallPct}%`, backgroundColor: verdictColor, transition: 'width 500ms ease-out' }} />
+
+        {/* Overall progress bar */}
+        <div className="rounded-full overflow-hidden" style={{ height: 6, backgroundColor: 'var(--divider-light)' }}>
+          <div className="animate-progress" style={{ height: '100%', borderRadius: 99, width: `${overallPct}%`, backgroundColor: verdictColor, transition: 'width 800ms ease-out' }} />
+        </div>
+
+        {/* Per-status breakdown */}
+        <div className="flex items-center gap-4 mt-3">
+          {[
+            { label: 'Planned', count: experiments.filter(e => e.status === 'planned').length, badge: 'badge-muted' },
+            { label: 'Running', count: runningExp, badge: 'badge-amber' },
+            { label: 'Completed', count: completedExp, badge: 'badge-green' },
+          ].map(s => (
+            <div key={s.label} className="flex items-center gap-1.5">
+              <span className={`badge ${s.badge}`}>{s.count}</span>
+              <span className="font-caption" style={{ fontSize: 11 }}>{s.label}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Grouped experiments */}
+      {/* Experiments grouped by idea */}
       {Object.entries(grouped).map(([ideaText, exps]) => (
         <div key={ideaText}>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', marginBottom: 10 }}>
-            {ideaText.slice(0, 80)}{ideaText.length > 80 ? '…' : ''}
+          <p className="font-body" style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', marginBottom: 8 }}>
+            📋 {ideaText.slice(0, 80)}{ideaText.length > 80 ? '…' : ''}
           </p>
-          <div className="flex flex-col" style={{ gap: 8 }}>
+          <div className="flex flex-col gap-3">
             {exps.map(exp => {
-              const sc = statusStyles[exp.status] || statusStyles.planned;
               const metrics = exp.metrics as Record<string, ExperimentMetric> | null;
               const metricEntries = metrics ? Object.entries(metrics) : [];
               const metCount = metricEntries.length;
               const metMet = metricEntries.filter(([, v]) => v.target > 0 && v.actual >= v.target).length;
+              const isExpanded = expandedExp === exp.id;
+              const pct = metCount > 0 ? Math.round((metMet / metCount) * 100) : 0;
 
               return (
-                <div key={exp.id} className="rounded-[12px] p-5" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-                  <div className="flex items-center justify-between mb-3">
-                    <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{exp.method_name}</p>
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => onStatusChange(exp)} className="rounded-full transition-all duration-200"
-                        style={{ padding: '2px 12px', fontSize: 11, fontWeight: 400, fontFamily: "'Outfit', sans-serif", color: sc.color, backgroundColor: sc.bg, border: 'none', cursor: 'pointer', textTransform: 'capitalize' }}
-                        title="Click to advance status">
-                        {exp.status}
-                      </button>
-                      <button onClick={() => onDelete(exp.id)}
-                        style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px' }}>
-                        ✕
-                      </button>
+                <div key={exp.id} className="card-base overflow-hidden">
+                  {/* Header — always visible */}
+                  <div className="p-4 cursor-pointer" onClick={() => setExpandedExp(isExpanded ? null : exp.id)}>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <p className="font-body" style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{exp.method_name}</p>
+                        <span className={`badge ${exp.status === 'completed' ? 'badge-green' : exp.status === 'running' ? 'badge-amber' : 'badge-muted'}`} style={{ textTransform: 'capitalize' }}>
+                          {exp.status}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button onClick={(e) => { e.stopPropagation(); onStatusChange(exp); }}
+                          className="btn-secondary" style={{ fontSize: 10, padding: '2px 8px' }} title="Advance status">
+                          ↻ Next
+                        </button>
+                        <button onClick={(e) => { e.stopPropagation(); onDelete(exp.id); }}
+                          className="font-caption" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+                      </div>
                     </div>
+
+                    {/* Mini progress */}
+                    {metCount > 0 && (
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 rounded-full overflow-hidden" style={{ height: 3, backgroundColor: 'var(--divider-light)' }}>
+                          <div className="animate-progress" style={{
+                            height: '100%', borderRadius: 99, width: `${pct}%`,
+                            backgroundColor: pct >= 100 ? 'var(--accent-primary)' : pct > 0 ? 'var(--accent-amber)' : 'var(--divider-light)',
+                          }} />
+                        </div>
+                        <span className="font-caption" style={{ fontSize: 10, minWidth: 30 }}>{metMet}/{metCount}</span>
+                        <span className="font-caption" style={{ fontSize: 10 }}>{isExpanded ? '▲' : '▼'}</span>
+                      </div>
+                    )}
                   </div>
 
-                  {metricEntries.length > 0 && (
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>
-                          {metMet}/{metCount} targets met
-                        </span>
-                        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: metMet === metCount && metCount > 0 ? 'var(--accent-teal)' : 'var(--text-muted)' }}>
-                          {metCount > 0 ? Math.round((metMet / metCount) * 100) : 0}%
-                        </span>
-                      </div>
-                      <div style={{ height: 3, borderRadius: 2, backgroundColor: 'var(--divider-light)', overflow: 'hidden', marginBottom: 10 }}>
-                        <div style={{
-                          height: '100%', borderRadius: 2, transition: 'width 300ms ease-out',
-                          width: `${metCount > 0 ? (metMet / metCount) * 100 : 0}%`,
-                          backgroundColor: metMet === metCount && metCount > 0 ? 'var(--accent-teal)' : metMet > 0 ? 'var(--accent-amber)' : 'var(--divider-light)',
-                        }} />
-                      </div>
-                      <div className="flex flex-wrap" style={{ gap: 6 }}>
+                  {/* Expanded metrics — editable */}
+                  {isExpanded && metricEntries.length > 0 && (
+                    <div className="px-4 pb-4" style={{ borderTop: '1px solid var(--divider)' }}>
+                      <p className="font-section-label mt-3 mb-3">METRICS</p>
+                      <div className="flex flex-col gap-2">
                         {metricEntries.map(([key, val]) => {
                           const met = val.target > 0 && val.actual >= val.target;
+                          const isEditing = editingMetric?.expId === exp.id && editingMetric?.key === key;
+                          const pctVal = val.target > 0 ? Math.min(Math.round((val.actual / val.target) * 100), 100) : 0;
+
                           return (
-                            <span key={key} className="rounded-[6px]" style={{
-                              padding: '3px 8px', fontSize: 11, fontFamily: "'Outfit', sans-serif",
-                              backgroundColor: met ? 'rgba(91,140,126,0.06)' : 'var(--surface-input)',
-                              color: met ? 'var(--accent-teal)' : 'var(--text-secondary)',
-                            }}>
-                              {key}: {val.actual}/{val.target_label || val.target} {val.unit}
-                            </span>
+                            <div key={key} className="rounded-md p-3" style={{ backgroundColor: met ? 'var(--accent-primary-light)' : 'var(--surface-input)' }}>
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="font-body" style={{ fontSize: 12, fontWeight: 400, color: 'var(--text-primary)' }}>{key}</span>
+                                <div className="flex items-center gap-2">
+                                  {isEditing ? (
+                                    <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                                      <input type="number" value={editValue} onChange={(e) => setEditValue(e.target.value)}
+                                        className="rounded-sm px-2 py-0.5 font-body" style={{ width: 60, fontSize: 12, border: '1px solid var(--accent-primary)', outline: 'none' }}
+                                        onKeyDown={(e) => { if (e.key === 'Enter') handleSaveEdit(); if (e.key === 'Escape') setEditingMetric(null); }}
+                                        autoFocus />
+                                      <button onClick={handleSaveEdit} className="btn-primary" style={{ fontSize: 10, padding: '2px 6px' }}>✓</button>
+                                    </div>
+                                  ) : (
+                                    <button onClick={(e) => { e.stopPropagation(); handleStartEdit(exp.id, key, val.actual); }}
+                                      className="font-body cursor-pointer" style={{ fontSize: 12, fontWeight: 400, color: met ? 'var(--accent-primary)' : 'var(--accent-amber)', background: 'none', border: 'none', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
+                                      {val.actual} / {val.target_label || val.target} {val.unit}
+                                    </button>
+                                  )}
+                                  {met && <span style={{ fontSize: 12 }}>✓</span>}
+                                </div>
+                              </div>
+                              <div className="rounded-full overflow-hidden" style={{ height: 3, backgroundColor: met ? 'rgba(45,107,82,0.2)' : 'var(--divider-light)' }}>
+                                <div className="animate-progress" style={{ height: '100%', borderRadius: 99, width: `${pctVal}%`, backgroundColor: met ? 'var(--accent-primary)' : 'var(--accent-amber)' }} />
+                              </div>
+                            </div>
                           );
                         })}
                       </div>
+
+                      <p className="font-caption mt-3" style={{ fontSize: 10 }}>
+                        Created {new Date(exp.created_at).toLocaleDateString()}
+                        {exp.updated_at !== exp.created_at && ` · Updated ${new Date(exp.updated_at).toLocaleDateString()}`}
+                      </p>
                     </div>
                   )}
-
-                  <p className="font-caption" style={{ fontSize: 10, marginTop: 8 }}>
-                    Created {new Date(exp.created_at).toLocaleDateString()}
-                    {exp.updated_at !== exp.created_at && ` · Updated ${new Date(exp.updated_at).toLocaleDateString()}`}
-                  </p>
                 </div>
               );
             })}
@@ -595,7 +577,7 @@ function ValidationTab({ experiments, statusStyles, onStatusChange, onDelete }: 
   );
 }
 
-// ═══ ACCOUNT TAB ═══
+// ═══ ACCOUNT ═══
 function AccountTab({ user, onSignOut }: { user: any; onSignOut: () => void }) {
   const [displayName, setDisplayName] = useState('');
   const [saving, setSaving] = useState(false);
@@ -609,63 +591,34 @@ function AccountTab({ user, onSignOut }: { user: any; onSignOut: () => void }) {
     setSaving(true);
     const { error } = await supabase.from('profiles').update({ display_name: displayName } as any).eq('user_id', user.id);
     setSaving(false);
-    if (error) toast.error('Failed to update');
-    else toast.success('Name updated');
-  };
-
-  const handlePasswordReset = async () => {
-    const { error } = await supabase.auth.resetPasswordForEmail(user.email || '');
-    if (error) toast.error('Failed to send reset email');
-    else toast.success('Password reset email sent');
+    if (error) toast.error('Failed to update'); else toast.success('Name updated');
   };
 
   return (
-    <div className="space-y-8" style={{ maxWidth: 480 }}>
-      <div className="rounded-[14px] p-6" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 16 }}>Profile</p>
-
-        <label style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>Email</label>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, color: 'var(--text-primary)', marginBottom: 16 }}>{user.email}</p>
-
-        <label style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>Display Name</label>
+    <div className="space-y-6 stagger-children" style={{ maxWidth: 480 }}>
+      <div className="card-base p-6">
+        <p className="font-section-label mb-4">PROFILE</p>
+        <label className="font-caption block mb-1" style={{ fontSize: 12 }}>Email</label>
+        <p className="font-body mb-4" style={{ fontSize: 14 }}>{user.email}</p>
+        <label className="font-caption block mb-1" style={{ fontSize: 12 }}>Display Name</label>
         <div className="flex gap-2">
-          <input
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            className="flex-1 rounded-[8px] px-3 py-2"
-            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, backgroundColor: 'var(--surface-input)', border: '1px solid var(--divider-light)', color: 'var(--text-primary)', outline: 'none' }}
-          />
-          <button
-            onClick={handleSaveName}
-            disabled={saving}
-            className="rounded-[8px] px-4 py-2 transition-all duration-200"
-            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
-          >
-            {saving ? 'Saving…' : 'Save'}
-          </button>
+          <input value={displayName} onChange={(e) => setDisplayName(e.target.value)}
+            className="flex-1 card-base px-3 py-2 font-body" style={{ fontSize: 14, color: 'var(--text-primary)', outline: 'none' }} />
+          <button onClick={handleSaveName} disabled={saving} className="btn-primary">{saving ? 'Saving…' : 'Save'}</button>
         </div>
       </div>
 
-      <div className="rounded-[14px] p-6" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 16 }}>Security</p>
-        <button
-          onClick={handlePasswordReset}
-          className="rounded-[10px] px-4 py-2 transition-all duration-200"
-          style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, backgroundColor: 'var(--surface-input)', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer' }}
-        >
-          Reset password via email
-        </button>
+      <div className="card-base p-6">
+        <p className="font-section-label mb-4">SECURITY</p>
+        <button onClick={async () => {
+          const { error } = await supabase.auth.resetPasswordForEmail(user.email || '');
+          if (error) toast.error('Failed'); else toast.success('Reset email sent');
+        }} className="btn-secondary">Reset password via email</button>
       </div>
 
-      <div className="rounded-[14px] p-6" style={{ backgroundColor: 'rgba(140,96,96,0.03)', border: '1px solid rgba(140,96,96,0.12)' }}>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: '#8C6060', textTransform: 'uppercase', marginBottom: 12 }}>Danger Zone</p>
-        <button
-          onClick={onSignOut}
-          className="rounded-[10px] px-4 py-2 transition-all duration-200"
-          style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'transparent', color: '#8C6060', border: '1px solid rgba(140,96,96,0.2)', cursor: 'pointer' }}
-        >
-          Sign out
-        </button>
+      <div className="rounded-lg p-6" style={{ backgroundColor: 'rgba(196,69,62,0.03)', border: '1px solid rgba(196,69,62,0.12)' }}>
+        <p className="font-section-label mb-3" style={{ color: 'var(--error)' }}>DANGER ZONE</p>
+        <button onClick={onSignOut} className="btn-secondary" style={{ color: 'var(--error)', borderColor: 'rgba(196,69,62,0.2)' }}>Sign out</button>
       </div>
     </div>
   );
