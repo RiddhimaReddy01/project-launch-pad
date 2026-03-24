@@ -506,7 +506,7 @@ export default function ValidateModule() {
             {activeTab === 'survey' && result.survey && <SurveySection data={result.survey} onChange={(s) => updateResult({ survey: s })} />}
             {activeTab === 'whatsapp' && result.whatsapp && <WhatsAppSection data={result.whatsapp} onChange={(w) => updateResult({ whatsapp: w })} />}
             {activeTab === 'communities' && result.communities && <CommunitiesSection data={result.communities} />}
-            {activeTab === 'scorecard' && <ScorecardSection data={result.scorecard} onUpdate={updateScorecard} analyzeData={analyzeData} setupData={setupData} />}
+            
           </>
         )}
       </div>
