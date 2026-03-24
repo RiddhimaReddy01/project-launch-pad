@@ -16,7 +16,7 @@ async function hashKey(input: string): Promise<string> {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function callAI(apiKey: string, systemPrompt: string, userPrompt: string, tools: any[]) {
+async function callAIJson(apiKey: string, systemPrompt: string, userPrompt: string) {
   const resp = await fetch(AI_GATEWAY, {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
@@ -26,8 +26,8 @@ async function callAI(apiKey: string, systemPrompt: string, userPrompt: string, 
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
       ],
-      tools,
-      tool_choice: { type: "function", function: { name: tools[0].function.name } },
+      response_format: { type: "json_object" },
+      temperature: 0.4,
     }),
   });
 
@@ -37,87 +37,17 @@ async function callAI(apiKey: string, systemPrompt: string, userPrompt: string, 
   }
 
   const data = await resp.json();
-  const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
-  if (toolCall) return JSON.parse(toolCall.function.arguments);
-  throw new Error("No structured response returned");
+  const content = data.choices?.[0]?.message?.content;
+  if (!content) throw new Error("No content in AI response");
+
+  try {
+    return JSON.parse(content);
+  } catch {
+    const match = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (match) return JSON.parse(match[1].trim());
+    throw new Error("Could not parse AI response as JSON");
+  }
 }
-
-// ── Tool schema ──
-
-const DISCOVER_TOOLS = [
-  {
-    type: "function",
-    function: {
-      name: "extract_insights",
-      description: "Extract structured market insights from analysis of a business idea and its target market",
-      parameters: {
-        type: "object",
-        properties: {
-          insights: {
-            type: "array",
-            description: "8-12 market insights discovered from analyzing real community discussions, reviews, and search results",
-            items: {
-              type: "object",
-              properties: {
-                title: { type: "string", description: "Concise insight title, max 12 words" },
-                type: { type: "string", enum: ["pain_point", "workaround", "demand_signal", "expectation"] },
-                description: { type: "string", description: "2-3 sentence description" },
-                frequency_score: { type: "number", description: "0.0-1.0" },
-                severity_score: { type: "number", description: "0.0-1.0" },
-                willingness_to_pay: { type: "number", description: "0.0-1.0" },
-                market_size_signal: { type: "number", description: "0.0-1.0" },
-                tags: { type: "array", items: { type: "string" }, description: "2-4 short keyword tags" },
-                sources: {
-                  type: "array",
-                  description: "2-4 evidence sources with realistic quotes",
-                  items: {
-                    type: "object",
-                    properties: {
-                      platform: { type: "string", enum: ["reddit", "google", "yelp"] },
-                      text: { type: "string", description: "Verbatim quote (50-120 chars)" },
-                      url: { type: "string" },
-                      author: { type: "string" },
-                      date: { type: "string" },
-                      upvotes: { type: "number" },
-                    },
-                    required: ["platform", "text", "url", "author", "date"],
-                  },
-                },
-              },
-              required: ["title", "type", "description", "frequency_score", "severity_score", "willingness_to_pay", "market_size_signal", "tags", "sources"],
-              additionalProperties: false,
-            },
-          },
-          synthesis: {
-            type: "object",
-            properties: {
-              top_pain_points: { type: "array", items: { type: "string" } },
-              current_workarounds: { type: "array", items: { type: "string" } },
-              what_they_value: { type: "array", items: { type: "string" } },
-              willingness_signals: { type: "array", items: { type: "string" } },
-              opportunity_score: { type: "number" },
-            },
-            required: ["top_pain_points", "current_workarounds", "what_they_value", "willingness_signals", "opportunity_score"],
-            additionalProperties: false,
-          },
-          source_summary: {
-            type: "object",
-            properties: {
-              reddit_count: { type: "number" },
-              google_count: { type: "number" },
-              yelp_count: { type: "number" },
-              total_signals: { type: "number" },
-            },
-            required: ["reddit_count", "google_count", "yelp_count", "total_signals"],
-            additionalProperties: false,
-          },
-        },
-        required: ["insights", "synthesis", "source_summary"],
-        additionalProperties: false,
-      },
-    },
-  },
-];
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -133,7 +63,7 @@ serve(async (req) => {
     const body = await req.json();
     let decomposition = body.decomposition;
 
-    // Support simple { idea } format — build decomposition from idea string
+    // Support simple { idea } format
     if (!decomposition && body.idea) {
       const idea = body.idea;
       let business_type = idea;
@@ -146,13 +76,10 @@ serve(async (req) => {
         business_type = idea.replace(/\bin\s+.+$/i, "").trim();
       }
       decomposition = {
-        business_type,
-        location: { city, state },
-        search_queries: [`${business_type} in ${city}`],
-        source_domains: [],
-        subreddits: [],
-        target_customers: [],
-        price_tier: "mid-range",
+        business_type, location: { city, state },
+        search_queries: [`${business_type} in ${city || 'USA'}`],
+        source_domains: [], subreddits: [],
+        target_customers: [], price_tier: "mid-range",
       };
     }
 
@@ -164,15 +91,12 @@ serve(async (req) => {
 
     const { business_type, location, search_queries, source_domains, subreddits, target_customers, price_tier } = decomposition;
 
-    // ── DB cache check ──
+    // DB cache check
     const cacheInput = `discover:${business_type}:${location?.city}:${location?.state}`;
     const cacheKey = await hashKey(cacheInput);
 
     const { data: cached } = await supabase
-      .from("result_cache")
-      .select("*")
-      .eq("cache_key", cacheKey)
-      .maybeSingle();
+      .from("result_cache").select("*").eq("cache_key", cacheKey).maybeSingle();
 
     if (cached) {
       const age = Date.now() - new Date(cached.created_at).getTime();
@@ -185,55 +109,98 @@ serve(async (req) => {
 
     const locationStr = location?.city ? `${location.city}, ${location.state}` : "United States";
 
-    const systemPrompt = `You are an expert market research analyst. You analyze real community discussions, reviews, and online conversations to extract actionable market insights for founders.
+    const systemPrompt = `You are an expert market research analyst. Analyze real community discussions, reviews, and online conversations to extract actionable market insights for founders.
 
-Your job is to simulate the results of a deep scan of Reddit threads, Google reviews, Yelp reviews, and forum discussions about a specific business type in a specific location.
+Simulate results of a deep scan of Reddit threads, Google reviews, Yelp reviews, and forum discussions about a specific business type in a specific location.
 
-Generate insights that are:
-- SPECIFIC to the business type and location (not generic)
-- Evidence-backed with realistic verbatim quotes from real people
-- Actionable for a founder deciding whether to pursue this business
-- Varied across pain points, workarounds, demand signals, and expectations
+Return a JSON object with this exact structure:
+{
+  "insights": [
+    {
+      "title": "Concise insight title, max 12 words",
+      "type": "pain_point|workaround|demand_signal|expectation",
+      "description": "2-3 sentence description",
+      "frequency_score": 0.0-1.0,
+      "severity_score": 0.0-1.0,
+      "willingness_to_pay": 0.0-1.0,
+      "market_size_signal": 0.0-1.0,
+      "tags": ["tag1", "tag2"],
+      "sources": [
+        {
+          "platform": "reddit|google|yelp",
+          "text": "Verbatim quote 50-120 chars, written as a real person would type",
+          "url": "https://reddit.com/r/...",
+          "author": "username",
+          "date": "2024-01-15",
+          "upvotes": 42
+        }
+      ]
+    }
+  ],
+  "synthesis": {
+    "top_pain_points": ["pain1", "pain2", "pain3"],
+    "current_workarounds": ["workaround1", "workaround2"],
+    "what_they_value": ["value1", "value2"],
+    "willingness_signals": ["signal1", "signal2"],
+    "opportunity_score": 7.5
+  },
+  "source_summary": {
+    "reddit_count": 12,
+    "google_count": 8,
+    "yelp_count": 6,
+    "total_signals": 26
+  }
+}
 
-For quotes, write them as if a real person typed them — with natural language, occasional typos, and genuine frustration or excitement.
-
-Score all metrics honestly — not everything should be high.`;
+RULES:
+- Generate 8-12 insights, SPECIFIC to the business type and location
+- Each insight must have 2-4 sources with realistic verbatim quotes
+- Quotes should sound like real people — natural language, genuine emotion
+- Score metrics honestly — not everything should be high
+- source_summary counts should reflect total sources across all insights
+- Include a mix of pain_point, workaround, demand_signal, and expectation types`;
 
     const userPrompt = `Analyze this business opportunity:
 
 Business Type: ${business_type}
 Location: ${locationStr}
-Target Customers: ${(target_customers || []).join(", ")}
+Target Customers: ${(target_customers || []).join(", ") || "General consumers"}
 Price Tier: ${price_tier || "mid-range"}
 
-Search Queries Used:
-${(search_queries || []).map((q: string) => `- "${q}"`).join("\n")}
+Search Queries: ${(search_queries || []).map((q: string) => `"${q}"`).join(", ")}
+Source Domains: ${(source_domains || []).join(", ") || "yelp.com, reddit.com, google.com"}
+Subreddits: ${(subreddits || []).map((s: string) => `r/${s}`).join(", ") || "relevant local subreddits"}
 
-Source Domains Scanned:
-${(source_domains || []).map((d: string) => `- ${d}`).join("\n")}
+Generate specific, evidence-backed market insights with realistic source quotes.`;
 
-Subreddits Analyzed:
-${(subreddits || []).map((s: string) => `- r/${s}`).join("\n")}
-
-Generate 8-12 specific, evidence-backed market insights. Include a mix of pain points, workarounds, demand signals, and customer expectations.`;
-
-    const result = await callAI(LOVABLE_API_KEY, systemPrompt, userPrompt, DISCOVER_TOOLS);
+    const result = await callAIJson(LOVABLE_API_KEY, systemPrompt, userPrompt);
 
     // Post-process: compute composite scores
     if (result.insights) {
       result.insights = result.insights.map((insight: any) => {
         const composite = (
-          insight.frequency_score * 0.25 +
-          insight.severity_score * 0.30 +
-          insight.willingness_to_pay * 0.25 +
-          insight.market_size_signal * 0.20
+          (insight.frequency_score || 0) * 0.25 +
+          (insight.severity_score || 0) * 0.30 +
+          (insight.willingness_to_pay || 0) * 0.25 +
+          (insight.market_size_signal || 0) * 0.20
         ) * 10;
         return { ...insight, composite_score: Math.round(composite * 10) / 10 };
       });
       result.insights.sort((a: any, b: any) => b.composite_score - a.composite_score);
     }
 
-    // ── Save to cache ──
+    // Ensure source_summary exists
+    if (!result.source_summary) {
+      const allSources = (result.insights || []).flatMap((i: any) => i.sources || []);
+      result.source_summary = {
+        reddit_count: allSources.filter((s: any) => s.platform === "reddit").length,
+        google_count: allSources.filter((s: any) => s.platform === "google").length,
+        yelp_count: allSources.filter((s: any) => s.platform === "yelp").length,
+        total_signals: allSources.length,
+      };
+    }
+
+    // Save to cache
     if (cached) {
       await supabase.from("result_cache").update({ result_data: result, created_at: new Date().toISOString() }).eq("id", cached.id);
     } else {

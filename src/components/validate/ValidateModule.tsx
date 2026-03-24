@@ -4,8 +4,7 @@ import { useIdea } from '@/context/IdeaContext';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { generateValidation, type ValidateResult, type ValidateContext, type ScorecardMetric } from '@/lib/validate';
-import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Tooltip } from 'recharts';
+import { generateValidation, type ValidateResult, type ValidateContext } from '@/lib/validate';
 import SectionSkeleton from '@/components/analyze/SectionSkeleton';
 
 // ═══ VALIDATION METHODS ═══
@@ -33,7 +32,7 @@ const ALL_METHODS: ValidationMethod[] = [
 const EFFORT_COLORS: Record<string, string> = { low: 'var(--accent-teal)', medium: 'var(--accent-amber)', high: 'hsl(var(--destructive))' };
 const SPEED_LABELS: Record<string, string> = { fast: 'Fast', medium: 'Medium', slow: 'Slow' };
 
-type TabKey = 'landing' | 'survey' | 'whatsapp' | 'communities' | 'scorecard';
+type TabKey = 'landing' | 'survey' | 'whatsapp' | 'communities';
 
 const ALL_TABS: { key: TabKey; label: string; mono: string; subtitle: string; outputKey: string; target: string; deployGuide: { tool: string; urls: { name: string; url: string }[]; instruction: string } }[] = [
   { key: 'landing', label: 'Landing Page', mono: 'L', subtitle: 'Pitch your idea', outputKey: 'landing_page',
@@ -64,9 +63,6 @@ const ALL_TABS: { key: TabKey; label: string; mono: string; subtitle: string; ou
       { name: 'Facebook Groups', url: 'https://facebook.com/groups' },
       { name: 'Discord', url: 'https://discord.com' },
     ], instruction: 'Join each community and engage genuinely for 2-3 days before sharing your survey or landing page. Follow community rules.' } },
-  { key: 'scorecard', label: 'Scorecard', mono: 'T', subtitle: 'Track targets', outputKey: 'scorecard',
-    target: 'Hit 70%+ of targets for a GO verdict',
-    deployGuide: { tool: 'Dashboard', urls: [], instruction: 'Update metrics as responses come in. Save to persist progress to your dashboard.' } },
 ];
 
 const PLATFORM_COLORS: Record<string, string> = {
@@ -198,23 +194,6 @@ export default function ValidateModule() {
     return ctx;
   }, [decomposeResult, discoverResult, selectedInsight, analyzeData, setupData]);
 
-  const deriveScorecard = useCallback((sc: ScorecardMetric[]): ScorecardMetric[] => {
-    return sc.map(m => {
-      if (m.id === 'waitlist_signups' && analyzeData?.opportunity?.som?.value) {
-        const somYear1 = analyzeData.opportunity.som.value;
-        const target = Math.max(50, Math.round(somYear1 / 50000));
-        return { ...m, target, target_label: `${target}+` };
-      }
-      if (m.id === 'price_tolerance' && setupData?.costs?.tiers) {
-        const midTier = setupData.costs.tiers?.find((t: any) => t.id === (setupData.tier || 'mid'));
-        if (midTier) {
-          const avgCost = Math.round((midTier.cost_min + midTier.cost_max) / 2000);
-          return { ...m, target: avgCost, target_label: `$${avgCost}` };
-        }
-      }
-      return m;
-    });
-  }, [analyzeData, setupData]);
 
   const visibleTabs = useMemo(() => {
     const selectedOutputs = new Set<string>();
@@ -222,7 +201,6 @@ export default function ValidateModule() {
       const method = ALL_METHODS.find(m => m.id === mId);
       method?.outputs.forEach(o => selectedOutputs.add(o));
     });
-    selectedOutputs.add('scorecard');
     return ALL_TABS.filter(tab => selectedOutputs.has(tab.outputKey));
   }, [selectedMethods]);
 
@@ -242,17 +220,15 @@ export default function ValidateModule() {
         const method = ALL_METHODS.find(m => m.id === mId);
         method?.outputs.forEach(o => requiredOutputs.add(o));
       });
-      requiredOutputs.add('scorecard');
 
       const data = await generateValidation(idea, Array.from(requiredOutputs));
-      data.scorecard = deriveScorecard(data.scorecard || []);
       setResult(data);
       setPhase('toolkit');
     } catch (err: any) {
       setErrorMsg(err.message || 'Something went wrong - please try again');
       setPhase('select');
     }
-  }, [idea, deriveScorecard, selectedMethods]);
+  }, [idea, selectedMethods]);
 
   const toggleMethod = (id: string) => {
     setSelectedMethods(prev => {
@@ -265,14 +241,6 @@ export default function ValidateModule() {
   const updateResult = (patch: Partial<ValidateResult>) => {
     if (!result) return;
     setResult({ ...result, ...patch });
-  };
-
-  const updateScorecard = (id: string, actual: number) => {
-    if (!result) return;
-    setResult({
-      ...result,
-      scorecard: result.scorecard.map(m => m.id === id ? { ...m, actual } : m),
-    });
   };
 
   const handleSave = async () => {
@@ -298,7 +266,6 @@ export default function ValidateModule() {
       if (ideaId) {
         await supabase.from('experiments').delete().eq('idea_id', ideaId).eq('user_id', user.id);
 
-        const scorecardObj = Object.fromEntries(result.scorecard.map(m => [m.label, { target: m.target, actual: m.actual, unit: m.unit, target_label: m.target_label }]));
         const methodEntries = Array.from(selectedMethods).map(mId => {
           const method = ALL_METHODS.find(am => am.id === mId);
           return {
@@ -306,8 +273,8 @@ export default function ValidateModule() {
             user_id: user.id,
             method_id: mId,
             method_name: method?.name || mId,
-            status: result.scorecard.some(m => m.actual > 0) ? 'running' : 'planned',
-            metrics: scorecardObj as any,
+            status: 'planned',
+            metrics: {} as any,
             assets_data: {
               landing_page: method?.outputs.includes('landing_page') ? result.landing_page : null,
               survey: method?.outputs.includes('survey') ? result.survey : null,
@@ -539,7 +506,7 @@ export default function ValidateModule() {
             {activeTab === 'survey' && result.survey && <SurveySection data={result.survey} onChange={(s) => updateResult({ survey: s })} />}
             {activeTab === 'whatsapp' && result.whatsapp && <WhatsAppSection data={result.whatsapp} onChange={(w) => updateResult({ whatsapp: w })} />}
             {activeTab === 'communities' && result.communities && <CommunitiesSection data={result.communities} />}
-            {activeTab === 'scorecard' && <ScorecardSection data={result.scorecard} onUpdate={updateScorecard} analyzeData={analyzeData} setupData={setupData} />}
+            
           </>
         )}
       </div>
@@ -747,142 +714,3 @@ function CommunitiesSection({ data }: { data: NonNullable<ValidateResult['commun
   );
 }
 
-// ═══ SCORECARD SECTION — Radar chart with targets only ═══
-
-function ScorecardSection({ data, onUpdate, analyzeData, setupData }: {
-  data: ScorecardMetric[];
-  onUpdate: (id: string, actual: number) => void;
-  analyzeData: Record<string, any>;
-  setupData: Record<string, any>;
-}) {
-  // Radar chart data — normalized to 0-100 scale for visual comparison
-  const radarData = useMemo(() => {
-    const maxTarget = Math.max(...data.map(m => m.target), 1);
-    return data.map(m => ({
-      metric: m.label.length > 15 ? m.label.slice(0, 14) + '...' : m.label,
-      fullLabel: m.label,
-      target: Math.round((m.target / maxTarget) * 100),
-      rawTarget: m.target,
-      targetLabel: m.target_label,
-      unit: m.unit,
-    }));
-  }, [data]);
-
-  // Context from prior tabs
-  const contextSummary = useMemo(() => {
-    const items: { label: string; value: string }[] = [];
-    if (analyzeData?.opportunity?.som?.formatted) items.push({ label: 'SOM', value: analyzeData.opportunity.som.formatted });
-    if (analyzeData?.customers?.segments?.[0]) items.push({ label: 'Primary segment', value: analyzeData.customers.segments[0].name });
-    if (setupData?.tier) items.push({ label: 'Tier', value: setupData.tier.toUpperCase() });
-    if (analyzeData?.costs?.total_range) items.push({ label: 'Budget', value: `$${(analyzeData.costs.total_range.min / 1000).toFixed(0)}K-$${(analyzeData.costs.total_range.max / 1000).toFixed(0)}K` });
-    return items;
-  }, [analyzeData, setupData]);
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-5">
-        <p className="section-label">VALIDATION SCORECARD</p>
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>
-          {data.length} metrics
-        </span>
-      </div>
-
-      {/* Radar Chart — targets only */}
-      {radarData.length >= 3 && (
-        <div className="card-base p-6 mb-8">
-          <p className="section-label mb-4">Target Profile</p>
-          <div style={{ height: 300 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="70%">
-                <PolarGrid stroke="var(--divider-light)" />
-                <PolarAngleAxis
-                  dataKey="metric"
-                  tick={{ fontSize: 10, fontFamily: "'Outfit', sans-serif", fill: 'var(--text-muted)' }}
-                />
-                <Radar
-                  name="Target"
-                  dataKey="target"
-                  stroke="var(--accent-primary)"
-                  fill="var(--accent-primary)"
-                  fillOpacity={0.12}
-                  strokeWidth={2}
-                />
-                <Tooltip
-                  content={({ payload }) => {
-                    if (!payload?.[0]) return null;
-                    const d = payload[0].payload;
-                    return (
-                      <div className="card-base px-3 py-2" style={{ fontSize: 12, fontFamily: "'Outfit', sans-serif" }}>
-                        <p style={{ fontWeight: 500, color: 'var(--text-primary)', marginBottom: 2 }}>{d.fullLabel}</p>
-                        <p style={{ color: 'var(--accent-primary)' }}>Target: {d.targetLabel} {d.unit}</p>
-                      </div>
-                    );
-                  }}
-                />
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      )}
-
-      {/* Context pills */}
-      {contextSummary.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-6">
-          {contextSummary.map((item, i) => (
-            <div key={i} className="rounded-[8px] px-3 py-2" style={{ backgroundColor: 'var(--surface-input)', border: '1px solid var(--divider-light)' }}>
-              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{item.label}</span>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)', marginTop: 2 }}>{item.value}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Metric cards — targets only, no current percent */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
-        {data.map((m) => (
-          <div key={m.id} className="card-base p-5">
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 8 }}>{m.label}</p>
-            <div className="flex items-baseline gap-2 mb-3">
-              <span className="font-heading" style={{ fontSize: 24, color: 'var(--accent-primary)' }}>{m.target_label}</span>
-              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>{m.unit}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <input type="number" value={m.actual || ''} onChange={(e) => onUpdate(m.id, Number(e.target.value) || 0)} placeholder="Current"
-                style={{ width: 80, padding: '6px 10px', borderRadius: 8, border: '1px solid var(--divider-light)', backgroundColor: 'var(--surface-bg)', fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)', outline: 'none' }}
-                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent-primary)'; }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--divider-light)'; }} />
-              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>actual</span>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Verdict */}
-      {(() => {
-        const hasData = data.some(m => m.actual > 0);
-        if (!hasData) return (
-          <div className="card-base text-center mt-8 p-8">
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-              Enter your validation results above to get a data-driven go/no-go recommendation.
-            </p>
-          </div>
-        );
-
-        const metPct = data.filter(m => m.target > 0 && m.actual >= m.target).length / Math.max(data.filter(m => m.target > 0).length, 1);
-        const verdict = metPct >= 0.7
-          ? { label: 'GO', color: 'var(--accent-teal)', bg: 'rgba(91,140,126,0.06)', reasoning: 'Strong signals across your validation metrics. Move forward with confidence.' }
-          : metPct >= 0.4
-            ? { label: 'PIVOT', color: 'var(--accent-amber)', bg: 'rgba(166,139,91,0.06)', reasoning: 'Mixed signals. Refine your positioning or target a narrower segment before investing further.' }
-            : { label: 'RECONSIDER', color: 'hsl(var(--destructive))', bg: 'rgba(140,96,96,0.06)', reasoning: 'Weak demand signals. Consider a fundamentally different approach or target market.' };
-
-        return (
-          <div className="rounded-[16px] text-center mt-8" style={{ padding: 32, backgroundColor: verdict.bg }}>
-            <p className="section-label" style={{ marginBottom: 12 }}>Verdict</p>
-            <p className="font-heading" style={{ fontSize: 26, color: verdict.color, marginBottom: 16 }}>{verdict.label}</p>
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75, maxWidth: 500, margin: '0 auto' }}>{verdict.reasoning}</p>
-          </div>
-        );
-      })()}
-    </div>
-  );
-}

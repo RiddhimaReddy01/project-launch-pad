@@ -21,8 +21,8 @@ const RENDER_ENDPOINTS: Record<string, string> = {
   "validate-idea": "/api/generate-validation",
 };
 
-// Functions where Lovable Cloud is the ONLY option (no backend endpoint exists)
-const LOVABLE_ONLY = new Set<string>([]);
+// Functions where Lovable Cloud is the ONLY option (skip broken Render/Ngrok)
+const LOVABLE_ONLY = new Set<string>(["setup-section"]);
 
 // Sections not supported by the Render backend — route to Lovable Cloud
 const RENDER_UNSUPPORTED_SECTIONS = new Set(["risk", "location", "moat"]);
