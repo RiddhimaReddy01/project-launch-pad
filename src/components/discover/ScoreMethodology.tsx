@@ -4,7 +4,7 @@ const SCORE_EXPLANATIONS = [
   {
     key: 'frequency_score' as const,
     label: 'Frequency',
-    icon: '📊',
+    icon: '',
     getDesc: (v: number) => {
       if (v >= 0.7) return 'This issue appears very frequently — mentioned across multiple threads, reviews, and discussions.';
       if (v >= 0.4) return 'Moderately discussed — appears in several sources but not dominant.';
