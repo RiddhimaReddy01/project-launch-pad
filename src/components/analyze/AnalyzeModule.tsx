@@ -53,7 +53,7 @@ const initSections = (prefetchedData?: Record<string, any>): SectionResults => {
 };
 
 export default function AnalyzeModule() {
-  const { idea, selectedInsight, decomposeResult, discoverResult, setAnalyzeFindings, setAnalyzeData } = useIdea();
+  const { idea, selectedInsight, decomposeResult, discoverResult, setAnalyzeFindings, setAnalyzeData, analyzeData } = useIdea();
   const { user } = useAuth();
 
   const [activeModule, setActiveModule] = useState<SectionKey>('opportunity');
