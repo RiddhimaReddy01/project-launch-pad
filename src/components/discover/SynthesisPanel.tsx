@@ -28,10 +28,10 @@ function OpportunityGauge({ score }: { score: number }) {
           style={{ transition: 'stroke-dashoffset 1s ease-out' }}
         />
       </svg>
-      <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 28, fontWeight: 400, color, marginTop: -20 }}>
+      <span style={{ fontSize: 28, fontWeight: 400, color, marginTop: -20 }}>
         {score}
       </span>
-      <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 300, color: 'var(--text-muted)', letterSpacing: '0.04em', marginTop: 4 }}>
+      <span className="section-label" style={{ marginTop: 4 }}>
         OPPORTUNITY SCORE
       </span>
     </div>
@@ -60,9 +60,9 @@ function ClickableSection({
               }}
               onClick={() => onItemClick?.(item)}
             >
-              <p style={{
-                fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300,
-                lineHeight: 1.5, color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
+              <p className="font-caption" style={{
+                fontSize: 13,
+                color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
               }}>
                 {item}
               </p>
@@ -92,7 +92,7 @@ export default function SynthesisPanel({
       className="rounded-[14px] p-6 lg:sticky"
       style={{ top: 120, backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
     >
-      <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 16, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 20 }}>
+      <p style={{ fontSize: 16, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 20 }}>
         Founder Synthesis
       </p>
 

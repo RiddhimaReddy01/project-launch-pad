@@ -20,10 +20,10 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> 
 const DEFAULT_TYPE_CONFIG = { label: 'INSIGHT', color: 'var(--text-muted)', bg: 'var(--surface-input)' };
 function getTypeConfig(type: string) { return TYPE_CONFIG[type] || DEFAULT_TYPE_CONFIG; }
 
-const PLATFORM_META: Record<string, { label: string; chipClass: string; urlPrefix: string }> = {
-  reddit: { label: 'Reddit', chipClass: 'source-chip-reddit', urlPrefix: 'https://reddit.com' },
-  google: { label: 'Google', chipClass: 'source-chip-google', urlPrefix: 'https://google.com' },
-  yelp: { label: 'Yelp', chipClass: 'source-chip-yelp', urlPrefix: 'https://yelp.com' },
+const PLATFORM_META: Record<string, { label: string; chipClass: string }> = {
+  reddit: { label: 'Reddit', chipClass: 'source-chip-reddit' },
+  google: { label: 'Google', chipClass: 'source-chip-google' },
+  yelp: { label: 'Yelp', chipClass: 'source-chip-yelp' },
 };
 
 function ScoreBar({ label, value, color, explanation }: { label: string; value: number; color: string; explanation: string }) {
@@ -40,23 +40,19 @@ function ScoreBar({ label, value, color, explanation }: { label: string; value: 
           onClick={(e) => { e.stopPropagation(); setShowTip(!showTip); }}
           style={{ background: 'none', border: 'none', padding: 0 }}
         >
-          <span className="font-body" style={{ fontSize: 10, fontWeight: 300, color: 'var(--text-muted)', letterSpacing: '0.03em' }}>
-            {label}
-          </span>
+          <span className="font-caption" style={{ fontSize: 10, letterSpacing: '0.03em' }}>{label}</span>
         </button>
-        <span className="font-body" style={{ fontSize: 10, fontWeight: 400, color: 'var(--text-secondary)' }}>
-          {pct}%
-        </span>
+        <span style={{ fontSize: 10, fontWeight: 400, color: 'var(--text-secondary)' }}>{pct}%</span>
       </div>
       <div className="rounded-full overflow-hidden" style={{ height: 4, backgroundColor: 'var(--divider-light)' }}>
         <div className="rounded-full h-full animate-progress" style={{ width: `${pct}%`, backgroundColor: color, transition: 'width 600ms ease-out' }} />
       </div>
       {showTip && (
-        <div className="absolute z-20 rounded-lg p-3 shadow-lg" style={{
+        <div className="absolute z-20 rounded-lg p-3" style={{
           bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: 6, width: 220,
           backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', pointerEvents: 'none',
         }}>
-          <p className="font-body" style={{ fontSize: 11, fontWeight: 300, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
+          <p className="font-caption" style={{ fontSize: 11, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
             {explanation}
           </p>
         </div>
@@ -73,10 +69,10 @@ function NoteInput({ onSubmit, onCancel }: { onSubmit: (note: string) => void; o
   return (
     <div className="mt-4 card-base p-3" onClick={(e) => e.stopPropagation()}>
       <textarea ref={ref} value={text} onChange={(e) => setText(e.target.value)}
-        placeholder="Add a note about this insight…" rows={2}
+        placeholder="Add a note about this insight..." rows={2}
         className="w-full resize-none font-body" style={{ fontSize: 13, fontWeight: 300, color: 'var(--text-primary)', backgroundColor: 'transparent', border: 'none', outline: 'none', lineHeight: 1.5 }} />
       <div className="flex justify-end gap-2 mt-2">
-        <button onClick={onCancel} className="font-body" style={{ fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
+        <button onClick={onCancel} className="font-caption" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
         <button onClick={() => { if (text.trim()) onSubmit(text.trim()); }} disabled={!text.trim()} className="btn-primary disabled:opacity-40" style={{ fontSize: 12, padding: '4px 12px' }}>
           Save note
         </button>
@@ -144,10 +140,12 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
   const scoreColor = insight.composite_score >= 7 ? 'var(--signal-high)' :
     insight.composite_score >= 4 ? 'var(--signal-medium)' : 'var(--signal-low)';
 
+  // Check if sources have URLs (for interactivity gating)
+  const hasInteractiveSources = insight.sources?.some(s => s.url && s.url !== '#');
+
   return (
     <div
       className="card-base card-interactive transition-all duration-200"
-      style={{ boxShadow: expanded ? '0 4px 20px rgba(0,0,0,0.04)' : 'none' }}
       onClick={() => setExpanded(!expanded)}
     >
       <div className="p-5">
@@ -161,11 +159,13 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
                 {config.label}
               </span>
               {Object.entries(platformCounts).map(([platform, count]) => {
-                const meta = PLATFORM_META[platform] || { label: platform, chipClass: 'badge-muted', urlPrefix: '#' };
-                return (
+                const meta = PLATFORM_META[platform] || { label: platform, chipClass: 'badge-muted' };
+                const sourceUrl = insight.sources.find(s => s.platform === platform)?.url;
+                const hasUrl = sourceUrl && sourceUrl !== '#';
+                return hasUrl ? (
                   <a
                     key={platform}
-                    href={insight.sources.find(s => s.platform === platform)?.url || '#'}
+                    href={sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
@@ -175,17 +175,21 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
                     {meta.label}
                     <span style={{ fontSize: 9, opacity: 0.7 }}>({count})</span>
                   </a>
+                ) : (
+                  <span key={platform} className="badge badge-muted" style={{ fontSize: 10 }}>
+                    {meta.label} ({count})
+                  </span>
                 );
               })}
             </div>
 
             {/* Title */}
-            <p className="font-body" style={{ fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.45 }}>
+            <p style={{ fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.45 }}>
               {insight.title}
             </p>
 
             {/* Description */}
-            <p className="font-body" style={{ fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5, marginTop: 6 }}>
+            <p className="font-caption" style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5, marginTop: 6 }}>
               {insight.description}
             </p>
 
@@ -200,13 +204,13 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
             {/* Tags */}
             <div className="flex flex-wrap gap-1.5 mt-3">
               {insight.tags.map((tag, i) => (
-                <span key={i} className="badge-muted badge">{tag}</span>
+                <span key={i} className="badge badge-muted">{tag}</span>
               ))}
             </div>
 
             {/* Expand hint */}
             <div className="mt-3">
-              <span className="font-body" style={{ fontSize: 11, fontWeight: 300, color: 'var(--accent-primary)' }}>
+              <span className="font-caption" style={{ fontSize: 11, color: 'var(--accent-primary)' }}>
                 {expanded ? 'Hide evidence' : `${insight.sources.length} sources — click to expand`}
               </span>
             </div>
@@ -220,7 +224,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
           <div style={{ height: 1, backgroundColor: 'var(--divider)', marginBottom: 16 }} />
 
           <div className="flex items-center justify-between mb-3">
-            <p className="font-section-label">EVIDENCE ({insight.sources.length} sources)</p>
+            <p className="section-label">EVIDENCE ({insight.sources.length} sources)</p>
             <button
               onClick={(e) => { e.stopPropagation(); setShowMethodology(!showMethodology); }}
               className="btn-secondary" style={{ fontSize: 10, padding: '3px 10px', borderRadius: 12 }}
@@ -234,38 +238,45 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
           {/* Source evidence — interactive cards */}
           <div className="flex flex-col gap-3 stagger-children">
             {insight.sources.map((source, i) => {
-              const meta = PLATFORM_META[source.platform] || { label: source.platform, chipClass: 'badge-muted', urlPrefix: '#' };
+              const meta = PLATFORM_META[source.platform] || { label: source.platform, chipClass: 'badge-muted' };
+              const hasUrl = source.url && source.url !== '#';
               return (
                 <div key={i} className="card-base p-4 hover:border-[#C8C6C2]" style={{ borderRadius: 8 }}>
-                  <p className="font-heading" style={{ fontStyle: 'italic', fontSize: 14, lineHeight: 1.6, color: 'var(--text-primary)', fontWeight: 400 }}>
+                  <p style={{ fontStyle: 'italic', fontSize: 14, lineHeight: 1.6, color: 'var(--text-primary)', fontWeight: 300 }}>
                     "{source.text}"
                   </p>
                   <div className="flex items-center gap-3 mt-3 flex-wrap">
-                    <a
-                      href={source.url || '#'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className={`source-chip ${meta.chipClass}`}
-                    >
-                      {meta.label}
-                    </a>
-                    <a
-                      href={source.url || '#'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="font-body transition-colors duration-150"
-                      style={{ fontSize: 12, color: 'var(--accent-primary)', textDecoration: 'underline', textUnderlineOffset: '2px' }}
-                    >
-                      {source.author}
-                    </a>
-                    {source.upvotes != null && (
-                      <span className="badge badge-green" style={{ fontSize: 10 }}>
-                        +{source.upvotes}
-                      </span>
+                    {hasUrl ? (
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className={`source-chip ${meta.chipClass}`}
+                      >
+                        {meta.label}
+                      </a>
+                    ) : (
+                      <span className="badge badge-muted">{meta.label}</span>
                     )}
-                    <span className="font-caption" style={{ fontSize: 11 }}>{source.date}</span>
+                    {hasUrl && source.author ? (
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="font-caption transition-colors duration-150"
+                        style={{ fontSize: 12, color: 'var(--accent-primary)', textDecoration: 'underline', textUnderlineOffset: '2px' }}
+                      >
+                        {source.author}
+                      </a>
+                    ) : source.author ? (
+                      <span className="font-caption" style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{source.author}</span>
+                    ) : null}
+                    {source.upvotes != null && (
+                      <span className="badge badge-green" style={{ fontSize: 10 }}>+{source.upvotes}</span>
+                    )}
+                    {source.date && <span className="font-caption" style={{ fontSize: 11 }}>{source.date}</span>}
                   </div>
                 </div>
               );
@@ -284,7 +295,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
             </button>
             <button onClick={handlePin} disabled={saving || saved} className="btn-secondary"
               style={{ color: saved ? 'var(--accent-primary)' : undefined, backgroundColor: saved ? 'var(--accent-primary-light)' : undefined, borderColor: saved ? 'var(--accent-primary)' : undefined }}>
-              {saved ? 'Pinned' : saving ? 'Pinning…' : 'Pin Insight'}
+              {saved ? 'Pinned' : saving ? 'Pinning...' : 'Pin Insight'}
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); setShowNoteInput(!showNoteInput); }}
