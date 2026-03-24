@@ -10,18 +10,26 @@ const corsHeaders = {
 const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
+// Use stronger model for complex generation, lite for simple sections
+const MODEL_BY_SECTION: Record<string, string> = {
+  costs: "google/gemini-2.5-flash",
+  suppliers: "google/gemini-2.5-flash",
+  team: "google/gemini-2.5-flash",
+  timeline: "google/gemini-2.5-flash-lite",
+};
+
 async function hashKey(input: string): Promise<string> {
   const data = new TextEncoder().encode(input.trim().toLowerCase().replace(/\s+/g, " "));
   const buf = await crypto.subtle.digest("SHA-256", data);
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function callAI(apiKey: string, systemPrompt: string, userPrompt: string, tools: any[]) {
+async function callAI(apiKey: string, systemPrompt: string, userPrompt: string, tools: any[], model: string = "google/gemini-2.5-flash") {
   const resp = await fetch(AI_GATEWAY, {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "google/gemini-2.5-flash-lite",
+      model,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
@@ -323,7 +331,23 @@ serve(async (req) => {
       }
     }
 
-    let result = await callAI(LOVABLE_API_KEY, config.systemPrompt(context), config.userPrompt(context), config.tool);
+    const model = MODEL_BY_SECTION[section] || "google/gemini-2.5-flash";
+    let result = await callAI(LOVABLE_API_KEY, config.systemPrompt(context), config.userPrompt(context), config.tool, model);
+
+    // Validate non-empty results — don't cache empty arrays
+    const isEmpty = (section === "suppliers" && (!result.suppliers || result.suppliers.length === 0)) ||
+                    (section === "team" && (!result.team || result.team.length === 0));
+    if (isEmpty) {
+      console.warn(`[setup-section] ${section} returned empty, not caching. Retrying with stronger model...`);
+      result = await callAI(LOVABLE_API_KEY, config.systemPrompt(context), config.userPrompt(context), config.tool, "google/gemini-2.5-flash");
+      const stillEmpty = (section === "suppliers" && (!result.suppliers || result.suppliers.length === 0)) ||
+                         (section === "team" && (!result.team || result.team.length === 0));
+      if (stillEmpty) {
+        return new Response(JSON.stringify({ section, data: result }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
 
     // Post-process costs: restructure breakdown from separate arrays into keyed object
     if (section === "costs") {
