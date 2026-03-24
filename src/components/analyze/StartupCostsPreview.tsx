@@ -3,8 +3,8 @@ import { analyzeSection, type AnalyzeContext, type CostsData } from '@/lib/analy
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import SectionSkeleton from './SectionSkeleton';
 
-export default function StartupCostsPreview({ context, onData, onError, shouldRun = true }: { context: AnalyzeContext; onData?: (data: CostsData) => void; onError?: (error: string) => void; shouldRun?: boolean }) {
-  const [data, setData] = useState<CostsData | null>(null);
+export default function StartupCostsPreview({ context, onData, onError, shouldRun = true, initialData }: { context: AnalyzeContext; onData?: (data: CostsData) => void; onError?: (error: string) => void; shouldRun?: boolean; initialData?: CostsData | null }) {
+  const [data, setData] = useState<CostsData | null>(initialData ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

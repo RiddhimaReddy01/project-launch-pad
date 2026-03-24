@@ -3,8 +3,8 @@ import { analyzeSection, type AnalyzeContext, type MoatData } from '@/lib/analyz
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
 import SectionSkeleton from './SectionSkeleton';
 
-export default function CompetitiveMoat({ context, onData, onError, shouldRun = true }: { context: AnalyzeContext; onData?: (data: MoatData) => void; onError?: (error: string) => void; shouldRun?: boolean }) {
-  const [data, setData] = useState<MoatData | null>(null);
+export default function CompetitiveMoat({ context, onData, onError, shouldRun = true, initialData }: { context: AnalyzeContext; onData?: (data: MoatData) => void; onError?: (error: string) => void; shouldRun?: boolean; initialData?: MoatData | null }) {
+  const [data, setData] = useState<MoatData | null>(initialData ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

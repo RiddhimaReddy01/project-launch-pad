@@ -11,8 +11,8 @@ const LEVEL_CONFIG = {
 const likelihoodVal = { low: 1, medium: 2, high: 3 };
 const impactVal = { low: 1, medium: 2, high: 3 };
 
-export default function RiskMatrix({ context, onData, onError, shouldRun = true }: { context: AnalyzeContext; onData?: (data: RiskData) => void; onError?: (error: string) => void; shouldRun?: boolean }) {
-  const [data, setData] = useState<RiskData | null>(null);
+export default function RiskMatrix({ context, onData, onError, shouldRun = true, initialData }: { context: AnalyzeContext; onData?: (data: RiskData) => void; onError?: (error: string) => void; shouldRun?: boolean; initialData?: RiskData | null }) {
+  const [data, setData] = useState<RiskData | null>(initialData ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hoveredRisk, setHoveredRisk] = useState<number | null>(null);

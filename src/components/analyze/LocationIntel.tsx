@@ -3,8 +3,8 @@ import { analyzeSection, type AnalyzeContext, type LocationData } from '@/lib/an
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import SectionSkeleton from './SectionSkeleton';
 
-export default function LocationIntel({ context, onData, onError, shouldRun = true }: { context: AnalyzeContext; onData?: (data: LocationData) => void; onError?: (error: string) => void; shouldRun?: boolean }) {
-  const [data, setData] = useState<LocationData | null>(null);
+export default function LocationIntel({ context, onData, onError, shouldRun = true, initialData }: { context: AnalyzeContext; onData?: (data: LocationData) => void; onError?: (error: string) => void; shouldRun?: boolean; initialData?: LocationData | null }) {
+  const [data, setData] = useState<LocationData | null>(initialData ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
