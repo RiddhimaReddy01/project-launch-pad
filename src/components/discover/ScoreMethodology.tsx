@@ -26,7 +26,7 @@ const SCORE_EXPLANATIONS = [
   {
     key: 'willingness_to_pay' as const,
     label: 'Willingness to Pay',
-    icon: '💰',
+    icon: '',
     getDesc: (v: number) => {
       if (v >= 0.7) return 'Strong pay signal — users explicitly mention budgets, price comparisons, or willingness to switch.';
       if (v >= 0.4) return 'Some pay signal — indirect mentions of value or cost.';
