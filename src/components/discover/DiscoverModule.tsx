@@ -74,15 +74,7 @@ export default function DiscoverModule() {
 
     try {
       const startTime = Date.now();
-      const data = await discoverInsights({
-        business_type: decomposeResult.stage1.business_type,
-        location: decomposeResult.stage1.location,
-        search_queries: decomposeResult.stage2.search_queries,
-        source_domains: decomposeResult.stage2.source_domains,
-        subreddits: decomposeResult.stage2.subreddits,
-        target_customers: decomposeResult.stage2.target_customers,
-        price_tier: decomposeResult.stage2.price_tier,
-      });
+      const data = await discoverInsights(idea);
       if (Date.now() - startTime < 1000) setCached(true);
       setResult(data);
       setContextDiscover(data);
