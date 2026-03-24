@@ -57,8 +57,8 @@ function CompetitorCard({ comp, index }: { comp: Competitor; index: number }) {
   );
 }
 
-export default function Competitors({ context, onData, onError, shouldRun = true }: { context: AnalyzeContext; onData?: (data: CompetitorsData) => void; onError?: (error: string) => void; shouldRun?: boolean }) {
-  const [data, setData] = useState<CompetitorsData | null>(null);
+export default function Competitors({ context, onData, onError, shouldRun = true, initialData }: { context: AnalyzeContext; onData?: (data: CompetitorsData) => void; onError?: (error: string) => void; shouldRun?: boolean; initialData?: CompetitorsData | null }) {
+  const [data, setData] = useState<CompetitorsData | null>(initialData ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
