@@ -220,7 +220,6 @@ export default function ValidateModule() {
         const method = ALL_METHODS.find(m => m.id === mId);
         method?.outputs.forEach(o => requiredOutputs.add(o));
       });
-      requiredOutputs.add('scorecard');
 
       const data = await generateValidation(idea, Array.from(requiredOutputs));
       data.scorecard = deriveScorecard(data.scorecard || []);
