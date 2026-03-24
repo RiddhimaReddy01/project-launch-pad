@@ -266,7 +266,6 @@ export default function ValidateModule() {
       if (ideaId) {
         await supabase.from('experiments').delete().eq('idea_id', ideaId).eq('user_id', user.id);
 
-        const scorecardObj = Object.fromEntries(result.scorecard.map(m => [m.label, { target: m.target, actual: m.actual, unit: m.unit, target_label: m.target_label }]));
         const methodEntries = Array.from(selectedMethods).map(mId => {
           const method = ALL_METHODS.find(am => am.id === mId);
           return {
