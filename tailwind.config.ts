@@ -47,11 +47,24 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Calm Intelligence palette
+        calm: {
+          green: "#2D6B52",
+          "green-light": "#E6F2EC",
+          amber: "#B8860B",
+          blue: "#4A6FA5",
+          purple: "#7B68A8",
+          error: "#C4453E",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      fontFamily: {
+        heading: ["'Playfair Display'", "serif"],
+        body: ["'Outfit'", "sans-serif"],
       },
     },
   },
