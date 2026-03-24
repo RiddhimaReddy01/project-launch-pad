@@ -8,6 +8,7 @@ import AnalyzeModule from '@/components/analyze/AnalyzeModule';
 import SetupModule from '@/components/setup/SetupModule';
 import ValidateModule from '@/components/validate/ValidateModule';
 import { saveIdea } from '@/lib/saved-ideas';
+import { usePrefetch } from '@/hooks/use-prefetch';
 
 const STEPS: { key: Step; label: string }[] = [
   { key: 'understand', label: 'Understand' },
