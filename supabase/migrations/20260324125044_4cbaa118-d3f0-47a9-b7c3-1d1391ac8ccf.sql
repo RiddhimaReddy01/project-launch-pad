@@ -1,0 +1,1 @@
+DELETE FROM result_cache WHERE function_name IN ('setup-suppliers', 'setup-team') AND (result_data::text = '{"suppliers": []}' OR result_data::text = '{"team": [], "total_payroll": 0}' OR result_data::text = '{"suppliers":[]}' OR result_data::text = '{"team":[],"total_payroll":0}');
