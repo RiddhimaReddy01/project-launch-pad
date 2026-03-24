@@ -12,35 +12,44 @@
     --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
-    --primary: 0 0% 12%;
+    --primary: 153 30% 30%;
     --primary-foreground: 0 0% 100%;
     --secondary: 45 10% 96%;
     --secondary-foreground: 0 0% 10%;
     --muted: 45 10% 96%;
-    --muted-foreground: 0 0% 61%;
+    --muted-foreground: 40 3% 55%;
     --accent: 45 10% 96%;
     --accent-foreground: 0 0% 10%;
-    --destructive: 0 45% 45%;
+    --destructive: 4 42% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 40 7% 93%;
+    --border: 40 8% 90%;
     --input: 40 10% 95%;
-    --ring: 0 0% 12%;
-    --radius: 0.875rem;
+    --ring: 153 30% 30%;
+    --radius: 0.5rem;
+
+    /* Calm Intelligence tokens */
+    --surface-bg: #F8F7F5;
+    --surface-card: #FFFFFF;
+    --surface-input: #F5F4F2;
+    --divider: #E5E3DF;
+    --divider-light: #EDECE9;
+    --divider-section: #D8D6D2;
 
     --text-primary: #1A1A1A;
-    --text-secondary: #5A5A5A;
-    --text-muted: #9B9B9B;
-    --text-link: #6B6B6B;
-    --surface-bg: #FAFAF8;
-    --surface-card: #FFFFFF;
-    --surface-input: #F5F5F3;
-    --divider: #F0EFED;
-    --divider-light: #E8E7E5;
-    --divider-section: #E0DFDD;
-    --accent-primary: #1A1A1A;
-    --accent-teal: #5B8C7E;
-    --accent-blue: #7A8FA0;
-    --accent-amber: #A68B5B;
+    --text-secondary: #6E6C68;
+    --text-muted: #A09E9A;
+    --text-link: #2D6B52;
+
+    --accent-primary: #2D6B52;
+    --accent-primary-light: #E6F2EC;
+    --accent-teal: #2D6B52;
+    --accent-blue: #4A6FA5;
+    --accent-amber: #B8860B;
+    --accent-purple: #7B68A8;
+    --signal-high: #2D6B52;
+    --signal-medium: #B8860B;
+    --signal-low: #A09E9A;
+    --error: #C4453E;
   }
 }
 
@@ -49,7 +58,7 @@ html {
 }
 
 ::selection {
-  background: rgba(26, 26, 26, 0.1);
+  background: rgba(45, 107, 82, 0.15);
 }
 
 @layer base {
@@ -96,11 +105,96 @@ html {
   color: var(--text-muted);
 }
 
+.font-section-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
 .font-button {
   font-family: 'Outfit', sans-serif;
   font-size: 14px;
   font-weight: 400;
 }
+
+/* Card system */
+.card-base {
+  background-color: var(--surface-card);
+  border: 1px solid var(--divider);
+  border-radius: 8px;
+  transition: border-color 200ms ease-out;
+}
+
+.card-base:hover {
+  border-color: #C8C6C2;
+}
+
+.card-interactive {
+  cursor: pointer;
+}
+
+.card-interactive:hover {
+  border-color: #C8C6C2;
+}
+
+/* Buttons */
+.btn-primary {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  background-color: var(--accent-primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+.btn-secondary {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  background-color: var(--surface-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--divider);
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+}
+
+.btn-secondary:hover {
+  border-color: #C8C6C2;
+}
+
+/* Badge system */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.badge-green { background-color: var(--accent-primary-light); color: var(--accent-primary); }
+.badge-amber { background-color: rgba(184, 134, 11, 0.08); color: var(--accent-amber); }
+.badge-blue { background-color: rgba(74, 111, 165, 0.08); color: var(--accent-blue); }
+.badge-purple { background-color: rgba(123, 104, 168, 0.08); color: var(--accent-purple); }
+.badge-muted { background-color: var(--surface-input); color: var(--text-muted); }
 
 /* Transitions */
 * {
@@ -110,8 +204,8 @@ html {
 /* Scroll animation base */
 .scroll-reveal {
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 300ms ease-out, transform 300ms ease-out;
+  transform: translateY(12px);
+  transition: opacity 400ms ease-out, transform 400ms ease-out;
 }
 
 .scroll-reveal.visible {
@@ -119,13 +213,45 @@ html {
   transform: translateY(0);
 }
 
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-  }
+/* Stagger children */
+.stagger-children > * {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: staggerIn 400ms ease-out forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 200ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 250ms; }
+.stagger-children > *:nth-child(7) { animation-delay: 300ms; }
+.stagger-children > *:nth-child(8) { animation-delay: 350ms; }
+
+@keyframes staggerIn {
   to {
-    transform: translateX(0);
+    opacity: 1;
+    transform: translateY(0);
   }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes progressGrow {
+  from { width: 0%; }
+}
+
+.animate-progress {
+  animation: progressGrow 800ms ease-out;
 }
 
 .hide-scrollbar {
@@ -135,3 +261,28 @@ html {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Source chip styles */
+.source-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.source-chip:hover {
+  border-color: var(--divider-section);
+  transform: translateY(-1px);
+}
+
+.source-chip-reddit { background-color: rgba(255, 69, 0, 0.06); color: #C84B31; }
+.source-chip-google { background-color: rgba(66, 133, 244, 0.06); color: #4285F4; }
+.source-chip-yelp { background-color: rgba(175, 6, 6, 0.06); color: #AF0606; }
