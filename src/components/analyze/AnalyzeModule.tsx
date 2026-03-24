@@ -39,9 +39,16 @@ interface SectionState {
 
 type SectionResults = Record<SectionKey, SectionState>;
 
-const initSections = (): SectionResults => {
+const initSections = (prefetchedData?: Record<string, any>): SectionResults => {
   const r: any = {};
-  MODULE_DEFS.forEach(m => { r[m.key] = { data: null, status: 'idle' }; });
+  MODULE_DEFS.forEach(m => {
+    const prefetched = prefetchedData?.[m.key];
+    if (prefetched) {
+      r[m.key] = { data: prefetched, status: 'completed', lastRun: 'prefetched' };
+    } else {
+      r[m.key] = { data: null, status: 'idle' };
+    }
+  });
   return r as SectionResults;
 };
 
