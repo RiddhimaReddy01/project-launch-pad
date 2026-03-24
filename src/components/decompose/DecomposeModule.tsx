@@ -37,7 +37,6 @@ export default function DecomposeModule() {
     }
   };
 
-  // Loading — compact inline
   if (status === 'loading') {
     return (
       <div className="flex items-center justify-center gap-3 py-6">
@@ -52,31 +51,21 @@ export default function DecomposeModule() {
           }}
         />
         <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}>
-          Analyzing your idea…
+          Analyzing your idea...
         </span>
       </div>
     );
   }
 
-  // Error
   if (status === 'error') {
     return (
       <div className="flex items-center justify-center gap-4 py-6">
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, color: 'var(--destructive)' }}>
+        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, color: 'hsl(var(--destructive))' }}>
           {error}
         </span>
         <button
           onClick={() => { hasRun.current = false; runDecompose(); }}
-          className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
-          style={{
-            fontFamily: "'Outfit', sans-serif",
-            fontSize: 13,
-            fontWeight: 400,
-            backgroundColor: 'var(--accent-primary)',
-            color: '#fff',
-            border: 'none',
-            cursor: 'pointer',
-          }}
+          className="btn-primary rounded-[10px] px-4 py-2"
         >
           Retry
         </button>
@@ -84,22 +73,20 @@ export default function DecomposeModule() {
     );
   }
 
-  // Done — slim context strip (no internal details)
   if (status === 'done' && result) {
     const loc = [result.stage1.location.city, result.stage1.location.state].filter(Boolean).join(', ');
     return (
       <div className="flex items-center justify-center gap-3 py-2">
-        <div
-          className="flex items-center gap-2 rounded-full px-4 py-2"
-          style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
-        >
-          <span style={{ fontSize: 14 }}>✓</span>
+        <div className="card-base flex items-center gap-2 rounded-full px-4 py-2">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M3 7L6 10L11 4" stroke="var(--accent-primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
           <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
             {result.stage1.business_type}
           </span>
           {loc && (
             <>
-              <span style={{ color: 'var(--divider-light)' }}>·</span>
+              <span style={{ color: 'var(--divider-light)' }}>/</span>
               <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)' }}>
                 {loc}
               </span>
@@ -107,15 +94,15 @@ export default function DecomposeModule() {
           )}
           {result.stage2.price_tier && (
             <>
-              <span style={{ color: 'var(--divider-light)' }}>·</span>
+              <span style={{ color: 'var(--divider-light)' }}>/</span>
               <span
                 className="rounded-full px-2 py-0.5"
                 style={{
                   fontFamily: "'Outfit', sans-serif",
                   fontSize: 11,
                   fontWeight: 400,
-                  backgroundColor: 'rgba(166,139,91,0.08)',
-                  color: 'var(--accent-amber)',
+                  backgroundColor: 'rgba(45,107,82,0.08)',
+                  color: 'var(--accent-primary)',
                 }}
               >
                 {result.stage2.price_tier}
@@ -124,7 +111,7 @@ export default function DecomposeModule() {
           )}
           {result.cached && (
             <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--accent-teal)' }}>
-              ⚡ cached
+              cached
             </span>
           )}
         </div>

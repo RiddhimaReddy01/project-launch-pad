@@ -16,7 +16,7 @@ async function hashIdea(idea: string): Promise<string> {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function callAI(apiKey: string, model: string, systemPrompt: string, userPrompt: string, tools: any[]) {
+async function callAIJson(apiKey: string, model: string, systemPrompt: string, userPrompt: string) {
   const resp = await fetch(AI_GATEWAY, {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
@@ -26,8 +26,8 @@ async function callAI(apiKey: string, model: string, systemPrompt: string, userP
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
       ],
-      tools,
-      tool_choice: { type: "function", function: { name: tools[0].function.name } },
+      response_format: { type: "json_object" },
+      temperature: 0.3,
     }),
   });
 
@@ -37,51 +37,18 @@ async function callAI(apiKey: string, model: string, systemPrompt: string, userP
   }
 
   const data = await resp.json();
-  const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
-  if (toolCall) return JSON.parse(toolCall.function.arguments);
-  throw new Error("No structured response returned");
+  const content = data.choices?.[0]?.message?.content;
+  if (!content) throw new Error("No content in AI response");
+  
+  try {
+    return JSON.parse(content);
+  } catch {
+    // Try to extract JSON from markdown code blocks
+    const match = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (match) return JSON.parse(match[1].trim());
+    throw new Error("Could not parse AI response as JSON");
+  }
 }
-
-const STAGE1_TOOLS = [{
-  type: "function",
-  function: {
-    name: "extract_stage1",
-    description: "Extract business type and location from a business idea",
-    parameters: {
-      type: "object",
-      properties: {
-        business_type: { type: "string" },
-        location: {
-          type: "object",
-          properties: { city: { type: "string" }, state: { type: "string" } },
-          required: ["city", "state"],
-        },
-      },
-      required: ["business_type", "location"],
-      additionalProperties: false,
-    },
-  },
-}];
-
-const STAGE2_TOOLS = [{
-  type: "function",
-  function: {
-    name: "extract_stage2",
-    description: "Extract detailed market research parameters",
-    parameters: {
-      type: "object",
-      properties: {
-        target_customers: { type: "array", items: { type: "string" } },
-        price_tier: { type: "string", enum: ["budget", "mid-range", "premium", "luxury"] },
-        search_queries: { type: "array", items: { type: "string" } },
-        source_domains: { type: "array", items: { type: "string" } },
-        subreddits: { type: "array", items: { type: "string" } },
-      },
-      required: ["target_customers", "price_tier", "search_queries", "source_domains", "subreddits"],
-      additionalProperties: false,
-    },
-  },
-}];
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -105,7 +72,7 @@ serve(async (req) => {
 
     const words = idea.trim().split(/\s+/);
     if (words.length < 3) {
-      return new Response(JSON.stringify({ error: "Tell us a bit more — at least 3 words about your idea" }), {
+      return new Response(JSON.stringify({ error: "Tell us a bit more - at least 3 words about your idea" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -128,46 +95,52 @@ serve(async (req) => {
       }
     }
 
-    // Stage 1 — Fast extraction
-    const stage1 = await callAI(
+    // Single combined call - extract everything at once for speed
+    const combined = await callAIJson(
       LOVABLE_API_KEY,
       "google/gemini-2.5-flash",
-      `You are a business analyst. Extract the business type and location from the user's idea.
-IMPORTANT: Look carefully for city/state/country mentions. Examples:
-- "Juice bar in Plano TX" → business_type: "Juice bar", location: { city: "Plano", state: "TX" }
-- "Coffee shop in Austin, Texas" → business_type: "Coffee shop", location: { city: "Austin", state: "Texas" }
-- "Online tutoring platform" → business_type: "Online tutoring platform", location: { city: "", state: "" }
-Always extract the most specific location mentioned. Use standard state abbreviations or full names as written.`,
-      idea,
-      STAGE1_TOOLS
-    );
+      `You are a business analyst. Given a business idea, extract structured data as JSON.
 
-    // Stage 2 — Detailed extraction
-    const loc = stage1.location?.city ? `${stage1.location.city}, ${stage1.location.state}` : "Not specified";
-    const stage2Prompt = `Business idea: ${idea}\nBusiness type: ${stage1.business_type}\nLocation: ${loc}\n\nExtract target customer segments, price tier, and research parameters for this specific business.`;
+Return exactly this JSON structure:
+{
+  "business_type": "string - the core business type (e.g. 'Juice bar', 'SaaS platform')",
+  "location": {
+    "city": "string - city name or empty string if not mentioned",
+    "state": "string - state/region or empty string if not mentioned"
+  },
+  "target_customers": ["array of 3-5 specific customer segments"],
+  "price_tier": "one of: budget, mid-range, premium, luxury",
+  "search_queries": ["5-8 Google search queries for market research"],
+  "source_domains": ["3-5 relevant review/discussion domains like yelp.com, reddit.com"],
+  "subreddits": ["3-5 relevant subreddit names without r/ prefix"]
+}
 
-    const stage2 = await callAI(
-      LOVABLE_API_KEY,
-      "google/gemini-2.5-flash",
-      `You are a market research expert. Extract detailed parameters for market research.
-- target_customers: 3-5 specific customer segments (e.g. "Health-conscious millennials", "Office workers seeking quick lunch")
-- price_tier: one of "budget", "mid-range", "premium", "luxury" based on the business concept
-- search_queries: 5-8 Google search queries to find customer discussions about this type of business
-- source_domains: 3-5 review/discussion domains relevant to this business (e.g. yelp.com, reddit.com)
-- subreddits: 3-5 relevant subreddit names without r/ prefix`,
-      stage2Prompt,
-      STAGE2_TOOLS
+IMPORTANT RULES:
+- Look carefully for city/state/country mentions in the idea
+- "Juice bar in Plano TX" -> city: "Plano", state: "TX"
+- "Coffee shop in Austin, Texas" -> city: "Austin", state: "Texas"  
+- "Online tutoring platform" -> city: "", state: ""
+- Use standard state abbreviations or full names as written
+- target_customers should be specific segments like "Health-conscious millennials" not generic like "everyone"
+- search_queries should be research-focused queries a market researcher would use`,
+      `Business idea: ${idea}`
     );
 
     const result = {
       cached: false,
-      stage1: { business_type: stage1.business_type, location: stage1.location },
+      stage1: {
+        business_type: combined.business_type || idea,
+        location: {
+          city: combined.location?.city || "",
+          state: combined.location?.state || "",
+        },
+      },
       stage2: {
-        target_customers: stage2.target_customers,
-        price_tier: stage2.price_tier,
-        search_queries: stage2.search_queries,
-        source_domains: stage2.source_domains,
-        subreddits: stage2.subreddits,
+        target_customers: combined.target_customers || [],
+        price_tier: combined.price_tier || "mid-range",
+        search_queries: combined.search_queries || [],
+        source_domains: combined.source_domains || [],
+        subreddits: combined.subreddits || [],
       },
     };
 
