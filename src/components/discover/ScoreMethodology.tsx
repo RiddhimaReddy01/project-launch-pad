@@ -84,7 +84,7 @@ export default function ScoreMethodology({ insight }: { insight: DiscoverInsight
             <div key={key} className="rounded-[8px] p-3" style={{ backgroundColor: 'var(--surface-card)' }}>
               <div className="flex items-center justify-between mb-1.5">
                 <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-primary)' }}>
-                  {icon} {label}
+                  {label}
                 </span>
                 <span style={{
                   fontFamily: "'Outfit', sans-serif",
