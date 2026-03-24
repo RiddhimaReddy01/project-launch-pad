@@ -49,7 +49,7 @@ export default function Story() {
       </blockquote>
 
       <p ref={p4} className="scroll-reveal font-body" style={{ marginTop: 40 }}>
-        LaunchLens does the legwork. You type one sentence about your idea. We scan the places where your future customers{' '}
+        Launch Lean does the legwork. You type one sentence about your idea. We scan the places where your future customers{' '}
         <span className="font-body-strong">already talk</span> — Reddit, Yelp, local forums — and come back with the four things you need before you spend a dollar.
       </p>
     </section>);
