@@ -98,7 +98,7 @@ export async function setupSection(
   tier?: string
 ): Promise<SetupSectionData> {
   const body = typeof ideaOrContext === 'string'
-    ? { idea: ideaOrContext, selected_tier: (tier || 'MID').toUpperCase() }
+    ? { idea: ideaOrContext, section, selected_tier: (tier || 'MID').toUpperCase() }
     : { section, context: ideaOrContext };
 
   const result = await invokeApi<{ data: SetupSectionData }>("setup-section", body);
