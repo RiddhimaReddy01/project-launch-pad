@@ -72,18 +72,18 @@ export default function SetupModule() {
   }, []);
 
   const loadSection = useCallback(async (section: TabKey) => {
-    if (!context) return;
+    if (!idea) return;
     const setters = { costs: setCostsState, suppliers: setSuppliersState, team: setTeamState, timeline: setTimelineState };
     setters[section]({ data: null, status: 'loading' });
     try {
-      const result = await setupSection(section, context);
+      const result = await setupSection(section, idea, selectedTier.toUpperCase());
       setters[section]({ data: result as any, status: 'completed' });
       // Push to shared context for Validate tab
-      setSetupData(prev => ({ ...prev, tier: context.tier, [section]: result }));
+      setSetupData(prev => ({ ...prev, tier: selectedTier, [section]: result }));
     } catch (err: any) {
       setters[section]({ data: null, status: 'error', error: err.message });
     }
-  }, [context, setSetupData]);
+  }, [idea, selectedTier, setSetupData]);
 
   // Auto-load costs on mount
   useEffect(() => {
