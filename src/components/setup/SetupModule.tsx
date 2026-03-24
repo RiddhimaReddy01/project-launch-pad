@@ -92,10 +92,10 @@ export default function SetupModule() {
 
   // Load tab data on switch
   useEffect(() => {
-    if (!context) return;
+    if (!idea) return;
     const states = { costs: costsState, suppliers: suppliersState, team: teamState, timeline: timelineState };
     if (states[activeTab].status === 'idle') loadSection(activeTab);
-  }, [activeTab, context]);
+  }, [activeTab, idea]);
 
   // Re-fetch suppliers/team/timeline when tier changes
   useEffect(() => {
