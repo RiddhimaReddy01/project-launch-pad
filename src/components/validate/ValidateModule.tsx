@@ -228,7 +228,7 @@ export default function ValidateModule() {
       setErrorMsg(err.message || 'Something went wrong - please try again');
       setPhase('select');
     }
-  }, [idea, deriveScorecard, selectedMethods]);
+  }, [idea, selectedMethods]);
 
   const toggleMethod = (id: string) => {
     setSelectedMethods(prev => {
