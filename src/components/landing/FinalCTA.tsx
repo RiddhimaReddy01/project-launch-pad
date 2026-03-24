@@ -1,10 +1,11 @@
+import { forwardRef } from 'react';
 import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 
-export default function FinalCTA() {
-  const ref = useScrollReveal();
+const FinalCTA = forwardRef<HTMLElement>((_props, _ref) => {
+  const scrollRef = useScrollReveal();
 
   return (
-    <section ref={ref} className="scroll-reveal px-6 mx-auto text-center" style={{ maxWidth: 500 }}>
+    <section ref={scrollRef} className="scroll-reveal px-6 mx-auto text-center" style={{ maxWidth: 500 }}>
       <h2 className="font-heading">Stop researching. Start validating.</h2>
 
       <button
@@ -29,4 +30,7 @@ export default function FinalCTA() {
       </p>
     </section>
   );
-}
+});
+
+FinalCTA.displayName = 'FinalCTA';
+export default FinalCTA;
