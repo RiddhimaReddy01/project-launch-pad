@@ -130,9 +130,34 @@ serve(async (req) => {
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
-    const { decomposition } = await req.json();
+    const body = await req.json();
+    let decomposition = body.decomposition;
+
+    // Support simple { idea } format — build decomposition from idea string
+    if (!decomposition && body.idea) {
+      const idea = body.idea;
+      let business_type = idea;
+      let city = "";
+      let state = "";
+      const locMatch = idea.match(/\bin\s+([A-Za-z\s]+?)(?:,?\s+([A-Z]{2}))?\s*$/i);
+      if (locMatch) {
+        city = locMatch[1].trim();
+        state = (locMatch[2] || "").trim();
+        business_type = idea.replace(/\bin\s+.+$/i, "").trim();
+      }
+      decomposition = {
+        business_type,
+        location: { city, state },
+        search_queries: [`${business_type} in ${city}`],
+        source_domains: [],
+        subreddits: [],
+        target_customers: [],
+        price_tier: "mid-range",
+      };
+    }
+
     if (!decomposition) {
-      return new Response(JSON.stringify({ error: "Missing 'decomposition' field" }), {
+      return new Response(JSON.stringify({ error: "Missing 'idea' or 'decomposition' field" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
