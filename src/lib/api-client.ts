@@ -150,8 +150,12 @@ async function tryExternalApi<T>(baseUrl: string, functionName: string, body: un
  *   3. LOVABLE Cloud edge functions
  */
 export async function invokeApi<T = unknown>(functionName: string, body: unknown): Promise<T> {
-  if (LOVABLE_ONLY.has(functionName) || !RENDER_ENDPOINTS[functionName]) {
-    console.log(`[API] Using Lovable Cloud for ${functionName} (no backend endpoint)`);
+  // Route unsupported analyze sections directly to Lovable Cloud
+  const isUnsupportedSection = functionName === "analyze-section" && 
+    RENDER_UNSUPPORTED_SECTIONS.has((body as any)?.section);
+
+  if (LOVABLE_ONLY.has(functionName) || !RENDER_ENDPOINTS[functionName] || isUnsupportedSection) {
+    console.log(`[API] Using Lovable Cloud for ${functionName}${isUnsupportedSection ? ` (section: ${(body as any)?.section})` : ''}`);
     return await tryLovableCloud<T>(functionName, body);
   }
 
