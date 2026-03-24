@@ -60,9 +60,9 @@ function ClickableSection({
               }}
               onClick={() => onItemClick?.(item)}
             >
-              <p style={{
-                fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300,
-                lineHeight: 1.5, color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
+              <p className="font-caption" style={{
+                fontSize: 13,
+                color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
               }}>
                 {item}
               </p>
