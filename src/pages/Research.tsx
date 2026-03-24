@@ -8,6 +8,7 @@ import AnalyzeModule from '@/components/analyze/AnalyzeModule';
 import SetupModule from '@/components/setup/SetupModule';
 import ValidateModule from '@/components/validate/ValidateModule';
 import { saveIdea } from '@/lib/saved-ideas';
+import { usePrefetch } from '@/hooks/use-prefetch';
 
 const STEPS: { key: Step; label: string }[] = [
   { key: 'understand', label: 'Understand' },
@@ -58,8 +59,11 @@ function StepperDot({ step, index, currentIndex, onNavigate, locked }: { step: t
 }
 
 export default function Research() {
-  const { idea, currentStep, setCurrentStep, discoverResult } = useIdea();
+  const { idea, currentStep, setCurrentStep, discoverResult, prefetchStatus } = useIdea();
   const { user } = useAuth();
+
+  // Fire parallel prefetch for all tabs after decompose completes
+  usePrefetch();
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');

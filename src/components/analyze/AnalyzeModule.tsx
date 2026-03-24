@@ -39,18 +39,25 @@ interface SectionState {
 
 type SectionResults = Record<SectionKey, SectionState>;
 
-const initSections = (): SectionResults => {
+const initSections = (prefetchedData?: Record<string, any>): SectionResults => {
   const r: any = {};
-  MODULE_DEFS.forEach(m => { r[m.key] = { data: null, status: 'idle' }; });
+  MODULE_DEFS.forEach(m => {
+    const prefetched = prefetchedData?.[m.key];
+    if (prefetched) {
+      r[m.key] = { data: prefetched, status: 'completed', lastRun: 'prefetched' };
+    } else {
+      r[m.key] = { data: null, status: 'idle' };
+    }
+  });
   return r as SectionResults;
 };
 
 export default function AnalyzeModule() {
-  const { idea, selectedInsight, decomposeResult, discoverResult, setAnalyzeFindings, setAnalyzeData } = useIdea();
+  const { idea, selectedInsight, decomposeResult, discoverResult, setAnalyzeFindings, setAnalyzeData, analyzeData } = useIdea();
   const { user } = useAuth();
 
   const [activeModule, setActiveModule] = useState<SectionKey>('opportunity');
-  const [sections, setSections] = useState<SectionResults>(initSections);
+  const [sections, setSections] = useState<SectionResults>(() => initSections(analyzeData));
   const [inputs, setInputs] = useState<InputSelection>({ ...DEFAULT_INPUTS });
   const [selectedFindings, setSelectedFindings] = useState<Set<string>>(new Set());
   const [railCollapsed, setRailCollapsed] = useState(false);
@@ -110,6 +117,22 @@ export default function AnalyzeModule() {
     });
     setAnalyzeFindings(findings);
   }, [selectedFindings, setAnalyzeFindings]);
+
+  // Pick up prefetched analyze data that arrives after mount
+  useEffect(() => {
+    if (!analyzeData || Object.keys(analyzeData).length === 0) return;
+    setSections(prev => {
+      const next = { ...prev };
+      let changed = false;
+      Object.entries(analyzeData).forEach(([k, v]) => {
+        if (v && next[k as SectionKey]?.status === 'idle') {
+          next[k as SectionKey] = { data: v, status: 'completed', lastRun: 'prefetched' };
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
+  }, [analyzeData]);
 
   useEffect(() => {
     const el = containerRef.current;

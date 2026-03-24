@@ -30,7 +30,7 @@ interface SectionState<T> {
 }
 
 export default function SetupModule() {
-  const { idea, decomposeResult, setSetupData } = useIdea();
+  const { idea, decomposeResult, setSetupData, setupData: prefetchedSetup } = useIdea();
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -38,10 +38,22 @@ export default function SetupModule() {
   const [activeTab, setActiveTab] = useState<TabKey>('costs');
   const [exporting, setExporting] = useState(false);
 
-  const [costsState, setCostsState] = useState<SectionState<CostsResult>>({ data: null, status: 'idle' });
+  // Initialize from prefetched data if available
+  const prefetchedCosts = prefetchedSetup?.costs as CostsResult | undefined;
+  const [costsState, setCostsState] = useState<SectionState<CostsResult>>({
+    data: prefetchedCosts || null,
+    status: prefetchedCosts ? 'completed' : 'idle',
+  });
   const [suppliersState, setSuppliersState] = useState<SectionState<SuppliersResult>>({ data: null, status: 'idle' });
   const [teamState, setTeamState] = useState<SectionState<TeamResult>>({ data: null, status: 'idle' });
   const [timelineState, setTimelineState] = useState<SectionState<TimelineResult>>({ data: null, status: 'idle' });
+
+  // Pick up prefetched costs if they arrive after mount
+  useEffect(() => {
+    if (prefetchedCosts && costsState.status === 'idle') {
+      setCostsState({ data: prefetchedCosts, status: 'completed' });
+    }
+  }, [prefetchedCosts]);
 
   const context: SetupContext | null = useMemo(() => {
     if (!decomposeResult) return null;

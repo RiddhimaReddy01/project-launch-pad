@@ -4,6 +4,8 @@ import type { DiscoverResult } from '@/lib/discover';
 
 export type Step = 'understand' | 'discover' | 'analyze' | 'setup' | 'validate';
 
+export type PrefetchStatus = 'idle' | 'running' | 'done';
+
 export interface AnalyzeFinding {
   id: string;
   text: string;
@@ -28,6 +30,8 @@ interface IdeaState {
   setAnalyzeData: (data: Record<string, any>) => void;
   setupData: Record<string, any>;
   setSetupData: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  prefetchStatus: PrefetchStatus;
+  setPrefetchStatus: (status: PrefetchStatus) => void;
 }
 
 const IdeaContext = createContext<IdeaState | null>(null);
@@ -41,12 +45,14 @@ export function IdeaProvider({ children }: { children: ReactNode }) {
   const [analyzeFindings, setAnalyzeFindings] = useState<AnalyzeFinding[]>([]);
   const [analyzeData, setAnalyzeData] = useState<Record<string, any>>({});
   const [setupData, setSetupData] = useState<Record<string, any>>({});
+  const [prefetchStatus, setPrefetchStatus] = useState<PrefetchStatus>('idle');
 
   return (
     <IdeaContext.Provider value={{
       idea, setIdea, currentStep, setCurrentStep, selectedInsight, setSelectedInsight,
       decomposeResult, setDecomposeResult, discoverResult, setDiscoverResult,
       analyzeFindings, setAnalyzeFindings, analyzeData, setAnalyzeData, setupData, setSetupData,
+      prefetchStatus, setPrefetchStatus,
     }}>
       {children}
     </IdeaContext.Provider>
