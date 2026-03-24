@@ -4,8 +4,7 @@ import { useIdea } from '@/context/IdeaContext';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { generateValidation, type ValidateResult, type ValidateContext, type ScorecardMetric } from '@/lib/validate';
-import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Tooltip } from 'recharts';
+import { generateValidation, type ValidateResult, type ValidateContext } from '@/lib/validate';
 import SectionSkeleton from '@/components/analyze/SectionSkeleton';
 
 // ═══ VALIDATION METHODS ═══
