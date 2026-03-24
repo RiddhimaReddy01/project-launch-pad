@@ -141,6 +141,18 @@ async function tryExternalApi<T>(baseUrl: string, functionName: string, body: un
   if (rawData?.detail) throw new Error(JSON.stringify(rawData.detail));
 
   // Treat empty Render responses as failures so we fall through to Cloud
+  if (functionName === 'decompose-idea') {
+    const transformed = transformResponseFromRender(functionName, rawData);
+    const s1 = transformed.stage1;
+    const s2 = transformed.stage2;
+    const hasLocation = s1?.location?.city || s1?.location?.state;
+    const hasCustomers = s2?.target_customers?.length > 0;
+    const hasPriceTier = !!s2?.price_tier;
+    if (!hasLocation && !hasCustomers && !hasPriceTier) {
+      throw new Error('Render returned incomplete decompose data');
+    }
+  }
+
   if (functionName === 'setup-section') {
     const isEmpty = Array.isArray(rawData?.cost_tiers) && rawData.cost_tiers.length === 0 &&
       Array.isArray(rawData?.suppliers) && rawData.suppliers.length === 0;
