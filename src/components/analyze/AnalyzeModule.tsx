@@ -342,7 +342,7 @@ export default function AnalyzeModule() {
     <div className="flex items-center justify-center" style={{ height: '60vh' }}>
       <div className="text-center" style={{ maxWidth: 400 }}>
         <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Pick a module and run your analysis</p>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
           Choose which signals and insights to include, then run only the analyses you need.
         </p>
       </div>
@@ -369,16 +369,16 @@ export default function AnalyzeModule() {
             <span style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               width: 28, height: 28, borderRadius: 8,
-              fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+              fontSize: 12, fontWeight: 500, fontFamily: "'Outfit', sans-serif",
               backgroundColor: 'var(--text-primary)', color: '#fff',
             }}>
               {MODULE_DEFS.find(m => m.key === activeModule)?.mono}
             </span>
             <div>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)' }}>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)' }}>
                 {MODULE_DEFS.find(m => m.key === activeModule)?.label}
               </p>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>
                 {MODULE_DEFS.find(m => m.key === activeModule)?.subtitle}
               </p>
             </div>
@@ -417,7 +417,7 @@ export default function AnalyzeModule() {
                   toast.success('All sections researched');
                 }}
                 className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
-                style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
+                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
               >
                 Run all sections
               </button>
@@ -427,7 +427,7 @@ export default function AnalyzeModule() {
                 <button
                   onClick={handleSave}
                   className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
+                  style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
                 >
                   Save
                 </button>
@@ -435,13 +435,13 @@ export default function AnalyzeModule() {
                   onClick={handleExportPDF}
                   disabled={exporting}
                   className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', border: '1px solid var(--divider)', cursor: 'pointer', backgroundColor: 'transparent' }}
+                  style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', border: '1px solid var(--divider)', cursor: 'pointer', backgroundColor: 'transparent' }}
                 >
                   {exporting ? 'Exporting…' : 'Export PDF'}
                 </button>
               </>
             )}
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>
+            <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>
               {completedCount}/{MODULE_DEFS.length}
             </span>
           </div>
@@ -455,7 +455,7 @@ export default function AnalyzeModule() {
               <p className="font-heading" style={{ fontSize: 20, marginBottom: 8, textAlign: 'center' }}>
                 Ready to research
               </p>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', textAlign: 'center', maxWidth: 360, lineHeight: 1.6, marginBottom: 20 }}>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', textAlign: 'center', maxWidth: 360, lineHeight: 1.6, marginBottom: 20 }}>
                 Set up your inputs in the panel on the right, then hit the button below.
               </p>
               <button
@@ -463,7 +463,7 @@ export default function AnalyzeModule() {
                   setSections(prev => ({ ...prev, [activeModule]: { ...prev[activeModule], status: 'loading' } }));
                 }}
                 className="rounded-[10px] px-5 py-2.5 transition-all duration-200 active:scale-[0.97]"
-                style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
+                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
               >
                 Run {MODULE_DEFS.find(m => m.key === activeModule)?.label}
               </button>
@@ -472,16 +472,16 @@ export default function AnalyzeModule() {
 
           {activeSec.status === 'error' && (
             <div className="flex flex-col items-center justify-center" style={{ minHeight: 300 }}>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>
                 This section couldn't load right now.
               </p>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>
                 {activeSec.error || 'Give it another shot — sometimes a retry does the trick.'}
               </p>
               <button
                 onClick={() => setSections(prev => ({ ...prev, [activeModule]: { ...prev[activeModule], status: 'loading', error: undefined } }))}
                 className="rounded-[10px] px-5 py-2.5 transition-all duration-200"
-                style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
+                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
               >
                 Retry
               </button>
@@ -505,14 +505,14 @@ export default function AnalyzeModule() {
           {activeFindings.length > 0 && activeSec.status === 'completed' && (
             <div className="mt-12 rounded-[14px] p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
               <div className="flex items-center justify-between mb-1">
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
+                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
                   Key findings — {MODULE_DEFS.find(m => m.key === activeModule)?.label}
                 </p>
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>
                   {Array.from(selectedFindings).filter(f => activeFindings.some(af => af.text === f)).length} saved
                 </span>
               </div>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>
                 Save findings to your dashboard for validation
               </p>
               <div className="flex flex-col gap-1.5">
@@ -521,7 +521,7 @@ export default function AnalyzeModule() {
                   const isSaving = savingFinding === finding.id;
                   return (
                     <div key={finding.id} className="flex items-start gap-3 rounded-[8px] p-3 transition-colors duration-150" style={{ backgroundColor: isSelected ? 'rgba(45,139,117,0.03)' : 'transparent' }}>
-                      <span className="flex-1" style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: isSelected ? 400 : 300, color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)', lineHeight: 1.5 }}>
+                      <span className="flex-1" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: isSelected ? 400 : 300, color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)', lineHeight: 1.5 }}>
                         {finding.text}
                       </span>
                       <button
@@ -529,7 +529,7 @@ export default function AnalyzeModule() {
                         disabled={isSaving}
                         className="rounded-[6px] px-3 py-1 transition-all duration-200 flex-shrink-0"
                         style={{
-                          fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400,
+                          fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400,
                           backgroundColor: isSelected ? 'var(--text-primary)' : 'transparent',
                           color: isSelected ? '#fff' : 'var(--text-muted)',
                           border: isSelected ? 'none' : '1px solid var(--divider)',

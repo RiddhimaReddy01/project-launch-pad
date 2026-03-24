@@ -39,11 +39,11 @@ export default function CompetitiveMoat({ context, onData, onError, shouldRun = 
       {/* Overall moat score */}
       <div className="rounded-[12px] p-6 mb-8 flex items-center gap-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
         <div style={{ width: 72, height: 72, borderRadius: '50%', border: `3px solid ${scoreColor}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 24, fontWeight: 400, color: scoreColor }}>{data.overall_score}</span>
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 400, color: scoreColor }}>{data.overall_score}</span>
         </div>
         <div>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: scoreColor, marginBottom: 4 }}>Moat Score /10</p>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{data.recommendation}</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: scoreColor, marginBottom: 4 }}>Moat Score /10</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{data.recommendation}</p>
         </div>
       </div>
 
@@ -66,12 +66,12 @@ export default function CompetitiveMoat({ context, onData, onError, shouldRun = 
       {/* Strongest & weakest */}
       <div className="grid grid-cols-2 gap-3 mb-8">
         <div className="rounded-[12px] p-4" style={{ backgroundColor: 'rgba(45,139,117,0.03)', border: '1px solid rgba(45,139,117,0.1)' }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--accent-teal)', marginBottom: 4 }}>Strongest</p>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{data.strongest}</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--accent-teal)', marginBottom: 4 }}>Strongest</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{data.strongest}</p>
         </div>
         <div className="rounded-[12px] p-4" style={{ backgroundColor: 'rgba(239,68,68,0.03)', border: '1px solid rgba(239,68,68,0.1)' }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'hsl(0 84% 60%)', marginBottom: 4 }}>Weakest</p>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{data.weakest}</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'hsl(0 84% 60%)', marginBottom: 4 }}>Weakest</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{data.weakest}</p>
         </div>
       </div>
 
@@ -83,13 +83,13 @@ export default function CompetitiveMoat({ context, onData, onError, shouldRun = 
           return (
             <div key={i} className="rounded-[10px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
               <div className="flex items-center justify-between mb-2">
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>{dim.dimension}</span>
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: dimColor }}>{dim.score}/10</span>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>{dim.dimension}</span>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: dimColor }}>{dim.score}/10</span>
               </div>
               <div style={{ height: 3, borderRadius: 2, backgroundColor: 'var(--divider-light)', overflow: 'hidden', marginBottom: 8 }}>
                 <div style={{ height: '100%', width: `${barPct}%`, backgroundColor: dimColor, borderRadius: 2, transition: 'width 600ms ease-out' }} />
               </div>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.5 }}>{dim.rationale}</p>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.5 }}>{dim.rationale}</p>
             </div>
           );
         })}

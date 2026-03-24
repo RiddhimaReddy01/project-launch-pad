@@ -76,8 +76,8 @@ export default function Auth() {
         style={{ fontSize: 18, marginBottom: 48 }}
         onClick={() => navigate('/')}
       >
-        <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400 }}>Launch</span>
-        <span style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', fontWeight: 400 }}>{'\u200B'}Lens</span>
+        <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400 }}>Launch</span>
+        <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontWeight: 400 }}>{'\u200B'}Lens</span>
       </span>
 
       <div
@@ -92,7 +92,7 @@ export default function Auth() {
       >
         <h2
           style={{
-            fontFamily: "'Instrument Serif', serif",
+            fontFamily: "'Playfair Display', serif",
             fontSize: 24,
             fontWeight: 400,
             color: 'var(--text-primary)',
@@ -117,7 +117,7 @@ export default function Auth() {
             padding: '12px 16px',
             border: '1px solid var(--divider-light)',
             backgroundColor: 'var(--surface-bg)',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Outfit', sans-serif",
             fontSize: 14,
             fontWeight: 400,
             color: 'var(--text-primary)',
@@ -142,12 +142,12 @@ export default function Auth() {
         {forgotMode ? (
           forgotSent ? (
             <div className="text-center">
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 8 }}>Check your email</p>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 20 }}>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 8 }}>Check your email</p>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 20 }}>
                 We sent a password reset link to {email}.
               </p>
               <button onClick={() => { setForgotMode(false); setForgotSent(false); }} className="cursor-pointer"
-                style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: 'var(--accent-primary)', fontWeight: 400, background: 'none', border: 'none' }}>
+                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, color: 'var(--accent-primary)', fontWeight: 400, background: 'none', border: 'none' }}>
                 Back to login
               </button>
             </div>
@@ -155,10 +155,10 @@ export default function Auth() {
             <form onSubmit={handleForgotPassword}>
               <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required
                 className="w-full rounded-[10px] outline-none transition-all duration-200 mb-4"
-                style={{ padding: '12px 14px', border: '1px solid var(--divider-light)', backgroundColor: 'var(--surface-bg)', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-primary)' }} />
-              {error && <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#E05252', marginBottom: 12 }}>{error}</p>}
+                style={{ padding: '12px 14px', border: '1px solid var(--divider-light)', backgroundColor: 'var(--surface-bg)', fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-primary)' }} />
+              {error && <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, color: '#E05252', marginBottom: 12 }}>{error}</p>}
               <button type="submit" disabled={loading} className="w-full rounded-[12px] mb-3"
-                style={{ padding: '12px 16px', backgroundColor: 'var(--text-primary)', color: '#fff', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, border: 'none', cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.7 : 1 }}>
+                style={{ padding: '12px 16px', backgroundColor: 'var(--text-primary)', color: '#fff', fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, border: 'none', cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.7 : 1 }}>
                 {loading ? '...' : 'Send reset link'}
               </button>
               <p className="font-caption text-center" style={{ fontSize: 13 }}>
@@ -173,25 +173,25 @@ export default function Auth() {
             <form onSubmit={handleEmailAuth}>
               <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required
                 className="w-full rounded-[10px] outline-none transition-all duration-200 mb-3"
-                style={{ padding: '12px 14px', border: '1px solid var(--divider-light)', backgroundColor: 'var(--surface-bg)', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-primary)' }}
+                style={{ padding: '12px 14px', border: '1px solid var(--divider-light)', backgroundColor: 'var(--surface-bg)', fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-primary)' }}
                 onFocus={e => { e.currentTarget.style.borderColor = 'var(--accent-primary)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(26,26,26,0.06)'; }}
                 onBlur={e => { e.currentTarget.style.borderColor = 'var(--divider-light)'; e.currentTarget.style.boxShadow = 'none'; }} />
               <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6}
                 className="w-full rounded-[10px] outline-none transition-all duration-200 mb-2"
-                style={{ padding: '12px 14px', border: '1px solid var(--divider-light)', backgroundColor: 'var(--surface-bg)', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-primary)' }}
+                style={{ padding: '12px 14px', border: '1px solid var(--divider-light)', backgroundColor: 'var(--surface-bg)', fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-primary)' }}
                 onFocus={e => { e.currentTarget.style.borderColor = 'var(--accent-primary)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(26,26,26,0.06)'; }}
                 onBlur={e => { e.currentTarget.style.borderColor = 'var(--divider-light)'; e.currentTarget.style.boxShadow = 'none'; }} />
               {!isSignUp && (
                 <p className="text-right mb-4">
-                  <span className="cursor-pointer" style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}
+                  <span className="cursor-pointer" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}
                     onClick={() => { setForgotMode(true); setError(''); }}>
                     Forgot password?
                   </span>
                 </p>
               )}
-              {error && <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#E05252', marginBottom: 12 }}>{error}</p>}
+              {error && <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, color: '#E05252', marginBottom: 12 }}>{error}</p>}
               <button type="submit" disabled={loading} className="w-full rounded-[12px] transition-all duration-200 active:scale-[0.98]"
-                style={{ padding: '12px 16px', backgroundColor: 'var(--accent-primary)', color: '#FFFFFF', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, border: 'none', cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.7 : 1 }}>
+                style={{ padding: '12px 16px', backgroundColor: 'var(--accent-primary)', color: '#FFFFFF', fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, border: 'none', cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.7 : 1 }}>
                 {loading ? '...' : isSignUp ? 'Sign up' : 'Log in'}
               </button>
             </form>

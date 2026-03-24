@@ -29,7 +29,7 @@ export default function LaunchTimeline({ data, tier, context }: { data: Timeline
     <div>
       {/* Interactive Gantt Chart */}
       <div className="mb-10">
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 16 }}>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 16 }}>
           Launch Timeline — {tier.toUpperCase()} Tier · {totalWeeks} weeks
         </p>
 
@@ -37,7 +37,7 @@ export default function LaunchTimeline({ data, tier, context }: { data: Timeline
         <div className="flex mb-2" style={{ paddingLeft: 120 }}>
           {Array.from({ length: Math.ceil(totalWeeks / 4) }, (_, i) => (
             <div key={i} style={{ flex: 4, minWidth: 0 }}>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, color: 'var(--text-muted)' }}>W{i * 4 + 1}</span>
+              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, color: 'var(--text-muted)' }}>W{i * 4 + 1}</span>
             </div>
           ))}
         </div>
@@ -62,7 +62,7 @@ export default function LaunchTimeline({ data, tier, context }: { data: Timeline
                 >
                   {/* Phase label */}
                   <div style={{ width: 120, flexShrink: 0, paddingRight: 12 }}>
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: isExpanded ? 500 : 400, color: isExpanded ? pc.color : 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: isExpanded ? 500 : 400, color: isExpanded ? pc.color : 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
                       {row.phase}
                     </span>
                   </div>
@@ -88,7 +88,7 @@ export default function LaunchTimeline({ data, tier, context }: { data: Timeline
                       }}
                     >
                       <span style={{
-                        fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500,
+                        fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500,
                         color: isHovered || isExpanded ? '#fff' : pc.color,
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '0 6px',
                       }}>
@@ -101,18 +101,18 @@ export default function LaunchTimeline({ data, tier, context }: { data: Timeline
                 {/* Expanded details */}
                 {isExpanded && (
                   <div className="ml-[120px] mb-3 rounded-[10px] p-4 animate-fade-in" style={{ backgroundColor: pc.bg, borderLeft: `3px solid ${pc.color}` }}>
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: pc.color, marginBottom: 10 }}>Milestones</p>
+                    <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: pc.color, marginBottom: 10 }}>Milestones</p>
                     <div className="flex flex-col gap-2 mb-4">
                       {row.milestones.map((m, j) => (
                         <div key={j} className="flex items-start gap-2">
                           <div style={{ width: 14, height: 14, borderRadius: 3, border: `1.5px solid ${pc.color}40`, flexShrink: 0, marginTop: 2 }} />
-                          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{m}</p>
+                          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{m}</p>
                         </div>
                       ))}
                     </div>
                     <div className="rounded-[8px] p-3" style={{ backgroundColor: 'rgba(255,255,255,0.5)' }}>
-                      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: pc.color, marginBottom: 3 }}>Success Metric</p>
-                      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.5 }}>{row.success_metric}</p>
+                      <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: pc.color, marginBottom: 3 }}>Success Metric</p>
+                      <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.5 }}>{row.success_metric}</p>
                     </div>
                   </div>
                 )}
@@ -124,8 +124,8 @@ export default function LaunchTimeline({ data, tier, context }: { data: Timeline
 
       {/* Total */}
       <div className="rounded-[10px] p-4 flex items-center justify-between" style={{ backgroundColor: 'rgba(26,26,26,0.02)', border: '1px solid var(--divider)' }}>
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}>Total timeline</span>
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>{totalWeeks} weeks (~{Math.round(totalWeeks / 4.3)} months)</span>
+        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}>Total timeline</span>
+        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>{totalWeeks} weeks (~{Math.round(totalWeeks / 4.3)} months)</span>
       </div>
     </div>
   );

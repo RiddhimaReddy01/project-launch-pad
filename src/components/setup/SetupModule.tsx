@@ -181,7 +181,7 @@ export default function SetupModule() {
     <div className="flex items-center justify-center" style={{ height: '60vh' }}>
       <div className="text-center" style={{ maxWidth: 400 }}>
         <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Start with your idea first</p>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
           Head to the Understand tab to enter your business idea so we can build your launch plan.
         </p>
       </div>
@@ -194,10 +194,10 @@ export default function SetupModule() {
     if (state.status === 'loading') return <SectionSkeleton label={`Researching ${activeTab === 'costs' ? 'launch costs' : activeTab === 'suppliers' ? 'vendors' : activeTab === 'team' ? 'hiring options' : 'your roadmap'} for the ${selectedTier} strategy...`} />;
     if (state.status === 'error') return (
       <div className="flex flex-col items-center justify-center" style={{ minHeight: 200 }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>We couldn't load this section right now.</p>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>{state.error || 'Give it another shot'}</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>We couldn't load this section right now.</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>{state.error || 'Give it another shot'}</p>
         <button onClick={() => loadSection(activeTab)} className="rounded-[10px] px-5 py-2.5"
-          style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}>
+          style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}>
           Retry
         </button>
       </div>
@@ -217,9 +217,9 @@ export default function SetupModule() {
       {/* Header */}
       <div className="flex items-center justify-between mb-10">
         <div>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>SETUP</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>SETUP</p>
           <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>Launch Plan</p>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
             Your costs, vendors, team plan, and roadmap — tailored to the {selectedTier} launch strategy.
           </p>
         </div>
@@ -227,22 +227,22 @@ export default function SetupModule() {
           {completedCount > 0 && (
             <>
               <button onClick={handleSave} className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
-                style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}>
+                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}>
                 Save
               </button>
               <button onClick={handleExportPDF} disabled={exporting} className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
-                style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', border: '1px solid var(--divider)', cursor: 'pointer', backgroundColor: 'transparent' }}>
+                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', border: '1px solid var(--divider)', cursor: 'pointer', backgroundColor: 'transparent' }}>
                 {exporting ? 'Exporting...' : 'Export PDF'}
               </button>
             </>
           )}
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>{completedCount}/4</span>
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>{completedCount}/4</span>
         </div>
       </div>
 
       {/* Tier selector */}
       <div className="mb-10">
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 12 }}>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 12 }}>
           Select launch strategy
         </p>
         <div className="grid grid-cols-3 gap-3">
@@ -270,21 +270,21 @@ export default function SetupModule() {
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     width: 24, height: 24, borderRadius: 6, fontSize: 11, fontWeight: 500,
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: "'Outfit', sans-serif",
                     backgroundColor: isSelected ? 'var(--text-primary)' : 'var(--divider-light)',
                     color: isSelected ? '#fff' : 'var(--text-muted)',
                   }}>
                     {TIER_MONOS[tier]}
                   </span>
-                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: isSelected ? 500 : 400, color: 'var(--text-primary)' }}>
+                  <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: isSelected ? 500 : 400, color: 'var(--text-primary)' }}>
                     {labels.title}
                   </span>
                 </div>
                 <p className="font-heading" style={{ fontSize: 20, marginBottom: 4 }}>{labels.cost}</p>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.5 }}>
                   {labels.team} people · {labels.weeks} weeks
                 </p>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginTop: 6 }}>
+                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginTop: 6 }}>
                   {labels.best}
                 </p>
               </button>
@@ -301,11 +301,11 @@ export default function SetupModule() {
           return (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               className="relative flex items-center gap-2 px-4 py-3 transition-all duration-200 whitespace-nowrap"
-              style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: isActive ? 400 : 300, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
+              style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: isActive ? 400 : 300, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
               <span style={{
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 width: 20, height: 20, borderRadius: 5, fontSize: 9, fontWeight: 500,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Outfit', sans-serif",
                 backgroundColor: state.status === 'completed' ? 'var(--text-primary)' : isActive ? 'rgba(26,26,26,0.08)' : 'var(--divider-light)',
                 color: state.status === 'completed' ? '#fff' : 'var(--text-muted)',
               }}>{tab.mono}</span>

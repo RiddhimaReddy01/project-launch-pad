@@ -34,7 +34,7 @@ export default function Story() {
         
         <p
           style={{
-            fontFamily: "'Instrument Serif', serif",
+            fontFamily: "'Playfair Display', serif",
             fontSize: 18,
             fontStyle: 'italic',
             color: 'var(--text-primary)',

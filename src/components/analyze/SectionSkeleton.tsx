@@ -5,7 +5,7 @@ const SectionSkeleton = forwardRef<HTMLDivElement, { label?: string }>(({ label 
     <div ref={ref} style={{ padding: '48px 0' }}>
       {label && (
         <p style={{
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Outfit', sans-serif",
           fontSize: 13,
           fontWeight: 300,
           color: 'var(--text-muted)',

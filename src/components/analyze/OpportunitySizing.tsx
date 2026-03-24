@@ -77,13 +77,13 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
           return (
             <div key={t.key} className="rounded-[12px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
               <div className="flex items-center gap-2 mb-2">
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>{t.key}</span>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>{t.key}</span>
                 <span style={{ width: 1, height: 10, backgroundColor: 'var(--divider-section)' }} />
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, letterSpacing: '0.04em', color: conf.color }}>{conf.label}</span>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, letterSpacing: '0.04em', color: conf.color }}>{conf.label}</span>
               </div>
               <p className="font-heading" style={{ fontSize: 28, letterSpacing: '-0.02em', marginBottom: 4 }}>{t.formatted}</p>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>{t.label}</p>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', marginTop: 8, lineHeight: 1.6 }}>{t.methodology}</p>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>{t.label}</p>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', marginTop: 8, lineHeight: 1.6 }}>{t.methodology}</p>
             </div>
           );
         })}
@@ -115,10 +115,10 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
             const opacity = 0.06 + (i * 0.03);
             return (
               <div key={step.name} className="flex items-center gap-3" style={{ width: '100%' }}>
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: 'var(--text-muted)', width: 80, textAlign: 'right', flexShrink: 0, letterSpacing: '0.02em' }}>{step.name}</span>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, color: 'var(--text-muted)', width: 80, textAlign: 'right', flexShrink: 0, letterSpacing: '0.02em' }}>{step.name}</span>
                 <div style={{ flex: 1 }}>
                   <div className="rounded-[4px]" style={{ width: `${widthPct}%`, height: 24, backgroundColor: `rgba(26,26,26,${opacity})`, display: 'flex', alignItems: 'center', paddingLeft: 10, transition: 'width 600ms ease-out' }}>
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>{fmtNum(step.value)}</span>
+                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>{fmtNum(step.value)}</span>
                   </div>
                 </div>
               </div>
@@ -128,13 +128,13 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
       </div>
 
       {/* Methodology toggle */}
-      <button onClick={() => setMethodOpen(!methodOpen)} style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+      <button onClick={() => setMethodOpen(!methodOpen)} style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
         {methodOpen ? 'Hide methodology' : 'How we estimated this'}
       </button>
       {methodOpen && (
         <div className="rounded-[10px] mt-3 p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
           {tiers.map(t => (
-            <p key={t.key} style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 8, lineHeight: 1.5 }}>
+            <p key={t.key} style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 8, lineHeight: 1.5 }}>
               <span style={{ fontWeight: 400, color: 'var(--text-primary)' }}>{t.key}:</span> {t.methodology}
             </p>
           ))}

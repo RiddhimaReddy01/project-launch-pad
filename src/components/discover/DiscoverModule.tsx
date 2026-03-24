@@ -107,7 +107,7 @@ export default function DiscoverModule() {
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <p style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Outfit', sans-serif",
               fontSize: 20,
               fontWeight: 400,
               color: 'var(--text-primary)',
@@ -117,7 +117,7 @@ export default function DiscoverModule() {
             </p>
             {result && (
               <p style={{
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Outfit', sans-serif",
                 fontSize: 12,
                 fontWeight: 300,
                 color: 'var(--text-muted)',
@@ -134,7 +134,7 @@ export default function DiscoverModule() {
                 className="rounded-full px-3 py-1"
                 style={{
                   fontSize: 11,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "'Outfit', sans-serif",
                   backgroundColor: 'rgba(91,140,126,0.08)',
                   color: 'var(--accent-teal)',
                 }}
@@ -148,7 +148,7 @@ export default function DiscoverModule() {
                 className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
                 style={{
                   fontSize: 12,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "'Outfit', sans-serif",
                   fontWeight: 300,
                   backgroundColor: 'var(--surface-input)',
                   color: 'var(--text-secondary)',
@@ -170,7 +170,7 @@ export default function DiscoverModule() {
       {status === 'error' && (
         <div className="text-center py-16">
           <div className="rounded-[12px] p-6 mb-4 inline-block" style={{ backgroundColor: 'rgba(140,96,96,0.06)' }}>
-            <p style={{ fontSize: 14, fontFamily: "'Inter', sans-serif", color: 'var(--destructive)' }}>
+            <p style={{ fontSize: 14, fontFamily: "'Outfit', sans-serif", color: 'var(--destructive)' }}>
               {error}
             </p>
           </div>
@@ -180,7 +180,7 @@ export default function DiscoverModule() {
               className="rounded-[12px] px-5 py-3 transition-all duration-200 active:scale-[0.97]"
               style={{
                 fontSize: 14,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Outfit', sans-serif",
                 fontWeight: 400,
                 backgroundColor: 'var(--accent-primary)',
                 color: '#fff',
@@ -213,7 +213,7 @@ export default function DiscoverModule() {
                     className="flex items-center gap-1.5 rounded-[10px] px-4 py-2 transition-all duration-200 whitespace-nowrap"
                     style={{
                       fontSize: 12,
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: "'Outfit', sans-serif",
                       fontWeight: isActive ? 400 : 300,
                       backgroundColor: isActive ? 'var(--accent-primary)' : 'var(--surface-input)',
                       color: isActive ? '#fff' : 'var(--text-secondary)',
@@ -258,7 +258,7 @@ export default function DiscoverModule() {
             ))}
             {filtered.length === 0 && (
               <div className="text-center py-16">
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}>
+                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}>
                   No insights match this filter
                 </p>
               </div>

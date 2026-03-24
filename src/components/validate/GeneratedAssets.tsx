@@ -13,7 +13,7 @@ function CopyButton({ text }: { text: string }) {
     <button
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
       style={{
-        fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400,
+        fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400,
         color: copied ? 'var(--accent-teal)' : 'var(--accent-primary)',
         background: 'none', border: 'none', cursor: 'pointer',
         transition: 'color 200ms ease-out',
@@ -40,10 +40,10 @@ function SectionBlock({ title, children, copyText }: { title: string; children: 
       }}
     >
       <div className="flex items-center justify-between" style={{ marginBottom: 20 }}>
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)' }}>{title}</span>
+        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)' }}>{title}</span>
         <div className="flex items-center" style={{ gap: 12 }}>
           {copyText && <CopyButton text={copyText} />}
-          <button style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}>
+          <button style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}>
             Regenerate
           </button>
         </div>
@@ -62,23 +62,23 @@ function LandingPageAsset() {
       <div style={{ borderRadius: 12, border: '1px solid var(--divider-light)', overflow: 'hidden' }}>
         <div style={{ padding: '40px 32px', textAlign: 'center', backgroundColor: 'var(--surface-bg)' }}>
           <h3 className="font-heading" style={{ fontSize: 26, letterSpacing: '-0.02em', lineHeight: 1.25, marginBottom: 12 }}>{lp.headline}</h3>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 300, color: 'var(--text-secondary)', marginBottom: 28 }}>{lp.subheadline}</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 300, color: 'var(--text-secondary)', marginBottom: 28 }}>{lp.subheadline}</p>
           <div style={{ maxWidth: 340, margin: '0 auto', textAlign: 'left', marginBottom: 28 }}>
             {lp.benefits.map((b, i) => (
               <div key={i} className="flex items-start" style={{ gap: 10, marginBottom: 10 }}>
                 <span style={{ color: 'var(--accent-teal)', fontSize: 14, marginTop: 2 }}>✓</span>
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{b}</span>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{b}</span>
               </div>
             ))}
           </div>
           <button style={{
-            fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400,
+            fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400,
             color: '#FFFFFF', backgroundColor: 'var(--accent-primary)',
             border: 'none', borderRadius: 12, padding: '12px 28px', cursor: 'pointer',
           }}>
             {lp.cta}
           </button>
-          <p style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', fontSize: 13, color: 'var(--text-muted)', marginTop: 20 }}>{lp.socialProof}</p>
+          <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 13, color: 'var(--text-muted)', marginTop: 20 }}>{lp.socialProof}</p>
         </div>
       </div>
     </SectionBlock>
@@ -93,7 +93,7 @@ function SurveyAsset() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {MOCK_SURVEY.map((q, i) => (
           <div key={q.id} style={{ padding: '16px 20px', borderRadius: 10, backgroundColor: 'var(--surface-bg)' }}>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)', marginBottom: q.options ? 10 : 0 }}>
+            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)', marginBottom: q.options ? 10 : 0 }}>
               <span style={{ color: 'var(--text-muted)', marginRight: 8 }}>{i + 1}.</span>
               {q.question}
             </p>
@@ -101,7 +101,7 @@ function SurveyAsset() {
               <div className="flex flex-wrap" style={{ gap: 8 }}>
                 {q.options.map((o) => (
                   <span key={o} style={{
-                    fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300,
+                    fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300,
                     color: 'var(--text-secondary)', padding: '4px 10px',
                     borderRadius: 6, border: '1px solid var(--divider-light)',
                   }}>
@@ -112,7 +112,7 @@ function SurveyAsset() {
             )}
             {q.type === 'email' && (
               <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 8, border: '1px solid var(--divider-light)', backgroundColor: '#FFFFFF' }}>
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'var(--text-muted)' }}>email@example.com</span>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)' }}>email@example.com</span>
               </div>
             )}
           </div>
@@ -127,14 +127,14 @@ function SocialAsset() {
   return (
     <SectionBlock title="Social outreach message" copyText={so.message}>
       <div style={{ padding: 20, borderRadius: 14, backgroundColor: 'var(--surface-bg)', position: 'relative' }}>
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 8, display: 'block' }}>
+        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 8, display: 'block' }}>
           Tone: {so.tone}
         </span>
         <div style={{
           padding: '16px 20px', borderRadius: '14px 14px 14px 4px',
           backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
         }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75, whiteSpace: 'pre-line' }}>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75, whiteSpace: 'pre-line' }}>
             {so.message}
           </p>
         </div>
@@ -149,11 +149,11 @@ function MarketplaceAsset() {
   return (
     <SectionBlock title="Marketplace listing" copyText={allText}>
       <div style={{ padding: 20, borderRadius: 12, border: '1px solid var(--divider-light)' }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--accent-primary)', marginBottom: 8 }}>{ml.hook}</p>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 12 }}>{ml.title}</p>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: 16 }}>{ml.description}</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--accent-primary)', marginBottom: 8 }}>{ml.hook}</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 12 }}>{ml.title}</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: 16 }}>{ml.description}</p>
         <span style={{
-          fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400,
+          fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400,
           color: 'var(--accent-teal)', padding: '4px 10px', borderRadius: 6, backgroundColor: 'rgba(91,140,126,0.06)',
         }}>
           {ml.pricing}
@@ -174,10 +174,10 @@ function DirectOutreachAsset() {
         { label: 'Value proposition', text: d.valueProp },
       ].map((item) => (
         <div key={item.label} style={{ marginBottom: 16, padding: '16px 20px', borderRadius: 10, backgroundColor: 'var(--surface-bg)' }}>
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>
             {item.label}
           </span>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75 }}>{item.text}</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75 }}>{item.text}</p>
         </div>
       ))}
     </SectionBlock>
@@ -210,7 +210,7 @@ export default function GeneratedAssets({ selectedMethods }: Props) {
   if (methods.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '60px 0' }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 300, color: 'var(--text-muted)' }}>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 300, color: 'var(--text-muted)' }}>
           Select validation methods in the Methods tab to generate assets.
         </p>
       </div>

@@ -102,7 +102,7 @@ export default function Hero() {
             border: '1px solid var(--divider-light)',
             borderRadius: 14,
             backgroundColor: 'var(--surface-card)',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Outfit', sans-serif",
             fontSize: 15,
             fontWeight: 300,
             lineHeight: 1.75,

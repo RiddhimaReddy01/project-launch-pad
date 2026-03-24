@@ -47,11 +47,11 @@ export default function LocationIntel({ context, onData, onError, shouldRun = tr
       {/* Location score */}
       <div className="rounded-[12px] p-6 mb-8 flex items-center gap-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
         <div style={{ width: 64, height: 64, borderRadius: '50%', border: `3px solid ${scoreColor}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 22, fontWeight: 400, color: scoreColor }}>{data.score}</span>
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 22, fontWeight: 400, color: scoreColor }}>{data.score}</span>
         </div>
         <div>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: scoreColor, marginBottom: 4 }}>Location Score</p>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{data.verdict}</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: scoreColor, marginBottom: 4 }}>Location Score</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{data.verdict}</p>
         </div>
       </div>
 
@@ -72,21 +72,21 @@ export default function LocationIntel({ context, onData, onError, shouldRun = tr
         <div className="rounded-[12px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
           <div className="flex flex-col gap-4">
             <div>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Best Areas</p>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Best Areas</p>
               <div className="flex flex-wrap gap-2">
                 {data.foot_traffic.best_areas.map((area, i) => (
-                  <span key={i} className="rounded-full px-3 py-1" style={{ fontSize: 12, fontFamily: "'Inter', sans-serif", backgroundColor: 'rgba(26,26,26,0.03)', color: 'var(--text-primary)', border: '1px solid var(--divider)' }}>{area}</span>
+                  <span key={i} className="rounded-full px-3 py-1" style={{ fontSize: 12, fontFamily: "'Outfit', sans-serif", backgroundColor: 'rgba(26,26,26,0.03)', color: 'var(--text-primary)', border: '1px solid var(--divider)' }}>{area}</span>
                 ))}
               </div>
             </div>
             <div className="flex gap-8">
               <div>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>Avg Rent /sqft</p>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 18, fontWeight: 400, color: 'var(--text-primary)' }}>${data.foot_traffic.avg_monthly_rent_sqft}</p>
+                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>Avg Rent /sqft</p>
+                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 18, fontWeight: 400, color: 'var(--text-primary)' }}>${data.foot_traffic.avg_monthly_rent_sqft}</p>
               </div>
               <div>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>Competitor Density</p>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 18, fontWeight: 400, color: 'var(--text-primary)' }}>{data.foot_traffic.competitor_density}</p>
+                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>Competitor Density</p>
+                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 18, fontWeight: 400, color: 'var(--text-primary)' }}>{data.foot_traffic.competitor_density}</p>
               </div>
             </div>
           </div>
@@ -99,24 +99,24 @@ export default function LocationIntel({ context, onData, onError, shouldRun = tr
         <div className="rounded-[12px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
           <div className="flex flex-col gap-3">
             <div>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Key Permits Required</p>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Key Permits Required</p>
               <div className="flex flex-col gap-1.5">
                 {data.regulatory.key_permits.map((permit, i) => (
                   <div key={i} className="flex items-center gap-2">
                     <div style={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: 'var(--text-muted)', flexShrink: 0 }} />
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)' }}>{permit}</span>
+                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)' }}>{permit}</span>
                   </div>
                 ))}
               </div>
             </div>
             <div className="flex gap-8 pt-2" style={{ borderTop: '1px solid var(--divider)' }}>
               <div>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>Timeline</p>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{data.regulatory.estimated_timeline}</p>
+                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>Timeline</p>
+                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{data.regulatory.estimated_timeline}</p>
               </div>
             </div>
             {data.regulatory.notes && (
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.5, marginTop: 4 }}>{data.regulatory.notes}</p>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.5, marginTop: 4 }}>{data.regulatory.notes}</p>
             )}
           </div>
         </div>
@@ -128,8 +128,8 @@ export default function LocationIntel({ context, onData, onError, shouldRun = tr
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-[10px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>{label}</p>
-      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 20, fontWeight: 400, color: 'var(--text-primary)' }}>{value}</p>
+      <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>{label}</p>
+      <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 400, color: 'var(--text-primary)' }}>{value}</p>
     </div>
   );
 }

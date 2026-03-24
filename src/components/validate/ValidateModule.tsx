@@ -83,7 +83,7 @@ function CopyButton({ text }: { text: string }) {
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
       className="rounded-[6px] px-2.5 py-1 transition-all duration-200"
       style={{
-        fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400,
+        fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400,
         color: copied ? 'var(--accent-teal)' : 'var(--text-muted)',
         backgroundColor: copied ? 'rgba(91,140,126,0.06)' : 'var(--surface-input)',
         border: 'none', cursor: 'pointer',
@@ -382,7 +382,7 @@ export default function ValidateModule() {
     <div className="flex items-center justify-center" style={{ height: '60vh' }}>
       <div className="text-center" style={{ maxWidth: 400 }}>
         <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Start with your idea first</p>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
           Head to the Understand tab to enter your business idea. We need that context before building your validation toolkit.
         </p>
       </div>
@@ -393,9 +393,9 @@ export default function ValidateModule() {
   if (phase === 'select') return (
     <div ref={containerRef} className="scroll-reveal">
       <div className="mb-10">
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>VALIDATE</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>VALIDATE</p>
         <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>How do you want to test demand?</p>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
           Pick the methods that fit your stage. We'll build a ready-to-deploy toolkit — landing page copy, survey questions, outreach messages, target communities, and success benchmarks.
         </p>
       </div>
@@ -404,12 +404,12 @@ export default function ValidateModule() {
       {suggestedMethods.length > 0 && (
         <div className="rounded-[14px] mb-8 p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
           <div className="flex items-center gap-2 mb-3">
-            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, borderRadius: 5, fontSize: 9, fontWeight: 500, fontFamily: "'Inter', sans-serif", backgroundColor: 'var(--text-primary)', color: '#fff' }}>AI</span>
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, borderRadius: 5, fontSize: 9, fontWeight: 500, fontFamily: "'Outfit', sans-serif", backgroundColor: 'var(--text-primary)', color: '#fff' }}>AI</span>
+            <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
               Recommended based on your analysis
             </span>
           </div>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
             {analyzeData?.customers?.segments?.[0]?.pain_intensity >= 8
               ? 'High customer pain detected — landing page and pre-sale are your strongest validation methods.'
               : analyzeData?.competitors?.competitors?.length <= 3
@@ -432,7 +432,7 @@ export default function ValidateModule() {
 
       {/* Generate button */}
       <div className="flex items-center justify-between mt-10 pt-6" style={{ borderTop: '1px solid var(--divider)' }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}>
           {selectedMethods.size} method{selectedMethods.size !== 1 ? 's' : ''} selected
         </p>
         <button
@@ -440,7 +440,7 @@ export default function ValidateModule() {
           disabled={selectedMethods.size === 0 || !context}
           className="rounded-[10px] px-6 py-3 transition-all duration-200"
           style={{
-            fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400,
+            fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400,
             backgroundColor: selectedMethods.size > 0 ? 'var(--text-primary)' : 'var(--divider-light)',
             color: selectedMethods.size > 0 ? '#fff' : 'var(--text-muted)',
             border: 'none', cursor: selectedMethods.size > 0 ? 'pointer' : 'default',
@@ -451,7 +451,7 @@ export default function ValidateModule() {
       </div>
 
       {errorMsg && (
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: '#8C6060', marginTop: 12, textAlign: 'right' }}>{errorMsg}</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: '#8C6060', marginTop: 12, textAlign: 'right' }}>{errorMsg}</p>
       )}
     </div>
   );
@@ -460,7 +460,7 @@ export default function ValidateModule() {
   if (phase === 'generating') return (
     <div ref={containerRef} className="scroll-reveal">
       <div className="mb-10">
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>VALIDATE</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>VALIDATE</p>
         <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>Crafting your toolkit</p>
       </div>
       <SectionSkeleton label="Writing landing page copy, designing survey questions, drafting outreach messages, finding communities, and setting benchmarks..." />
@@ -473,27 +473,27 @@ export default function ValidateModule() {
       {/* Header */}
       <div className="flex items-center justify-between mb-10">
         <div>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>VALIDATE</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>VALIDATE</p>
           <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>Validation Toolkit</p>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
             {selectedMethods.size} methods — {Array.from(selectedMethods).map(m => ALL_METHODS.find(am => am.id === m)?.name).filter(Boolean).join(', ')}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleSave} disabled={saving} className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}>
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}>
             {saving ? 'Saving...' : 'Save to Dashboard'}
           </button>
           <button onClick={handleExportPDF} disabled={exporting} className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', border: '1px solid var(--divider)', cursor: 'pointer', backgroundColor: 'transparent' }}>
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', border: '1px solid var(--divider)', cursor: 'pointer', backgroundColor: 'transparent' }}>
             {exporting ? 'Exporting...' : 'Export PDF'}
           </button>
           <button onClick={() => setPhase('select')} className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', border: '1px solid var(--divider)', cursor: 'pointer', backgroundColor: 'transparent' }}>
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', border: '1px solid var(--divider)', cursor: 'pointer', backgroundColor: 'transparent' }}>
             Change Methods
           </button>
           <button onClick={generate} className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', border: '1px solid var(--divider)', cursor: 'pointer', backgroundColor: 'transparent' }}>
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', border: '1px solid var(--divider)', cursor: 'pointer', backgroundColor: 'transparent' }}>
             Regenerate
           </button>
         </div>
@@ -506,10 +506,10 @@ export default function ValidateModule() {
           return (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               className="relative flex items-center gap-2 px-4 py-3 transition-all duration-200 whitespace-nowrap"
-              style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: isActive ? 400 : 300, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
+              style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: isActive ? 400 : 300, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
               <span style={{
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                width: 20, height: 20, borderRadius: 5, fontSize: 9, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                width: 20, height: 20, borderRadius: 5, fontSize: 9, fontWeight: 500, fontFamily: "'Outfit', sans-serif",
                 backgroundColor: 'var(--text-primary)', color: '#fff',
               }}>{tab.mono}</span>
               {tab.label}
@@ -527,13 +527,13 @@ export default function ValidateModule() {
           <div className="rounded-[10px] mb-6 overflow-hidden" style={{ border: '1px solid var(--divider-light)' }}>
             {/* Target row */}
             <div className="flex items-center gap-3 px-4 py-2.5" style={{ backgroundColor: 'rgba(91,140,126,0.04)', borderBottom: '1px solid var(--divider-light)' }}>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, color: 'var(--accent-teal)', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0 }}>Target</span>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, color: 'var(--text-primary)' }}>{currentTab.target}</span>
+              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, color: 'var(--accent-teal)', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0 }}>Target</span>
+              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, color: 'var(--text-primary)' }}>{currentTab.target}</span>
             </div>
             {/* Deploy row */}
             <div className="flex items-center gap-3 px-4 py-2.5" style={{ backgroundColor: 'var(--surface-input)' }}>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0 }}>Deploy</span>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5, flex: 1 }}>
+              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0 }}>Deploy</span>
+              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5, flex: 1 }}>
                 {currentTab.deployGuide.instruction}
               </span>
               {currentTab.deployGuide.urls.length > 0 && (
@@ -541,7 +541,7 @@ export default function ValidateModule() {
                   {currentTab.deployGuide.urls.map(u => (
                     <a key={u.name} href={u.url} target="_blank" rel="noopener noreferrer"
                       className="rounded-[6px] px-2.5 py-1 transition-all duration-200 whitespace-nowrap"
-                      style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 400, color: 'var(--text-primary)', backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', textDecoration: 'none' }}>
+                      style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 400, color: 'var(--text-primary)', backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', textDecoration: 'none' }}>
                       {u.name}
                     </a>
                   ))}
@@ -588,9 +588,9 @@ function MethodCard({ method, isSelected, isSuggested, onToggle }: { method: Val
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)' }}>{method.name}</span>
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)' }}>{method.name}</span>
           {isSuggested && (
-            <span className="rounded-full px-2 py-0.5" style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, backgroundColor: 'rgba(26,26,26,0.06)', color: 'var(--text-muted)' }}>
+            <span className="rounded-full px-2 py-0.5" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, backgroundColor: 'rgba(26,26,26,0.06)', color: 'var(--text-muted)' }}>
               Recommended
             </span>
           )}
@@ -607,14 +607,14 @@ function MethodCard({ method, isSelected, isSuggested, onToggle }: { method: Val
           )}
         </div>
       </div>
-      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: 14 }}>{method.description}</p>
+      <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: 14 }}>{method.description}</p>
       <div className="flex items-center gap-3">
         <span style={{
-          fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400,
+          fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400,
           color: EFFORT_COLORS[method.effort], padding: '2px 8px', borderRadius: 6,
           backgroundColor: `${EFFORT_COLORS[method.effort]}10`,
         }}>{method.effort} effort</span>
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>{SPEED_LABELS[method.speed]}</span>
+        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>{SPEED_LABELS[method.speed]}</span>
       </div>
     </div>
   );
@@ -627,34 +627,34 @@ function LandingSection({ data, onChange }: { data: ValidateResult['landing_page
   return (
     <div>
       <div className="flex items-center justify-between mb-5">
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>LANDING PAGE COPY</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>LANDING PAGE COPY</p>
         <CopyButton text={allText} />
       </div>
       <div className="rounded-[14px] overflow-hidden" style={{ border: '1px solid var(--divider)', backgroundColor: 'var(--surface-card)' }}>
         <div style={{ padding: '48px 32px', textAlign: 'center', backgroundColor: 'var(--surface-bg)' }}>
           <div style={{ marginBottom: 16 }}>
             <EditableText value={data.headline} onChange={(v) => onChange({ ...data, headline: v })}
-              style={{ fontFamily: "'Instrument Serif', serif", fontSize: 28, fontWeight: 400, color: 'var(--text-primary)', letterSpacing: '-0.02em', lineHeight: 1.25, display: 'inline' }} />
+              style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 400, color: 'var(--text-primary)', letterSpacing: '-0.02em', lineHeight: 1.25, display: 'inline' }} />
           </div>
           <div style={{ marginBottom: 32 }}>
             <EditableText value={data.subheadline} onChange={(v) => onChange({ ...data, subheadline: v })}
-              style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6, display: 'inline' }} />
+              style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6, display: 'inline' }} />
           </div>
           <div style={{ maxWidth: 380, margin: '0 auto 32px', textAlign: 'left' }}>
             {data.benefits.map((b, i) => (
               <div key={i} className="flex items-start" style={{ gap: 10, marginBottom: 10 }}>
                 <span style={{ color: 'var(--accent-teal)', fontSize: 13, marginTop: 2, flexShrink: 0 }}>—</span>
                 <EditableText value={b} onChange={(v) => { const next = [...data.benefits]; next[i] = v; onChange({ ...data, benefits: next }); }}
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }} />
+                  style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }} />
               </div>
             ))}
           </div>
-          <div className="rounded-[10px] inline-block" style={{ padding: '12px 28px', backgroundColor: 'var(--text-primary)', color: '#fff', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400 }}>
+          <div className="rounded-[10px] inline-block" style={{ padding: '12px 28px', backgroundColor: 'var(--text-primary)', color: '#fff', fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400 }}>
             <EditableText value={data.cta} onChange={(v) => onChange({ ...data, cta: v })} style={{ color: '#fff' }} />
           </div>
           <div style={{ marginTop: 24 }}>
             <EditableText value={data.social_proof} onChange={(v) => onChange({ ...data, social_proof: v })}
-              style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', fontSize: 13, color: 'var(--text-muted)', display: 'inline' }} />
+              style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 13, color: 'var(--text-muted)', display: 'inline' }} />
           </div>
         </div>
       </div>
@@ -670,7 +670,7 @@ function SurveySection({ data, onChange }: { data: ValidateResult['survey']; onC
   return (
     <div>
       <div className="flex items-center justify-between mb-5">
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>CUSTOMER DISCOVERY SURVEY</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>CUSTOMER DISCOVERY SURVEY</p>
         <CopyButton text={allText} />
       </div>
       <div className="flex flex-col" style={{ gap: 8 }}>
@@ -679,25 +679,25 @@ function SurveySection({ data, onChange }: { data: ValidateResult['survey']; onC
             <div className="flex items-start gap-3">
               <span style={{
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                width: 24, height: 24, borderRadius: 6, fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                width: 24, height: 24, borderRadius: 6, fontSize: 11, fontWeight: 500, fontFamily: "'Outfit', sans-serif",
                 backgroundColor: 'rgba(26,26,26,0.05)', color: 'var(--text-muted)',
               }}>{i + 1}</span>
               <div className="flex-1">
                 <EditableText value={q.question} onChange={(v) => { const next = [...data]; next[i] = { ...q, question: v }; onChange(next); }}
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.5 }} />
+                  style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.5 }} />
                 <div className="flex items-center gap-2 mt-2">
-                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', padding: '2px 8px', borderRadius: 4, backgroundColor: 'var(--surface-input)' }}>{typeLabels[q.type] || q.type}</span>
+                  <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', padding: '2px 8px', borderRadius: 4, backgroundColor: 'var(--surface-input)' }}>{typeLabels[q.type] || q.type}</span>
                 </div>
                 {q.options && (
                   <div className="flex flex-wrap mt-3" style={{ gap: 6 }}>
                     {q.options.map((o, oi) => (
-                      <span key={oi} style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', padding: '4px 10px', borderRadius: 6, border: '1px solid var(--divider-light)' }}>{o}</span>
+                      <span key={oi} style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', padding: '4px 10px', borderRadius: 6, border: '1px solid var(--divider-light)' }}>{o}</span>
                     ))}
                   </div>
                 )}
                 {q.type === 'email' && (
                   <div className="mt-3 rounded-[8px]" style={{ padding: '8px 12px', border: '1px solid var(--divider-light)', backgroundColor: 'var(--surface-input)' }}>
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'var(--text-muted)' }}>email@example.com</span>
+                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)' }}>email@example.com</span>
                   </div>
                 )}
               </div>
@@ -715,16 +715,16 @@ function WhatsAppSection({ data, onChange }: { data: NonNullable<ValidateResult[
   return (
     <div>
       <div className="flex items-center justify-between mb-5">
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>COMMUNITY OUTREACH MESSAGE</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>COMMUNITY OUTREACH MESSAGE</p>
         <CopyButton text={data.message} />
       </div>
       <div className="rounded-[14px] p-6" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
         <div className="flex items-center gap-2 mb-4">
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', padding: '2px 8px', borderRadius: 4, backgroundColor: 'var(--surface-input)' }}>Tone: {data.tone}</span>
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', padding: '2px 8px', borderRadius: 4, backgroundColor: 'var(--surface-input)' }}>Tone: {data.tone}</span>
         </div>
         <div className="rounded-[12px]" style={{ padding: '20px 24px', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--divider-light)' }}>
           <EditableText value={data.message} onChange={(v) => onChange({ ...data, message: v })} multiline
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75, whiteSpace: 'pre-line' }} />
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75, whiteSpace: 'pre-line' }} />
         </div>
       </div>
     </div>
@@ -738,8 +738,8 @@ function CommunitiesSection({ data }: { data: ValidateResult['communities'] }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-5">
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>COMMUNITIES TO TEST</p>
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>{data.length} communities</span>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>COMMUNITIES TO TEST</p>
+        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>{data.length} communities</span>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 10 }}>
         {data.map((c, i) => {
@@ -755,14 +755,14 @@ function CommunitiesSection({ data }: { data: ValidateResult['communities'] }) {
               onMouseEnter={() => setHoveredId(i)} onMouseLeave={() => setHoveredId(null)}>
               <div className="flex items-center justify-between mb-3">
                 <a href={c.url} target="_blank" rel="noopener noreferrer"
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', textDecoration: 'none' }}>{c.name}</a>
-                <span className="rounded-full px-2 py-0.5" style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, backgroundColor: platformColor, color: '#fff' }}>{c.platform}</span>
+                  style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', textDecoration: 'none' }}>{c.name}</a>
+                <span className="rounded-full px-2 py-0.5" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, backgroundColor: platformColor, color: '#fff' }}>{c.platform}</span>
               </div>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, color: 'var(--text-muted)', marginBottom: 6 }}>{c.members} members</p>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{c.rationale}</p>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, color: 'var(--text-muted)', marginBottom: 6 }}>{c.members} members</p>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{c.rationale}</p>
               <a href={c.url} target="_blank" rel="noopener noreferrer"
                 className="inline-block mt-3 rounded-[6px] px-3 py-1.5 transition-all duration-200"
-                style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', backgroundColor: 'var(--surface-input)', textDecoration: 'none', border: 'none' }}>
+                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', backgroundColor: 'var(--surface-input)', textDecoration: 'none', border: 'none' }}>
                 Visit community
               </a>
             </div>
@@ -805,15 +805,15 @@ function ScorecardSection({ data, onUpdate, analyzeData, setupData }: {
   return (
     <div>
       <div className="flex items-center justify-between mb-5">
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>VALIDATION SCORECARD</p>
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>Track your progress</span>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>VALIDATION SCORECARD</p>
+        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>Track your progress</span>
       </div>
 
       {/* Context from prior tabs */}
       {contextSummary.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-6">
           {contextSummary.map((item, i) => (
-            <span key={i} className="rounded-[6px] px-2.5 py-1" style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-secondary)', backgroundColor: 'var(--surface-input)' }}>
+            <span key={i} className="rounded-[6px] px-2.5 py-1" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-secondary)', backgroundColor: 'var(--surface-input)' }}>
               {item}
             </span>
           ))}
@@ -828,20 +828,20 @@ function ScorecardSection({ data, onUpdate, analyzeData, setupData }: {
           return (
             <div key={m.id} className="rounded-[12px] p-5" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
               <div className="flex items-center justify-between mb-3">
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>{m.label}</span>
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)' }}>Target: {m.target_label}</span>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>{m.label}</span>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)' }}>Target: {m.target_label}</span>
               </div>
               <div className="flex items-center gap-3 mb-3">
                 <input type="number" value={m.actual || ''} onChange={(e) => onUpdate(m.id, Number(e.target.value) || 0)} placeholder="0"
-                  style={{ width: 72, padding: '7px 10px', borderRadius: 8, border: '1px solid var(--divider-light)', backgroundColor: 'var(--surface-bg)', fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', outline: 'none' }}
+                  style={{ width: 72, padding: '7px 10px', borderRadius: 8, border: '1px solid var(--divider-light)', backgroundColor: 'var(--surface-bg)', fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', outline: 'none' }}
                   onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--text-primary)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(26,26,26,0.06)'; }}
                   onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--divider-light)'; e.currentTarget.style.boxShadow = 'none'; }} />
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)' }}>{m.unit}</span>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)' }}>{m.unit}</span>
               </div>
               <div style={{ height: 3, borderRadius: 2, backgroundColor: 'var(--divider-light)', overflow: 'hidden' }}>
                 <div style={{ height: '100%', width: `${pct}%`, backgroundColor: barColor, borderRadius: 2, transition: 'width 300ms ease-out' }} />
               </div>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', marginTop: 4, textAlign: 'right' }}>{Math.round(pct)}%</p>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', marginTop: 4, textAlign: 'right' }}>{Math.round(pct)}%</p>
             </div>
           );
         })}
@@ -849,12 +849,12 @@ function ScorecardSection({ data, onUpdate, analyzeData, setupData }: {
 
       {/* Verdict */}
       <div className="rounded-[16px] text-center mt-8" style={{ padding: 32, backgroundColor: verdict.bg }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Verdict</p>
-        <p style={{ fontFamily: "'Instrument Serif', serif", fontSize: 26, fontWeight: 400, color: verdict.color, letterSpacing: '-0.02em', marginBottom: 16 }}>{verdict.label}</p>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75, maxWidth: 500, margin: '0 auto' }}>{verdict.reasoning}</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Verdict</p>
+        <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 26, fontWeight: 400, color: verdict.color, letterSpacing: '-0.02em', marginBottom: 16 }}>{verdict.label}</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75, maxWidth: 500, margin: '0 auto' }}>{verdict.reasoning}</p>
       </div>
 
-      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginTop: 16 }}>
+      <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginTop: 16 }}>
         Update metrics as you collect data. Save to persist progress to your dashboard.
       </p>
     </div>
