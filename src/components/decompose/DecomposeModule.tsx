@@ -19,8 +19,8 @@ export default function DecomposeModule() {
   }, [idea]);
 
   const runDecompose = async () => {
-    if (!idea || idea.trim().split(/\s+/).length < 3) {
-      setError('Please enter at least 3 words to describe your idea.');
+    if (!idea || idea.trim().split(/\s+/).length < 2) {
+      setError('Please enter at least 2 words to describe your idea.');
       setStatus('error');
       return;
     }
