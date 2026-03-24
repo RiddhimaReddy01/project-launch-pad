@@ -26,14 +26,24 @@ function buildTabs(insights: { type: string }[]) {
 }
 
 export default function DiscoverModule() {
-  const { decomposeResult, setDiscoverResult: setContextDiscover } = useIdea();
-  const [status, setStatus] = useState<Status>('idle');
-  const [result, setResult] = useState<DiscoverResult | null>(null);
+  const { decomposeResult, discoverResult: contextDiscover, setDiscoverResult: setContextDiscover } = useIdea();
+  const [status, setStatus] = useState<Status>(contextDiscover ? 'done' : 'idle');
+  const [result, setResult] = useState<DiscoverResult | null>(contextDiscover);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string | null>(null);
-  const [cached, setCached] = useState(false);
+  const [cached, setCached] = useState(!!contextDiscover);
   const containerRef = useRef<HTMLDivElement>(null);
-  const hasRun = useRef(false);
+  const hasRun = useRef(!!contextDiscover);
+
+  // Pick up prefetched data
+  useEffect(() => {
+    if (contextDiscover && !result && status !== 'loading') {
+      setResult(contextDiscover);
+      setStatus('done');
+      setCached(true);
+      hasRun.current = true;
+    }
+  }, [contextDiscover]);
 
   useEffect(() => {
     const el = containerRef.current;
