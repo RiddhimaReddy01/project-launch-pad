@@ -15,7 +15,7 @@ const SCORE_EXPLANATIONS = [
   {
     key: 'severity_score' as const,
     label: 'Severity',
-    icon: '🔥',
+    icon: '',
     getDesc: (v: number) => {
       if (v >= 0.7) return 'Highly severe — users describe this as a major frustration or dealbreaker.';
       if (v >= 0.4) return 'Moderate impact — users are annoyed but working around it.';
