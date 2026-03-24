@@ -114,19 +114,42 @@ html {
   color: var(--text-muted);
 }
 
-.font-section-label {
+.font-section-label,
+.section-label {
   font-family: 'Outfit', sans-serif;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
+.mono-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--text-primary);
+  color: #fff;
+}
+
 .font-button {
   font-family: 'Outfit', sans-serif;
   font-size: 14px;
   font-weight: 400;
+}
+
+.animate-fade-in {
+  animation: fadeIn 300ms ease-out;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Card system */
