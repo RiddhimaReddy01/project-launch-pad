@@ -63,9 +63,6 @@ const ALL_TABS: { key: TabKey; label: string; mono: string; subtitle: string; ou
       { name: 'Facebook Groups', url: 'https://facebook.com/groups' },
       { name: 'Discord', url: 'https://discord.com' },
     ], instruction: 'Join each community and engage genuinely for 2-3 days before sharing your survey or landing page. Follow community rules.' } },
-  { key: 'scorecard', label: 'Scorecard', mono: 'T', subtitle: 'Track targets', outputKey: 'scorecard',
-    target: 'Hit 70%+ of targets for a GO verdict',
-    deployGuide: { tool: 'Dashboard', urls: [], instruction: 'Update metrics as responses come in. Save to persist progress to your dashboard.' } },
 ];
 
 const PLATFORM_COLORS: Record<string, string> = {
