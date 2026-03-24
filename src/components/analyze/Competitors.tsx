@@ -3,7 +3,7 @@ import { analyzeSection, type AnalyzeContext, type CompetitorsData, type Competi
 import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import SectionSkeleton from './SectionSkeleton';
 
-const THREAT_CONFIG = {
+const THREAT_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   high: { label: 'High', color: 'hsl(var(--destructive))', bg: 'rgba(140,96,96,0.04)' },
   medium: { label: 'Medium', color: 'var(--accent-amber)', bg: 'rgba(212,136,15,0.04)' },
   low: { label: 'Low', color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.04)' },
