@@ -398,7 +398,7 @@ export default function AnalyzeModule() {
                     return next;
                   });
                   // Run in parallel
-                  const results = await analyzeSectionsParallel(remaining, context);
+                  const results = await analyzeSectionsParallel(remaining, idea);
                   setSections(prev => {
                     const next = { ...prev };
                     Object.entries(results).forEach(([k, v]) => {
