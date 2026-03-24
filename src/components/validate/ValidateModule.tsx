@@ -222,7 +222,6 @@ export default function ValidateModule() {
       });
 
       const data = await generateValidation(idea, Array.from(requiredOutputs));
-      data.scorecard = deriveScorecard(data.scorecard || []);
       setResult(data);
       setPhase('toolkit');
     } catch (err: any) {
