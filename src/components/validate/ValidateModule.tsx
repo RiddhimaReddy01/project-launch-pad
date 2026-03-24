@@ -32,7 +32,7 @@ const ALL_METHODS: ValidationMethod[] = [
 const EFFORT_COLORS: Record<string, string> = { low: 'var(--accent-teal)', medium: 'var(--accent-amber)', high: 'hsl(var(--destructive))' };
 const SPEED_LABELS: Record<string, string> = { fast: 'Fast', medium: 'Medium', slow: 'Slow' };
 
-type TabKey = 'landing' | 'survey' | 'whatsapp' | 'communities' | 'scorecard';
+type TabKey = 'landing' | 'survey' | 'whatsapp' | 'communities';
 
 const ALL_TABS: { key: TabKey; label: string; mono: string; subtitle: string; outputKey: string; target: string; deployGuide: { tool: string; urls: { name: string; url: string }[]; instruction: string } }[] = [
   { key: 'landing', label: 'Landing Page', mono: 'L', subtitle: 'Pitch your idea', outputKey: 'landing_page',
