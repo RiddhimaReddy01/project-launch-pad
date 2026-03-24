@@ -243,14 +243,6 @@ export default function ValidateModule() {
     setResult({ ...result, ...patch });
   };
 
-  const updateScorecard = (id: string, actual: number) => {
-    if (!result) return;
-    setResult({
-      ...result,
-      scorecard: result.scorecard.map(m => m.id === id ? { ...m, actual } : m),
-    });
-  };
-
   const handleSave = async () => {
     if (!user) { navigate('/auth'); return; }
     if (!result) return;
