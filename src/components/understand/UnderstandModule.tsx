@@ -54,10 +54,11 @@ function VisualCard({ configKey, label, value, onSave }: VisualCardProps) {
 
   return (
     <div
-      className="rounded-xl p-5 transition-all duration-200"
+      className="rounded-xl p-5 transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
       style={{
         backgroundColor: config.bg,
         border: `1.5px solid ${config.border}`,
+        cursor: 'default',
       }}
     >
       <div className="flex items-center justify-between mb-3">
@@ -119,10 +120,11 @@ function VisualListCard({ label, items, onSave }: VisualListCardProps) {
 
   return (
     <div
-      className="rounded-xl p-5 transition-all duration-200 col-span-1 md:col-span-2"
+      className="rounded-xl p-5 transition-all duration-200 col-span-1 md:col-span-2 hover:scale-[1.01] hover:shadow-lg"
       style={{
         backgroundColor: config.bg,
         border: `1.5px solid ${config.border}`,
+        cursor: 'default',
       }}
     >
       <div className="flex items-center justify-between mb-3">

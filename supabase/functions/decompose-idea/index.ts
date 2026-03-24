@@ -99,31 +99,36 @@ serve(async (req) => {
     const combined = await callAIJson(
       LOVABLE_API_KEY,
       "google/gemini-2.5-flash",
-      `You are a business analyst. Given a business idea, extract structured data as JSON.
+      `You are a business analyst specializing in extracting structured data from business idea descriptions. Your job is to parse the user's idea and return a JSON object with ALL fields populated.
 
 Return exactly this JSON structure:
 {
-  "business_type": "string - the core business type (e.g. 'Juice bar', 'SaaS platform')",
+  "business_type": "string - a clear, descriptive name for the business (e.g. 'Fresh-pressed juice bar', 'AI-powered SaaS platform for HR', 'Thai street food restaurant'). Include modifiers that distinguish the business.",
   "location": {
-    "city": "string - city name or empty string if not mentioned",
-    "state": "string - state/region or empty string if not mentioned"
+    "city": "string - the city name mentioned in the idea. Extract ANY location reference: 'in Dallas' -> 'Dallas', 'Plano TX' -> 'Plano', 'Austin, Texas' -> 'Austin'. If NO location is mentioned, return empty string.",
+    "state": "string - the state/region/country. 'TX' -> 'Texas', 'Plano TX' -> 'Texas', 'Austin, Texas' -> 'Texas'. Use full state name. If NO location is mentioned, return empty string."
   },
-  "target_customers": ["array of 3-5 specific customer segments"],
-  "price_tier": "one of: budget, mid-range, premium, luxury",
-  "search_queries": ["5-8 Google search queries for market research"],
-  "source_domains": ["3-5 relevant review/discussion domains like yelp.com, reddit.com"],
-  "subreddits": ["3-5 relevant subreddit names without r/ prefix"]
+  "target_customers": ["array of 3-5 SPECIFIC customer segments. Be detailed: 'Health-conscious millennials aged 25-35' not 'people'. 'Busy professionals who skip lunch' not 'workers'. Each segment should describe WHO they are and WHY they'd buy."],
+  "price_tier": "MUST be exactly one of: budget, mid-range, premium, luxury. Infer from the business type - juice bars are typically 'mid-range' to 'premium', street food is 'budget' to 'mid-range', SaaS varies.",
+  "search_queries": ["5-8 Google search queries a market researcher would use to study this business opportunity"],
+  "source_domains": ["3-5 relevant review/discussion domains like yelp.com, reddit.com, g2.com"],
+  "subreddits": ["3-5 relevant subreddit names WITHOUT the r/ prefix"]
 }
 
-IMPORTANT RULES:
-- Look carefully for city/state/country mentions in the idea
-- "Juice bar in Plano TX" -> city: "Plano", state: "TX"
-- "Coffee shop in Austin, Texas" -> city: "Austin", state: "Texas"  
-- "Online tutoring platform" -> city: "", state: ""
-- Use standard state abbreviations or full names as written
-- target_customers should be specific segments like "Health-conscious millennials" not generic like "everyone"
-- search_queries should be research-focused queries a market researcher would use`,
-      `Business idea: ${idea}`
+CRITICAL EXTRACTION RULES:
+1. LOCATION: Scan the ENTIRE idea text for ANY location mentions. Common patterns:
+   - "in [City]" or "in [City], [State]"
+   - "[Business] [City] [State]" (e.g. "juice bar Plano TX")
+   - State abbreviations: TX=Texas, CA=California, NY=New York, FL=Florida, etc.
+   - If the idea says "Thai street food restaurant in Dallas" -> city: "Dallas", state: "Texas"
+   - NEVER return "Not specified" — return empty string if no location found
+   
+2. PRICE TIER: Always infer a tier. Consider the business type, target market, and any price signals in the description.
+
+3. TARGET CUSTOMERS: Generate 3-5 specific segments even if not explicitly mentioned. Infer from the business type and location.
+
+4. BUSINESS TYPE: Capture the FULL descriptor, not just generic category. "authentic Thai street food restaurant" not just "restaurant".`,
+      `Analyze this business idea and extract ALL structured data:\n\n"${idea}"`
     );
 
     const result = {
