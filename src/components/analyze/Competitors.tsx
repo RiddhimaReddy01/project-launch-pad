@@ -3,7 +3,7 @@ import { analyzeSection, type AnalyzeContext, type CompetitorsData, type Competi
 import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import SectionSkeleton from './SectionSkeleton';
 
-const THREAT_CONFIG = {
+const THREAT_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   high: { label: 'High', color: 'hsl(var(--destructive))', bg: 'rgba(140,96,96,0.04)' },
   medium: { label: 'Medium', color: 'var(--accent-amber)', bg: 'rgba(212,136,15,0.04)' },
   low: { label: 'Low', color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.04)' },
@@ -57,8 +57,8 @@ function CompetitorCard({ comp, index }: { comp: Competitor; index: number }) {
   );
 }
 
-export default function Competitors({ context, onData, onError, shouldRun = true }: { context: AnalyzeContext; onData?: (data: CompetitorsData) => void; onError?: (error: string) => void; shouldRun?: boolean }) {
-  const [data, setData] = useState<CompetitorsData | null>(null);
+export default function Competitors({ context, onData, onError, shouldRun = true, initialData }: { context: AnalyzeContext; onData?: (data: CompetitorsData) => void; onError?: (error: string) => void; shouldRun?: boolean; initialData?: CompetitorsData | null }) {
+  const [data, setData] = useState<CompetitorsData | null>(initialData ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

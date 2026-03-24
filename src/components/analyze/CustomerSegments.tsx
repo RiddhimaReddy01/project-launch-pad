@@ -3,8 +3,8 @@ import { analyzeSection, type AnalyzeContext, type CustomersData } from '@/lib/a
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
 import SectionSkeleton from './SectionSkeleton';
 
-export default function CustomerSegments({ context, onData, onError, shouldRun = true }: { context: AnalyzeContext; onData?: (data: CustomersData) => void; onError?: (error: string) => void; shouldRun?: boolean }) {
-  const [data, setData] = useState<CustomersData | null>(null);
+export default function CustomerSegments({ context, onData, onError, shouldRun = true, initialData }: { context: AnalyzeContext; onData?: (data: CustomersData) => void; onError?: (error: string) => void; shouldRun?: boolean; initialData?: CustomersData | null }) {
+  const [data, setData] = useState<CustomersData | null>(initialData ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<number>(0);

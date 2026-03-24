@@ -61,8 +61,8 @@ function CauseCard({ cause }: { cause: RootCause }) {
   );
 }
 
-export default function RootCauses({ context, onData, onError, shouldRun = true }: { context: AnalyzeContext; onData?: (data: RootCauseData) => void; onError?: (error: string) => void; shouldRun?: boolean }) {
-  const [data, setData] = useState<RootCauseData | null>(null);
+export default function RootCauses({ context, onData, onError, shouldRun = true, initialData }: { context: AnalyzeContext; onData?: (data: RootCauseData) => void; onError?: (error: string) => void; shouldRun?: boolean; initialData?: RootCauseData | null }) {
+  const [data, setData] = useState<RootCauseData | null>(initialData ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

@@ -9,8 +9,8 @@ const CONFIDENCE_CONFIG = {
   high: { color: 'var(--accent-teal)', label: 'High confidence' },
 };
 
-export default function OpportunitySizing({ context, onData, onError, shouldRun = true }: { context: AnalyzeContext; onData?: (data: OpportunityData) => void; onError?: (error: string) => void; shouldRun?: boolean }) {
-  const [data, setData] = useState<OpportunityData | null>(null);
+export default function OpportunitySizing({ context, onData, onError, shouldRun = true, initialData }: { context: AnalyzeContext; onData?: (data: OpportunityData) => void; onError?: (error: string) => void; shouldRun?: boolean; initialData?: OpportunityData | null }) {
+  const [data, setData] = useState<OpportunityData | null>(initialData ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [methodOpen, setMethodOpen] = useState(false);

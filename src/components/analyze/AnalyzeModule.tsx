@@ -490,14 +490,14 @@ export default function AnalyzeModule() {
 
           {(activeSec.status === 'loading' || activeSec.status === 'completed' || activeSec.status === 'stale') && context && (
             <Suspense fallback={<SectionSkeleton />}>
-              {activeModule === 'opportunity' && <OpportunitySizing context={context} onData={(d) => handleSectionData('opportunity', d)} onError={(e) => handleSectionError('opportunity', e)} shouldRun={sections.opportunity.status === 'loading'} />}
-              {activeModule === 'customers' && <CustomerSegments context={context} onData={(d) => handleSectionData('customers', d)} onError={(e) => handleSectionError('customers', e)} shouldRun={sections.customers.status === 'loading'} />}
-              {activeModule === 'competitors' && <Competitors context={context} onData={(d) => handleSectionData('competitors', d)} onError={(e) => handleSectionError('competitors', e)} shouldRun={sections.competitors.status === 'loading'} />}
-              {activeModule === 'rootcause' && <RootCauses context={context} onData={(d) => handleSectionData('rootcause', d)} onError={(e) => handleSectionError('rootcause', e)} shouldRun={sections.rootcause.status === 'loading'} />}
-              {activeModule === 'costs' && <StartupCostsPreview context={context} onData={(d) => handleSectionData('costs', d)} onError={(e) => handleSectionError('costs', e)} shouldRun={sections.costs.status === 'loading'} />}
-              {activeModule === 'risk' && <RiskMatrix context={context} onData={(d) => handleSectionData('risk', d)} onError={(e) => handleSectionError('risk', e)} shouldRun={sections.risk.status === 'loading'} />}
-              {activeModule === 'location' && <LocationIntel context={context} onData={(d) => handleSectionData('location', d)} onError={(e) => handleSectionError('location', e)} shouldRun={sections.location.status === 'loading'} />}
-              {activeModule === 'moat' && <CompetitiveMoat context={context} onData={(d) => handleSectionData('moat', d)} onError={(e) => handleSectionError('moat', e)} shouldRun={sections.moat.status === 'loading'} />}
+              {activeModule === 'opportunity' && <OpportunitySizing context={context} onData={(d) => handleSectionData('opportunity', d)} onError={(e) => handleSectionError('opportunity', e)} shouldRun={sections.opportunity.status === 'loading'} initialData={sections.opportunity.data as any} />}
+              {activeModule === 'customers' && <CustomerSegments context={context} onData={(d) => handleSectionData('customers', d)} onError={(e) => handleSectionError('customers', e)} shouldRun={sections.customers.status === 'loading'} initialData={sections.customers.data as any} />}
+              {activeModule === 'competitors' && <Competitors context={context} onData={(d) => handleSectionData('competitors', d)} onError={(e) => handleSectionError('competitors', e)} shouldRun={sections.competitors.status === 'loading'} initialData={sections.competitors.data as any} />}
+              {activeModule === 'rootcause' && <RootCauses context={context} onData={(d) => handleSectionData('rootcause', d)} onError={(e) => handleSectionError('rootcause', e)} shouldRun={sections.rootcause.status === 'loading'} initialData={sections.rootcause.data as any} />}
+              {activeModule === 'costs' && <StartupCostsPreview context={context} onData={(d) => handleSectionData('costs', d)} onError={(e) => handleSectionError('costs', e)} shouldRun={sections.costs.status === 'loading'} initialData={sections.costs.data as any} />}
+              {activeModule === 'risk' && <RiskMatrix context={context} onData={(d) => handleSectionData('risk', d)} onError={(e) => handleSectionError('risk', e)} shouldRun={sections.risk.status === 'loading'} initialData={sections.risk.data as any} />}
+              {activeModule === 'location' && <LocationIntel context={context} onData={(d) => handleSectionData('location', d)} onError={(e) => handleSectionError('location', e)} shouldRun={sections.location.status === 'loading'} initialData={sections.location.data as any} />}
+              {activeModule === 'moat' && <CompetitiveMoat context={context} onData={(d) => handleSectionData('moat', d)} onError={(e) => handleSectionError('moat', e)} shouldRun={sections.moat.status === 'loading'} initialData={sections.moat.data as any} />}
             </Suspense>
           )}
 

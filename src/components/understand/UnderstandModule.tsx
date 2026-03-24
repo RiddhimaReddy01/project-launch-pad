@@ -85,7 +85,7 @@ function EditableListCard({ label, items, onSave }: EditableListCardProps) {
           {items.map((item, i) => (
             <span key={i} className="rounded-full px-3 py-1" style={{ fontSize: 12, fontWeight: 300, backgroundColor: 'var(--surface-input)', color: 'var(--text-secondary)' }}>{item}</span>
           ))}
-          {items.length === 0 && <span className="font-caption">\u2014</span>}
+          {items.length === 0 && <span className="font-caption">{'\u2014'}</span>}
         </div>
       )}
     </div>
