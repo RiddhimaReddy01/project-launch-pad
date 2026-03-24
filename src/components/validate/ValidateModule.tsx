@@ -221,14 +221,17 @@ export default function ValidateModule() {
         method?.outputs.forEach(o => requiredOutputs.add(o));
       });
 
-      const data = await generateValidation(idea, Array.from(requiredOutputs));
+      // Use rich context when available, fall back to simple idea string
+      const data = context
+        ? await generateValidation(context, Array.from(requiredOutputs))
+        : await generateValidation(idea, Array.from(requiredOutputs));
       setResult(data);
       setPhase('toolkit');
     } catch (err: any) {
       setErrorMsg(err.message || 'Something went wrong - please try again');
       setPhase('select');
     }
-  }, [idea, selectedMethods]);
+  }, [idea, selectedMethods, context]);
 
   const toggleMethod = (id: string) => {
     setSelectedMethods(prev => {
