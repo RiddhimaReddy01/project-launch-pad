@@ -3,9 +3,9 @@ import { analyzeSection, type AnalyzeContext, type RiskData } from '@/lib/analyz
 import SectionSkeleton from './SectionSkeleton';
 
 const LEVEL_CONFIG = {
-  low: { color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.06)', label: 'Low' },
-  medium: { color: 'var(--accent-amber)', bg: 'rgba(212,136,15,0.06)', label: 'Medium' },
-  high: { color: 'hsl(0 84% 60%)', bg: 'rgba(239,68,68,0.06)', label: 'High' },
+  low: { color: 'var(--accent-teal)', bg: 'rgba(45,139,117,0.12)', label: 'Low' },
+  medium: { color: 'var(--accent-amber)', bg: 'rgba(212,136,15,0.12)', label: 'Medium' },
+  high: { color: 'hsl(0 84% 60%)', bg: 'rgba(239,68,68,0.12)', label: 'High' },
 };
 
 const likelihoodVal = { low: 1, medium: 2, high: 3 };
@@ -42,15 +42,15 @@ export default function RiskMatrix({ context, onData, onError, shouldRun = true,
 
   // 2x2 matrix positions
   const matrixCells = [
-    { row: 'high', col: 'low', label: 'Monitor', gridRow: 1, gridCol: 1, bg: 'rgba(212,136,15,0.04)' },
-    { row: 'high', col: 'medium', label: 'Mitigate', gridRow: 1, gridCol: 2, bg: 'rgba(239,68,68,0.04)' },
-    { row: 'high', col: 'high', label: 'Critical', gridRow: 1, gridCol: 3, bg: 'rgba(239,68,68,0.08)' },
-    { row: 'medium', col: 'low', label: 'Accept', gridRow: 2, gridCol: 1, bg: 'rgba(45,139,117,0.04)' },
-    { row: 'medium', col: 'medium', label: 'Monitor', gridRow: 2, gridCol: 2, bg: 'rgba(212,136,15,0.04)' },
-    { row: 'medium', col: 'high', label: 'Mitigate', gridRow: 2, gridCol: 3, bg: 'rgba(239,68,68,0.04)' },
-    { row: 'low', col: 'low', label: 'Accept', gridRow: 3, gridCol: 1, bg: 'rgba(45,139,117,0.06)' },
-    { row: 'low', col: 'medium', label: 'Accept', gridRow: 3, gridCol: 2, bg: 'rgba(45,139,117,0.04)' },
-    { row: 'low', col: 'high', label: 'Monitor', gridRow: 3, gridCol: 3, bg: 'rgba(212,136,15,0.04)' },
+    { row: 'high', col: 'low', label: 'Monitor', gridRow: 1, gridCol: 1, bg: 'rgba(212,136,15,0.10)' },
+    { row: 'high', col: 'medium', label: 'Mitigate', gridRow: 1, gridCol: 2, bg: 'rgba(239,68,68,0.10)' },
+    { row: 'high', col: 'high', label: 'Critical', gridRow: 1, gridCol: 3, bg: 'rgba(239,68,68,0.18)' },
+    { row: 'medium', col: 'low', label: 'Accept', gridRow: 2, gridCol: 1, bg: 'rgba(45,139,117,0.08)' },
+    { row: 'medium', col: 'medium', label: 'Monitor', gridRow: 2, gridCol: 2, bg: 'rgba(212,136,15,0.10)' },
+    { row: 'medium', col: 'high', label: 'Mitigate', gridRow: 2, gridCol: 3, bg: 'rgba(239,68,68,0.10)' },
+    { row: 'low', col: 'low', label: 'Accept', gridRow: 3, gridCol: 1, bg: 'rgba(45,139,117,0.12)' },
+    { row: 'low', col: 'medium', label: 'Accept', gridRow: 3, gridCol: 2, bg: 'rgba(45,139,117,0.08)' },
+    { row: 'low', col: 'high', label: 'Monitor', gridRow: 3, gridCol: 3, bg: 'rgba(212,136,15,0.10)' },
   ];
 
   return (

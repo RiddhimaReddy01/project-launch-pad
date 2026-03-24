@@ -111,9 +111,9 @@ export default function CustomerSegments({ context, onData, onError, shouldRun =
             <div style={{ height: 220 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={radarData}>
-                  <PolarGrid stroke="var(--divider-light)" />
+                  <PolarGrid stroke="var(--divider)" />
                   <PolarAngleAxis dataKey="metric" style={{ fontSize: 10, fill: 'var(--text-muted)' }} />
-                  <Radar dataKey="value" stroke="var(--text-primary)" fill="var(--text-primary)" fillOpacity={0.06} strokeWidth={1.5} />
+                  <Radar dataKey="value" stroke="var(--accent-teal)" fill="var(--accent-teal)" fillOpacity={0.15} strokeWidth={2} />
                 </RadarChart>
               </ResponsiveContainer>
             </div>
