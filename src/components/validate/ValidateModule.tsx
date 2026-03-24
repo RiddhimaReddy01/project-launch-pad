@@ -194,23 +194,6 @@ export default function ValidateModule() {
     return ctx;
   }, [decomposeResult, discoverResult, selectedInsight, analyzeData, setupData]);
 
-  const deriveScorecard = useCallback((sc: ScorecardMetric[]): ScorecardMetric[] => {
-    return sc.map(m => {
-      if (m.id === 'waitlist_signups' && analyzeData?.opportunity?.som?.value) {
-        const somYear1 = analyzeData.opportunity.som.value;
-        const target = Math.max(50, Math.round(somYear1 / 50000));
-        return { ...m, target, target_label: `${target}+` };
-      }
-      if (m.id === 'price_tolerance' && setupData?.costs?.tiers) {
-        const midTier = setupData.costs.tiers?.find((t: any) => t.id === (setupData.tier || 'mid'));
-        if (midTier) {
-          const avgCost = Math.round((midTier.cost_min + midTier.cost_max) / 2000);
-          return { ...m, target: avgCost, target_label: `$${avgCost}` };
-        }
-      }
-      return m;
-    });
-  }, [analyzeData, setupData]);
 
   const visibleTabs = useMemo(() => {
     const selectedOutputs = new Set<string>();
