@@ -271,7 +271,26 @@ serve(async (req) => {
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
-    const { section, context } = await req.json();
+    const body = await req.json();
+    let section = body.section;
+    let context = body.context;
+
+    // Support simple { idea, selected_tier } format
+    if (!context && body.idea) {
+      const idea = body.idea;
+      let business_type = idea;
+      let city = "";
+      let state = "";
+      const locMatch = idea.match(/\bin\s+([A-Za-z\s]+?)(?:,?\s+([A-Z]{2}))?\s*$/i);
+      if (locMatch) {
+        city = locMatch[1].trim();
+        state = (locMatch[2] || "").trim();
+        business_type = idea.replace(/\bin\s+.+$/i, "").trim();
+      }
+      context = { business_type, city, state, tier: (body.selected_tier || "mid").toLowerCase() };
+      if (!section) section = "costs"; // default section
+    }
+
     if (!section || !context) {
       return new Response(JSON.stringify({ error: "Missing section or context" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
