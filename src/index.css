@@ -31,24 +31,24 @@
     --surface-bg: #F8F7F5;
     --surface-card: #FFFFFF;
     --surface-input: #F3F2EE;
-    --divider: #E5E3DF;
-    --divider-light: #EDEBE7;
-    --divider-section: #D6D3CE;
+    --divider: #D4D1CC;
+    --divider-light: #E0DDD8;
+    --divider-section: #C2BFB9;
 
     --text-primary: #1A1A1A;
-    --text-secondary: #6E6C68;
-    --text-muted: #A09E9A;
+    --text-secondary: #555350;
+    --text-muted: #807D78;
     --text-link: #2D6B52;
 
     --accent-primary: #2D6B52;
     --accent-primary-light: #E6F2EC;
-    --accent-teal: #5B8C7E;
-    --accent-blue: #4A6FA5;
-    --accent-amber: #B8860B;
-    --accent-purple: #7B68A8;
+    --accent-teal: #4A7A6B;
+    --accent-blue: #3D5F8F;
+    --accent-amber: #9E7409;
+    --accent-purple: #6A5A94;
     --signal-high: #2D6B52;
-    --signal-medium: #B8860B;
-    --signal-low: #A09E9A;
+    --signal-medium: #9E7409;
+    --signal-low: #807D78;
     --error: #C4453E;
 
     --sidebar-background: 0 0% 98%;
@@ -111,7 +111,7 @@ html {
   font-family: 'Outfit', sans-serif;
   font-size: 13px;
   font-weight: 300;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .font-section-label,
@@ -121,7 +121,7 @@ html {
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .mono-badge {
