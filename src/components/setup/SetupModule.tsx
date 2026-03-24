@@ -87,8 +87,8 @@ export default function SetupModule() {
 
   // Auto-load costs on mount
   useEffect(() => {
-    if (context && costsState.status === 'idle') loadSection('costs');
-  }, [context]);
+    if (idea && costsState.status === 'idle') loadSection('costs');
+  }, [idea]);
 
   // Load tab data on switch
   useEffect(() => {
