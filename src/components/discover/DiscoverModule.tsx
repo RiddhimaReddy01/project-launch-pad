@@ -7,14 +7,14 @@ import SynthesisPanel from './SynthesisPanel';
 
 type Status = 'idle' | 'loading' | 'done' | 'error';
 
-const KNOWN_TABS: Record<string, { label: string; icon: string }> = {
-  pain_point: { label: 'Pain Points', icon: '🔥' },
-  workaround: { label: 'Workarounds', icon: '🔧' },
-  demand_signal: { label: 'Demand Signals', icon: '📈' },
-  expectation: { label: 'Expectations', icon: '🎯' },
-  market_gap: { label: 'Market Gaps', icon: '🕳️' },
-  opportunity: { label: 'Opportunities', icon: '💡' },
-  trend: { label: 'Trends', icon: '📊' },
+const KNOWN_TABS: Record<string, { label: string }> = {
+  pain_point: { label: 'Pain Points' },
+  workaround: { label: 'Workarounds' },
+  demand_signal: { label: 'Demand Signals' },
+  expectation: { label: 'Expectations' },
+  market_gap: { label: 'Market Gaps' },
+  opportunity: { label: 'Opportunities' },
+  trend: { label: 'Trends' },
 };
 
 function buildTabs(insights: { type: string }[]) {
@@ -22,7 +22,6 @@ function buildTabs(insights: { type: string }[]) {
   return types.map(key => ({
     key,
     label: KNOWN_TABS[key]?.label || key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-    icon: KNOWN_TABS[key]?.icon || '•',
   }));
 }
 
@@ -129,10 +128,10 @@ export default function DiscoverModule() {
             )}
           </div>
           <div className="flex items-center gap-3">
-            {cached && <span className="badge badge-green">⚡ Cached</span>}
+            {cached && <span className="badge badge-green">Cached</span>}
             {status === 'done' && (
               <button onClick={() => { hasRun.current = false; runDiscover(); }} className="btn-secondary" style={{ fontSize: 12 }}>
-                ↻ Re-run
+                Re-run
               </button>
             )}
           </div>
@@ -176,7 +175,6 @@ export default function DiscoverModule() {
                         border: isActive ? '1px solid var(--accent-primary)' : '1px solid var(--divider)',
                         cursor: 'pointer',
                       }}>
-                      <span style={{ fontSize: 12 }}>{tab.icon}</span>
                       {tab.label}
                       <span className="rounded-full px-1.5 py-0.5" style={{
                         fontSize: 10, fontWeight: 400, minWidth: 18, textAlign: 'center',

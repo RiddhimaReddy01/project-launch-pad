@@ -16,7 +16,6 @@ async function hashKey(input: string): Promise<string> {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-// Cost routing: simple extraction → cheaper model, complex synthesis → better model
 const MODEL_BY_SECTION: Record<string, string> = {
   costs: "google/gemini-2.5-flash-lite",
   risk: "google/gemini-2.5-flash-lite",
@@ -28,7 +27,7 @@ const MODEL_BY_SECTION: Record<string, string> = {
   competitors: "google/gemini-2.5-flash",
 };
 
-async function callAI(apiKey: string, model: string, systemPrompt: string, userPrompt: string, tools: any[]) {
+async function callAIJson(apiKey: string, model: string, systemPrompt: string, userPrompt: string) {
   const resp = await fetch(AI_GATEWAY, {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
@@ -38,8 +37,8 @@ async function callAI(apiKey: string, model: string, systemPrompt: string, userP
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
       ],
-      tools,
-      tool_choice: { type: "function", function: { name: tools[0].function.name } },
+      response_format: { type: "json_object" },
+      temperature: 0.3,
     }),
   });
 
@@ -49,181 +48,78 @@ async function callAI(apiKey: string, model: string, systemPrompt: string, userP
   }
 
   const data = await resp.json();
-  const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
-  if (toolCall) return JSON.parse(toolCall.function.arguments);
-  throw new Error("No structured response returned");
+  const content = data.choices?.[0]?.message?.content;
+  if (!content) throw new Error("No content in AI response");
+  
+  try {
+    return JSON.parse(content);
+  } catch {
+    const match = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (match) return JSON.parse(match[1].trim());
+    throw new Error("Could not parse AI response as JSON");
+  }
 }
 
-// ── SECTION TOOLS ──
+/** Build a location string, handling empty city/state gracefully */
+function locationStr(city: string, state: string): string {
+  const parts = [city, state].filter(Boolean);
+  return parts.length > 0 ? parts.join(", ") : "the US market";
+}
 
-const OPPORTUNITY_TOOL = [{
-  type: "function",
-  function: {
-    name: "analyze_opportunity",
-    description: "Calculate TAM/SAM/SOM market sizing",
-    parameters: {
-      type: "object",
-      properties: {
-        tam: { type: "object", properties: { value: { type: "number" }, formatted: { type: "string" }, methodology: { type: "string" }, confidence: { type: "string", enum: ["low", "medium", "high"] } }, required: ["value", "formatted", "methodology", "confidence"] },
-        sam: { type: "object", properties: { value: { type: "number" }, formatted: { type: "string" }, methodology: { type: "string" }, confidence: { type: "string", enum: ["low", "medium", "high"] } }, required: ["value", "formatted", "methodology", "confidence"] },
-        som: { type: "object", properties: { value: { type: "number" }, formatted: { type: "string" }, methodology: { type: "string" }, confidence: { type: "string", enum: ["low", "medium", "high"] } }, required: ["value", "formatted", "methodology", "confidence"] },
-        funnel: { type: "object", properties: { population: { type: "number" }, aware: { type: "number" }, interested: { type: "number" }, willing_to_try: { type: "number" }, repeat_customers: { type: "number" } }, required: ["population", "aware", "interested", "willing_to_try", "repeat_customers"] },
-      },
-      required: ["tam", "sam", "som", "funnel"],
-    },
-  },
-}];
+function locationContext(city: string, state: string): string {
+  const parts = [city, state].filter(Boolean);
+  return parts.length > 0 ? `in ${parts.join(", ")}` : "(online / nationwide)";
+}
 
-const CUSTOMERS_TOOL = [{
-  type: "function",
-  function: {
-    name: "analyze_customers",
-    description: "Generate customer segments",
-    parameters: {
-      type: "object",
-      properties: {
-        segments: { type: "array", items: { type: "object", properties: { name: { type: "string" }, description: { type: "string" }, estimated_size: { type: "number" }, pain_intensity: { type: "number" }, primary_need: { type: "string" }, spending_pattern: { type: "string" }, where_to_find: { type: "string" } }, required: ["name", "description", "estimated_size", "pain_intensity", "primary_need", "spending_pattern", "where_to_find"] } },
-      },
-      required: ["segments"],
-    },
-  },
-}];
+// ── SECTION PROMPTS ──
 
-const COMPETITORS_TOOL = [{
-  type: "function",
-  function: {
-    name: "analyze_competitors",
-    description: "Analyze competitive landscape",
-    parameters: {
-      type: "object",
-      properties: {
-        competitors: { type: "array", items: { type: "object", properties: { name: { type: "string" }, location: { type: "string" }, rating: { type: "number" }, price_range: { type: "string" }, key_strength: { type: "string" }, key_gap: { type: "string" }, threat_level: { type: "string", enum: ["low", "medium", "high"] }, url: { type: "string" } }, required: ["name", "location", "rating", "price_range", "key_strength", "key_gap", "threat_level", "url"] } },
-        unfilled_gaps: { type: "array", items: { type: "string" } },
-      },
-      required: ["competitors", "unfilled_gaps"],
-    },
-  },
-}];
-
-const ROOTCAUSE_TOOL = [{
-  type: "function",
-  function: {
-    name: "analyze_root_causes",
-    description: "Identify structural root causes",
-    parameters: {
-      type: "object",
-      properties: {
-        root_causes: { type: "array", items: { type: "object", properties: { cause_number: { type: "number" }, title: { type: "string" }, explanation: { type: "string" }, your_move: { type: "string" }, difficulty: { type: "string", enum: ["easy", "medium", "hard"] } }, required: ["cause_number", "title", "explanation", "your_move", "difficulty"] } },
-      },
-      required: ["root_causes"],
-    },
-  },
-}];
-
-const COSTS_TOOL = [{
-  type: "function",
-  function: {
-    name: "analyze_costs",
-    description: "Estimate startup costs",
-    parameters: {
-      type: "object",
-      properties: {
-        total_range: { type: "object", properties: { min: { type: "number" }, max: { type: "number" } }, required: ["min", "max"] },
-        breakdown: { type: "array", items: { type: "object", properties: { category: { type: "string" }, min: { type: "number" }, max: { type: "number" } }, required: ["category", "min", "max"] } },
-        note: { type: "string" },
-      },
-      required: ["total_range", "breakdown", "note"],
-    },
-  },
-}];
-
-const RISK_TOOL = [{
-  type: "function",
-  function: {
-    name: "analyze_risks",
-    description: "Assess business risks",
-    parameters: {
-      type: "object",
-      properties: {
-        risks: { type: "array", items: { type: "object", properties: { risk: { type: "string" }, likelihood: { type: "string", enum: ["low", "medium", "high"] }, impact: { type: "string", enum: ["low", "medium", "high"] }, mitigation: { type: "string" }, category: { type: "string" } }, required: ["risk", "likelihood", "impact", "mitigation", "category"] } },
-        overall_risk_level: { type: "string", enum: ["low", "medium", "high"] },
-        summary: { type: "string" },
-      },
-      required: ["risks", "overall_risk_level", "summary"],
-    },
-  },
-}];
-
-const LOCATION_TOOL = [{
-  type: "function",
-  function: {
-    name: "analyze_location",
-    description: "Analyze location demographics, foot traffic, and regulatory environment",
-    parameters: {
-      type: "object",
-      properties: {
-        demographics: { type: "object", properties: { population: { type: "number" }, median_income: { type: "number" }, median_age: { type: "number" }, growth_rate: { type: "string" } }, required: ["population", "median_income", "median_age", "growth_rate"] },
-        foot_traffic: { type: "object", properties: { best_areas: { type: "array", items: { type: "string" } }, avg_monthly_rent_sqft: { type: "number" }, competitor_density: { type: "string" } }, required: ["best_areas", "avg_monthly_rent_sqft", "competitor_density"] },
-        regulatory: { type: "object", properties: { key_permits: { type: "array", items: { type: "string" } }, estimated_timeline: { type: "string" }, notes: { type: "string" } }, required: ["key_permits", "estimated_timeline", "notes"] },
-        score: { type: "number" },
-        verdict: { type: "string" },
-      },
-      required: ["demographics", "foot_traffic", "regulatory", "score", "verdict"],
-    },
-  },
-}];
-
-const MOAT_TOOL = [{
-  type: "function",
-  function: {
-    name: "analyze_moat",
-    description: "Score competitive defensibility across 5 dimensions",
-    parameters: {
-      type: "object",
-      properties: {
-        dimensions: { type: "array", items: { type: "object", properties: { dimension: { type: "string" }, score: { type: "number" }, rationale: { type: "string" } }, required: ["dimension", "score", "rationale"] } },
-        overall_score: { type: "number" },
-        strongest: { type: "string" },
-        weakest: { type: "string" },
-        recommendation: { type: "string" },
-      },
-      required: ["dimensions", "overall_score", "strongest", "weakest", "recommendation"],
-    },
-  },
-}];
-
-const SECTION_CONFIG: Record<string, { tool: any[]; systemPrompt: (ctx: any) => string }> = {
+const SECTION_CONFIG: Record<string, { systemPrompt: (ctx: any) => string; schema: string }> = {
   opportunity: {
-    tool: OPPORTUNITY_TOOL,
-    systemPrompt: (ctx) => `You are an expert market analyst. Calculate market sizing for a ${ctx.business_type} in ${ctx.city}, ${ctx.state}. TAM: total addressable market in metro. SAM: serviceable available market for the pain point. SOM: realistic year-1 capture. Include customer funnel. TAM >= SAM >= SOM. Be specific to ${ctx.city}.`,
+    systemPrompt: (ctx) => `You are an expert market analyst. Calculate market sizing for a ${ctx.business_type} ${locationContext(ctx.city, ctx.state)}.
+
+IMPORTANT: Return realistic, non-zero dollar amounts. For SaaS/app businesses without a physical location, size the NATIONAL or GLOBAL market.
+- TAM: Total addressable market in dollars (the entire market for this type of product/service)
+- SAM: Serviceable available market (the segment you can realistically reach)
+- SOM: Serviceable obtainable market (realistic year-1 revenue capture)
+- TAM >= SAM >= SOM, all must be > 0
+- Include a customer funnel with realistic numbers
+
+For digital/SaaS businesses, think about: total users in the space, average revenue per user, market growth rate.
+For local businesses, think about: metro population, target demographic %, spending patterns.`,
+    schema: `{
+  "tam": { "value": number, "formatted": "string like $2.5B", "methodology": "string", "confidence": "low|medium|high" },
+  "sam": { "value": number, "formatted": "string like $150M", "methodology": "string", "confidence": "low|medium|high" },
+  "som": { "value": number, "formatted": "string like $2M", "methodology": "string", "confidence": "low|medium|high" },
+  "funnel": { "population": number, "aware": number, "interested": number, "willing_to_try": number, "repeat_customers": number }
+}`,
   },
   customers: {
-    tool: CUSTOMERS_TOOL,
-    systemPrompt: (ctx) => `Generate 3-4 customer segments for a ${ctx.business_type} in ${ctx.city}, ${ctx.state}. Each with memorable name, description, local size estimate, pain_intensity 1-10, primary need, spending patterns, where to find them. Sort by pain descending.`,
+    systemPrompt: (ctx) => `Generate 3-4 customer segments for a ${ctx.business_type} ${locationContext(ctx.city, ctx.state)}. Each with memorable name, description, local size estimate, pain_intensity 1-10, primary need, spending patterns, where to find them. Sort by pain descending.`,
+    schema: `{ "segments": [{ "name": "string", "description": "string", "estimated_size": number, "pain_intensity": number, "primary_need": "string", "spending_pattern": "string", "where_to_find": "string" }] }`,
   },
   competitors: {
-    tool: COMPETITORS_TOOL,
-    systemPrompt: (ctx) => `Analyze competitors for a ${ctx.business_type} in ${ctx.city}, ${ctx.state}. 4-8 real/realistic competitors with threat levels, ratings, gaps from reviews, realistic URLs. Also 3 unfilled gaps no competitor fills.`,
+    systemPrompt: (ctx) => `Analyze competitors for a ${ctx.business_type} ${locationContext(ctx.city, ctx.state)}. 4-8 real/realistic competitors with threat levels, ratings, gaps from reviews, realistic URLs. Also 3 unfilled gaps no competitor fills.`,
+    schema: `{ "competitors": [{ "name": "string", "location": "string", "rating": number, "price_range": "string", "key_strength": "string", "key_gap": "string", "threat_level": "low|medium|high", "url": "string" }], "unfilled_gaps": ["string"] }`,
   },
   rootcause: {
-    tool: ROOTCAUSE_TOOL,
-    systemPrompt: (ctx) => `Identify 3-5 ROOT CAUSES for why a market gap exists for a ${ctx.business_type} in ${ctx.city}, ${ctx.state}. Structural, economic, or regulatory reasons. Each with actionable counter-strategy specific to ${ctx.city}.`,
+    systemPrompt: (ctx) => `Identify 3-5 ROOT CAUSES for why a market gap exists for a ${ctx.business_type} ${locationContext(ctx.city, ctx.state)}. Structural, economic, or regulatory reasons. Each with actionable counter-strategy.`,
+    schema: `{ "root_causes": [{ "cause_number": number, "title": "string", "explanation": "string", "your_move": "string", "difficulty": "easy|medium|hard" }] }`,
   },
   costs: {
-    tool: COSTS_TOOL,
-    systemPrompt: (ctx) => `Estimate startup costs for a ${ctx.business_type} in ${ctx.city}, ${ctx.state}. 4-6 categories with min/max ranges. Note the biggest cost driver. Be specific to local commercial rates.`,
+    systemPrompt: (ctx) => `Estimate startup costs for a ${ctx.business_type} ${locationContext(ctx.city, ctx.state)}. 4-6 categories with min/max ranges. Note the biggest cost driver.`,
+    schema: `{ "total_range": { "min": number, "max": number }, "breakdown": [{ "category": "string", "min": number, "max": number }], "note": "string" }`,
   },
   risk: {
-    tool: RISK_TOOL,
-    systemPrompt: (ctx) => `Assess 5-8 business risks for launching a ${ctx.business_type} in ${ctx.city}, ${ctx.state}. Categorize each as operational, financial, market, regulatory, or competitive. Rate likelihood and impact. Include specific mitigation strategies.`,
+    systemPrompt: (ctx) => `Assess 5-8 business risks for launching a ${ctx.business_type} ${locationContext(ctx.city, ctx.state)}. Categorize each as operational, financial, market, regulatory, or competitive. Rate likelihood and impact. Include specific mitigation strategies.`,
+    schema: `{ "risks": [{ "risk": "string", "likelihood": "low|medium|high", "impact": "low|medium|high", "mitigation": "string", "category": "string" }], "overall_risk_level": "low|medium|high", "summary": "string" }`,
   },
   location: {
-    tool: LOCATION_TOOL,
-    systemPrompt: (ctx) => `Analyze ${ctx.city}, ${ctx.state} as a location for a ${ctx.business_type}. Include demographics, foot traffic, and regulatory environment. Score 1-10 and give a verdict.`,
+    systemPrompt: (ctx) => `Analyze ${locationStr(ctx.city, ctx.state)} as a location for a ${ctx.business_type}. Include demographics, foot traffic, and regulatory environment. Score 1-10 and give a verdict.`,
+    schema: `{ "demographics": { "population": number, "median_income": number, "median_age": number, "growth_rate": "string" }, "foot_traffic": { "best_areas": ["string"], "avg_monthly_rent_sqft": number, "competitor_density": "string" }, "regulatory": { "key_permits": ["string"], "estimated_timeline": "string", "notes": "string" }, "score": number, "verdict": "string" }`,
   },
   moat: {
-    tool: MOAT_TOOL,
-    systemPrompt: (ctx) => `Score competitive defensibility for a ${ctx.business_type} in ${ctx.city}, ${ctx.state} across 5 dimensions: Brand/Network Effects, Switching Costs, Cost Advantages, Proprietary Technology, Regulatory Barriers. Rate each 1-10.`,
+    systemPrompt: (ctx) => `Score competitive defensibility for a ${ctx.business_type} ${locationContext(ctx.city, ctx.state)} across 5 dimensions: Brand/Network Effects, Switching Costs, Cost Advantages, Proprietary Technology, Regulatory Barriers. Rate each 1-10.`,
+    schema: `{ "dimensions": [{ "dimension": "string", "score": number, "rationale": "string" }], "overall_score": number, "strongest": "string", "weakest": "string", "recommendation": "string" }`,
   },
 };
 
@@ -244,14 +140,8 @@ serve(async (req) => {
     // Support both { section, context } and { idea, section } formats
     let context = body.context;
     if (!context && body.idea) {
-      // Extract basic context from the idea string
       const idea = body.idea as string;
-      context = {
-        business_type: idea,
-        city: "",
-        state: "",
-      };
-      // Try to parse location from idea (e.g., "juice bar in Plano TX")
+      context = { business_type: idea, city: "", state: "" };
       const locMatch = idea.match(/\bin\s+([A-Za-z\s]+?)(?:,?\s+([A-Z]{2}))?\s*$/i);
       if (locMatch) {
         context.city = locMatch[1].trim();
@@ -298,21 +188,35 @@ serve(async (req) => {
     const systemPrompt = config.systemPrompt({ business_type, city, state });
 
     const userPrompt = `Business: ${business_type}
-Location: ${city}, ${state}
-Target customers: ${(target_customers || []).join(", ")}
+Location: ${locationStr(city, state)}
+Target customers: ${(target_customers || []).join(", ") || "general market"}
 Price tier: ${price_tier || "mid-range"}
 
 ${insight_title ? `Selected insight: ${insight_title}` : ""}
 ${insight_evidence ? `Evidence:\n${insight_evidence}` : ""}
 
-Analyze this business opportunity for the "${section}" section.`;
+Analyze this business opportunity for the "${section}" section.
+Return valid JSON matching this schema:
+${config.schema}
 
-    const result = await callAI(LOVABLE_API_KEY, model, systemPrompt, userPrompt, config.tool);
+IMPORTANT: All numeric values must be greater than 0. Use realistic market data.`;
+
+    const result = await callAIJson(LOVABLE_API_KEY, model, systemPrompt, userPrompt);
 
     // Post-processing
     if (section === "opportunity" && result.tam && result.sam && result.som) {
       const vals = [result.tam.value, result.sam.value, result.som.value].sort((a: number, b: number) => b - a);
       result.tam.value = vals[0]; result.sam.value = vals[1]; result.som.value = vals[2];
+      // Ensure formatted strings match values
+      const fmt = (v: number) => {
+        if (v >= 1e9) return `$${(v / 1e9).toFixed(1)}B`;
+        if (v >= 1e6) return `$${(v / 1e6).toFixed(1)}M`;
+        if (v >= 1e3) return `$${(v / 1e3).toFixed(0)}K`;
+        return `$${v}`;
+      };
+      result.tam.formatted = fmt(result.tam.value);
+      result.sam.formatted = fmt(result.sam.value);
+      result.som.formatted = fmt(result.som.value);
     }
     if (section === "customers" && result.segments) {
       result.segments = result.segments.slice(0, 4).sort((a: any, b: any) => b.pain_intensity - a.pain_intensity);

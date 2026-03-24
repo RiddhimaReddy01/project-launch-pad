@@ -7,23 +7,23 @@ import { toast } from 'sonner';
 import ScoreDonut from './ScoreDonut';
 import ScoreMethodology from './ScoreMethodology';
 
-const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-  pain_point: { label: 'PAIN POINT', color: 'var(--error)', bg: 'rgba(196,69,62,0.06)', icon: '🔥' },
-  workaround: { label: 'WORKAROUND', color: 'var(--accent-amber)', bg: 'rgba(184,134,11,0.06)', icon: '🔧' },
-  demand_signal: { label: 'DEMAND SIGNAL', color: 'var(--accent-primary)', bg: 'var(--accent-primary-light)', icon: '📈' },
-  expectation: { label: 'EXPECTATION', color: 'var(--accent-blue)', bg: 'rgba(74,111,165,0.06)', icon: '🎯' },
-  market_gap: { label: 'MARKET GAP', color: 'var(--accent-primary)', bg: 'var(--accent-primary-light)', icon: '🕳️' },
-  opportunity: { label: 'OPPORTUNITY', color: 'var(--accent-blue)', bg: 'rgba(74,111,165,0.06)', icon: '💡' },
-  trend: { label: 'TREND', color: 'var(--accent-purple)', bg: 'rgba(123,104,168,0.06)', icon: '📊' },
+const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
+  pain_point: { label: 'PAIN POINT', color: 'var(--error)', bg: 'rgba(196,69,62,0.06)' },
+  workaround: { label: 'WORKAROUND', color: 'var(--accent-amber)', bg: 'rgba(184,134,11,0.06)' },
+  demand_signal: { label: 'DEMAND SIGNAL', color: 'var(--accent-primary)', bg: 'var(--accent-primary-light)' },
+  expectation: { label: 'EXPECTATION', color: 'var(--accent-blue)', bg: 'rgba(74,111,165,0.06)' },
+  market_gap: { label: 'MARKET GAP', color: 'var(--accent-primary)', bg: 'var(--accent-primary-light)' },
+  opportunity: { label: 'OPPORTUNITY', color: 'var(--accent-blue)', bg: 'rgba(74,111,165,0.06)' },
+  trend: { label: 'TREND', color: 'var(--accent-purple)', bg: 'rgba(123,104,168,0.06)' },
 };
 
-const DEFAULT_TYPE_CONFIG = { label: 'INSIGHT', color: 'var(--text-muted)', bg: 'var(--surface-input)', icon: '•' };
+const DEFAULT_TYPE_CONFIG = { label: 'INSIGHT', color: 'var(--text-muted)', bg: 'var(--surface-input)' };
 function getTypeConfig(type: string) { return TYPE_CONFIG[type] || DEFAULT_TYPE_CONFIG; }
 
-const PLATFORM_META: Record<string, { label: string; icon: string; chipClass: string; urlPrefix: string }> = {
-  reddit: { label: 'Reddit', icon: '💬', chipClass: 'source-chip-reddit', urlPrefix: 'https://reddit.com' },
-  google: { label: 'Google', icon: '🔍', chipClass: 'source-chip-google', urlPrefix: 'https://google.com' },
-  yelp: { label: 'Yelp', icon: '⭐', chipClass: 'source-chip-yelp', urlPrefix: 'https://yelp.com' },
+const PLATFORM_META: Record<string, { label: string; chipClass: string; urlPrefix: string }> = {
+  reddit: { label: 'Reddit', chipClass: 'source-chip-reddit', urlPrefix: 'https://reddit.com' },
+  google: { label: 'Google', chipClass: 'source-chip-google', urlPrefix: 'https://google.com' },
+  yelp: { label: 'Yelp', chipClass: 'source-chip-yelp', urlPrefix: 'https://yelp.com' },
 };
 
 function ScoreBar({ label, value, color, explanation }: { label: string; value: number; color: string; explanation: string }) {
@@ -133,7 +133,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
     try {
       const { data: project } = await supabase.from('saved_ideas').select('id').eq('user_id', user.id).eq('idea_text', idea).maybeSingle();
       if (project) {
-        await supabase.from('project_notes').insert({ user_id: user.id, project_id: project.id, content: `[Discover → ${insight.title}] ${note}` } as any);
+        await supabase.from('project_notes').insert({ user_id: user.id, project_id: project.id, content: `[Discover - ${insight.title}] ${note}` } as any);
       }
       setNoteSaved(true);
       setShowNoteInput(false);
@@ -158,10 +158,10 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
             {/* Type badge + interactive source chips */}
             <div className="flex items-center gap-2 flex-wrap mb-2">
               <span className="badge" style={{ backgroundColor: config.bg, color: config.color, fontSize: 10, letterSpacing: '0.06em' }}>
-                {config.icon} {config.label}
+                {config.label}
               </span>
               {Object.entries(platformCounts).map(([platform, count]) => {
-                const meta = PLATFORM_META[platform] || { label: platform, icon: '🌐', chipClass: 'badge-muted', urlPrefix: '#' };
+                const meta = PLATFORM_META[platform] || { label: platform, chipClass: 'badge-muted', urlPrefix: '#' };
                 return (
                   <a
                     key={platform}
@@ -172,7 +172,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
                     className={`source-chip ${meta.chipClass}`}
                     title={`View ${count} ${meta.label} source${count > 1 ? 's' : ''}`}
                   >
-                    {meta.icon} {meta.label}
+                    {meta.label}
                     <span style={{ fontSize: 9, opacity: 0.7 }}>({count})</span>
                   </a>
                 );
@@ -207,7 +207,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
             {/* Expand hint */}
             <div className="mt-3">
               <span className="font-body" style={{ fontSize: 11, fontWeight: 300, color: 'var(--accent-primary)' }}>
-                {expanded ? '▲ Hide evidence' : `▼ ${insight.sources.length} sources — click to expand`}
+                {expanded ? 'Hide evidence' : `${insight.sources.length} sources — click to expand`}
               </span>
             </div>
           </div>
@@ -234,14 +234,13 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
           {/* Source evidence — interactive cards */}
           <div className="flex flex-col gap-3 stagger-children">
             {insight.sources.map((source, i) => {
-              const meta = PLATFORM_META[source.platform] || { label: source.platform, icon: '🌐', chipClass: 'badge-muted', urlPrefix: '#' };
+              const meta = PLATFORM_META[source.platform] || { label: source.platform, chipClass: 'badge-muted', urlPrefix: '#' };
               return (
                 <div key={i} className="card-base p-4 hover:border-[#C8C6C2]" style={{ borderRadius: 8 }}>
                   <p className="font-heading" style={{ fontStyle: 'italic', fontSize: 14, lineHeight: 1.6, color: 'var(--text-primary)', fontWeight: 400 }}>
                     "{source.text}"
                   </p>
                   <div className="flex items-center gap-3 mt-3 flex-wrap">
-                    {/* Platform chip — clickable */}
                     <a
                       href={source.url || '#'}
                       target="_blank"
@@ -249,9 +248,8 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
                       onClick={(e) => e.stopPropagation()}
                       className={`source-chip ${meta.chipClass}`}
                     >
-                      {meta.icon} {meta.label}
+                      {meta.label}
                     </a>
-                    {/* Author — clickable */}
                     <a
                       href={source.url || '#'}
                       target="_blank"
@@ -264,7 +262,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
                     </a>
                     {source.upvotes != null && (
                       <span className="badge badge-green" style={{ fontSize: 10 }}>
-                        ↑ {source.upvotes}
+                        +{source.upvotes}
                       </span>
                     )}
                     <span className="font-caption" style={{ fontSize: 11 }}>{source.date}</span>
@@ -282,17 +280,17 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
               onClick={(e) => { e.stopPropagation(); setSelectedInsight(insight.title); setCurrentStep('analyze'); }}
               className="btn-primary"
             >
-              Deep dive this opportunity →
+              Deep dive this opportunity
             </button>
             <button onClick={handlePin} disabled={saving || saved} className="btn-secondary"
               style={{ color: saved ? 'var(--accent-primary)' : undefined, backgroundColor: saved ? 'var(--accent-primary-light)' : undefined, borderColor: saved ? 'var(--accent-primary)' : undefined }}>
-              {saved ? '✓ Pinned' : saving ? 'Pinning…' : '📌 Pin Insight'}
+              {saved ? 'Pinned' : saving ? 'Pinning…' : 'Pin Insight'}
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); setShowNoteInput(!showNoteInput); }}
               className="btn-secondary"
               style={{ color: noteSaved ? 'var(--accent-primary)' : undefined, backgroundColor: noteSaved ? 'var(--accent-primary-light)' : undefined }}>
-              {noteSaved ? '✓ Note added' : '📝 Add Note'}
+              {noteSaved ? 'Note added' : 'Add Note'}
             </button>
           </div>
         </div>
