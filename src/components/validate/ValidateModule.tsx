@@ -201,7 +201,6 @@ export default function ValidateModule() {
       const method = ALL_METHODS.find(m => m.id === mId);
       method?.outputs.forEach(o => selectedOutputs.add(o));
     });
-    selectedOutputs.add('scorecard');
     return ALL_TABS.filter(tab => selectedOutputs.has(tab.outputKey));
   }, [selectedMethods]);
 
