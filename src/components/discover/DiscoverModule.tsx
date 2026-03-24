@@ -26,7 +26,7 @@ function buildTabs(insights: { type: string }[]) {
 }
 
 export default function DiscoverModule() {
-  const { decomposeResult, discoverResult: contextDiscover, setDiscoverResult: setContextDiscover } = useIdea();
+  const { idea, decomposeResult, discoverResult: contextDiscover, setDiscoverResult: setContextDiscover } = useIdea();
   const [status, setStatus] = useState<Status>(contextDiscover ? 'done' : 'idle');
   const [result, setResult] = useState<DiscoverResult | null>(contextDiscover);
   const [error, setError] = useState<string | null>(null);

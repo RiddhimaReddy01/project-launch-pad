@@ -152,7 +152,7 @@ export default function ValidateModule() {
     const comp = analyzeData?.competitors;
 
     // High pain → Landing Page + Pre-sale
-    const maxPain = cust?.segments?.reduce((max: number, s: any) => Math.max(max, s.pain_intensity || 0), 0) || 0;
+    const maxPain = Array.isArray(cust?.segments) ? cust.segments.reduce((max: number, s: any) => Math.max(max, s.pain_intensity || 0), 0) : 0;
     if (maxPain >= 8) { suggestions.push('landing', 'presale'); }
     else if (maxPain >= 5) { suggestions.push('landing', 'survey'); }
     else { suggestions.push('survey', 'community'); }
