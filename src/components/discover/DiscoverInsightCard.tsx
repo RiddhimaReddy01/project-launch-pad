@@ -8,25 +8,22 @@ import ScoreDonut from './ScoreDonut';
 import ScoreMethodology from './ScoreMethodology';
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-  pain_point: { label: 'PAIN POINT', color: '#8C6B6B', bg: 'rgba(140,107,107,0.06)', icon: 'P' },
-  workaround: { label: 'WORKAROUND', color: 'var(--accent-amber)', bg: 'rgba(166,139,91,0.06)', icon: 'W' },
-  demand_signal: { label: 'DEMAND SIGNAL', color: 'var(--accent-teal)', bg: 'rgba(91,140,126,0.06)', icon: 'D' },
-  expectation: { label: 'EXPECTATION', color: 'var(--accent-blue)', bg: 'rgba(122,143,160,0.06)', icon: 'E' },
-  market_gap: { label: 'MARKET GAP', color: 'var(--accent-teal)', bg: 'rgba(91,140,126,0.06)', icon: 'G' },
-  opportunity: { label: 'OPPORTUNITY', color: 'var(--accent-blue)', bg: 'rgba(122,143,160,0.06)', icon: 'O' },
-  trend: { label: 'TREND', color: 'var(--accent-amber)', bg: 'rgba(166,139,91,0.06)', icon: 'T' },
+  pain_point: { label: 'PAIN POINT', color: 'var(--error)', bg: 'rgba(196,69,62,0.06)', icon: '🔥' },
+  workaround: { label: 'WORKAROUND', color: 'var(--accent-amber)', bg: 'rgba(184,134,11,0.06)', icon: '🔧' },
+  demand_signal: { label: 'DEMAND SIGNAL', color: 'var(--accent-primary)', bg: 'var(--accent-primary-light)', icon: '📈' },
+  expectation: { label: 'EXPECTATION', color: 'var(--accent-blue)', bg: 'rgba(74,111,165,0.06)', icon: '🎯' },
+  market_gap: { label: 'MARKET GAP', color: 'var(--accent-primary)', bg: 'var(--accent-primary-light)', icon: '🕳️' },
+  opportunity: { label: 'OPPORTUNITY', color: 'var(--accent-blue)', bg: 'rgba(74,111,165,0.06)', icon: '💡' },
+  trend: { label: 'TREND', color: 'var(--accent-purple)', bg: 'rgba(123,104,168,0.06)', icon: '📊' },
 };
 
-const DEFAULT_TYPE_CONFIG = { label: 'INSIGHT', color: '#8C6B6B', bg: 'rgba(140,107,107,0.06)', icon: '•' };
+const DEFAULT_TYPE_CONFIG = { label: 'INSIGHT', color: 'var(--text-muted)', bg: 'var(--surface-input)', icon: '•' };
+function getTypeConfig(type: string) { return TYPE_CONFIG[type] || DEFAULT_TYPE_CONFIG; }
 
-function getTypeConfig(type: string) {
-  return TYPE_CONFIG[type] || DEFAULT_TYPE_CONFIG;
-}
-
-const PLATFORM_META: Record<string, { label: string }> = {
-  reddit: { label: 'Reddit' },
-  google: { label: 'Google' },
-  yelp: { label: 'Yelp' },
+const PLATFORM_META: Record<string, { label: string; icon: string; chipClass: string; urlPrefix: string }> = {
+  reddit: { label: 'Reddit', icon: '💬', chipClass: 'source-chip-reddit', urlPrefix: 'https://reddit.com' },
+  google: { label: 'Google', icon: '🔍', chipClass: 'source-chip-google', urlPrefix: 'https://google.com' },
+  yelp: { label: 'Yelp', icon: '⭐', chipClass: 'source-chip-yelp', urlPrefix: 'https://yelp.com' },
 };
 
 function ScoreBar({ label, value, color, explanation }: { label: string; value: number; color: string; explanation: string }) {
@@ -43,26 +40,23 @@ function ScoreBar({ label, value, color, explanation }: { label: string; value: 
           onClick={(e) => { e.stopPropagation(); setShowTip(!showTip); }}
           style={{ background: 'none', border: 'none', padding: 0 }}
         >
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 300, color: 'var(--text-muted)', letterSpacing: '0.03em' }}>
+          <span className="font-body" style={{ fontSize: 10, fontWeight: 300, color: 'var(--text-muted)', letterSpacing: '0.03em' }}>
             {label}
           </span>
         </button>
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 400, color: 'var(--text-secondary)' }}>
+        <span className="font-body" style={{ fontSize: 10, fontWeight: 400, color: 'var(--text-secondary)' }}>
           {pct}%
         </span>
       </div>
       <div className="rounded-full overflow-hidden" style={{ height: 4, backgroundColor: 'var(--divider-light)' }}>
-        <div className="rounded-full h-full" style={{ width: `${pct}%`, backgroundColor: color, transition: 'width 600ms ease-out' }} />
+        <div className="rounded-full h-full animate-progress" style={{ width: `${pct}%`, backgroundColor: color, transition: 'width 600ms ease-out' }} />
       </div>
       {showTip && (
-        <div
-          className="absolute z-20 rounded-[8px] p-3 shadow-lg"
-          style={{
-            bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: 6, width: 220,
-            backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', pointerEvents: 'none',
-          }}
-        >
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
+        <div className="absolute z-20 rounded-lg p-3 shadow-lg" style={{
+          bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: 6, width: 220,
+          backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', pointerEvents: 'none',
+        }}>
+          <p className="font-body" style={{ fontSize: 11, fontWeight: 300, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
             {explanation}
           </p>
         </div>
@@ -71,35 +65,19 @@ function ScoreBar({ label, value, color, explanation }: { label: string; value: 
   );
 }
 
-interface NoteInputProps {
-  onSubmit: (note: string) => void;
-  onCancel: () => void;
-}
-
-function NoteInput({ onSubmit, onCancel }: NoteInputProps) {
+function NoteInput({ onSubmit, onCancel }: { onSubmit: (note: string) => void; onCancel: () => void }) {
   const [text, setText] = useState('');
   const ref = useRef<HTMLTextAreaElement>(null);
   useEffect(() => { ref.current?.focus(); }, []);
 
   return (
-    <div className="mt-4 rounded-[10px] p-3" style={{ backgroundColor: 'var(--surface-input)', border: '1px solid var(--divider-light)' }} onClick={(e) => e.stopPropagation()}>
-      <textarea
-        ref={ref}
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Add a note about this insight…"
-        rows={2}
-        className="w-full resize-none"
-        style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-primary)', backgroundColor: 'transparent', border: 'none', outline: 'none', lineHeight: 1.5 }}
-      />
+    <div className="mt-4 card-base p-3" onClick={(e) => e.stopPropagation()}>
+      <textarea ref={ref} value={text} onChange={(e) => setText(e.target.value)}
+        placeholder="Add a note about this insight…" rows={2}
+        className="w-full resize-none font-body" style={{ fontSize: 13, fontWeight: 300, color: 'var(--text-primary)', backgroundColor: 'transparent', border: 'none', outline: 'none', lineHeight: 1.5 }} />
       <div className="flex justify-end gap-2 mt-2">
-        <button onClick={onCancel} style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
-        <button
-          onClick={() => { if (text.trim()) onSubmit(text.trim()); }}
-          disabled={!text.trim()}
-          className="rounded-[8px] px-3 py-1 disabled:opacity-40"
-          style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
-        >
+        <button onClick={onCancel} className="font-body" style={{ fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
+        <button onClick={() => { if (text.trim()) onSubmit(text.trim()); }} disabled={!text.trim()} className="btn-primary disabled:opacity-40" style={{ fontSize: 12, padding: '4px 12px' }}>
           Save note
         </button>
       </div>
@@ -124,7 +102,10 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
     if (contentRef.current) setContentHeight(contentRef.current.scrollHeight);
   }, [expanded, showMethodology, showNoteInput]);
 
-  const platforms = [...new Set((insight.sources || []).map(s => s.platform))];
+  const platformCounts = (insight.sources || []).reduce((acc, s) => {
+    acc[s.platform] = (acc[s.platform] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
 
   const handlePin = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -133,16 +114,11 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
     setSaving(true);
     try {
       await supabase.from('saved_insights').insert({
-        user_id: user.id,
-        title: insight.title,
-        content: insight.description,
-        section_type: 'discover',
-        tags: insight.tags,
+        user_id: user.id, title: insight.title, content: insight.description,
+        section_type: 'discover', tags: insight.tags,
         source_data: JSON.parse(JSON.stringify({
-          type: insight.type,
-          composite_score: insight.composite_score,
-          frequency_score: insight.frequency_score,
-          severity_score: insight.severity_score,
+          type: insight.type, composite_score: insight.composite_score,
+          frequency_score: insight.frequency_score, severity_score: insight.severity_score,
           sources_count: insight.sources.length,
         })),
       } as any);
@@ -155,20 +131,9 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
   const handleAddNote = async (note: string) => {
     if (!user) { toast.error('Sign in to add notes'); return; }
     try {
-      // Find or create the project
-      const { data: project } = await supabase
-        .from('saved_ideas')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('idea_text', idea)
-        .maybeSingle();
-
+      const { data: project } = await supabase.from('saved_ideas').select('id').eq('user_id', user.id).eq('idea_text', idea).maybeSingle();
       if (project) {
-        await supabase.from('project_notes').insert({
-          user_id: user.id,
-          project_id: project.id,
-          content: `[Discover → ${insight.title}] ${note}`,
-        } as any);
+        await supabase.from('project_notes').insert({ user_id: user.id, project_id: project.id, content: `[Discover → ${insight.title}] ${note}` } as any);
       }
       setNoteSaved(true);
       setShowNoteInput(false);
@@ -176,16 +141,13 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
     } catch { toast.error('Failed to add note'); }
   };
 
-  const scoreColor = insight.composite_score >= 7 ? 'var(--accent-teal)' :
-    insight.composite_score >= 4 ? 'var(--accent-amber)' : '#8C6B6B';
+  const scoreColor = insight.composite_score >= 7 ? 'var(--signal-high)' :
+    insight.composite_score >= 4 ? 'var(--signal-medium)' : 'var(--signal-low)';
 
   return (
     <div
-      className="rounded-[14px] transition-all duration-200 cursor-pointer"
-      style={{
-        backgroundColor: 'var(--surface-card)',
-        boxShadow: expanded ? '0 4px 20px rgba(0,0,0,0.06)' : '0 1px 3px rgba(0,0,0,0.04)',
-      }}
+      className="card-base card-interactive transition-all duration-200"
+      style={{ boxShadow: expanded ? '0 4px 20px rgba(0,0,0,0.04)' : 'none' }}
       onClick={() => setExpanded(!expanded)}
     >
       <div className="p-5">
@@ -193,62 +155,59 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
           <ScoreDonut score={insight.composite_score} color={config.color} />
 
           <div className="flex-1 min-w-0">
-            {/* Type badge + source chips */}
+            {/* Type badge + interactive source chips */}
             <div className="flex items-center gap-2 flex-wrap mb-2">
-              <span
-                className="inline-block rounded-full px-2.5 py-0.5"
-                style={{ fontSize: 10, fontFamily: "'Outfit', sans-serif", fontWeight: 400, letterSpacing: '0.06em', backgroundColor: config.bg, color: config.color }}
-              >
-                {config.label}
+              <span className="badge" style={{ backgroundColor: config.bg, color: config.color, fontSize: 10, letterSpacing: '0.06em' }}>
+                {config.icon} {config.label}
               </span>
-              {platforms.map(p => {
-                const meta = PLATFORM_META[p] || { label: p };
+              {Object.entries(platformCounts).map(([platform, count]) => {
+                const meta = PLATFORM_META[platform] || { label: platform, icon: '🌐', chipClass: 'badge-muted', urlPrefix: '#' };
                 return (
-                  <span key={p} className="inline-flex items-center gap-1 rounded-full px-2 py-0.5"
-                    style={{ fontSize: 10, fontFamily: "'Outfit', sans-serif", backgroundColor: 'var(--surface-input)', color: 'var(--text-muted)' }}>
-                    {meta.label}
-                    <span style={{ fontSize: 9 }}>({insight.sources.filter(s => s.platform === p).length})</span>
-                  </span>
+                  <a
+                    key={platform}
+                    href={insight.sources.find(s => s.platform === platform)?.url || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className={`source-chip ${meta.chipClass}`}
+                    title={`View ${count} ${meta.label} source${count > 1 ? 's' : ''}`}
+                  >
+                    {meta.icon} {meta.label}
+                    <span style={{ fontSize: 9, opacity: 0.7 }}>({count})</span>
+                  </a>
                 );
               })}
             </div>
 
             {/* Title */}
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.45 }}>
+            <p className="font-body" style={{ fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.45 }}>
               {insight.title}
             </p>
 
             {/* Description */}
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5, marginTop: 6 }}>
+            <p className="font-body" style={{ fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5, marginTop: 6 }}>
               {insight.description}
             </p>
 
             {/* Score bars */}
             <div className="flex gap-3 mt-4">
-              <ScoreBar label="Frequency" value={insight.frequency_score} color={scoreColor}
-                explanation="How often this topic appears across sources." />
-              <ScoreBar label="Severity" value={insight.severity_score} color={scoreColor}
-                explanation="Emotional intensity of language used." />
-              <ScoreBar label="Pay Signal" value={insight.willingness_to_pay} color={scoreColor}
-                explanation="Mentions of pricing, budget, willingness to switch." />
-              <ScoreBar label="Market Size" value={insight.market_size_signal} color={scoreColor}
-                explanation="Breadth of affected users across platforms." />
+              <ScoreBar label="Frequency" value={insight.frequency_score} color={scoreColor} explanation="How often this topic appears across sources." />
+              <ScoreBar label="Severity" value={insight.severity_score} color={scoreColor} explanation="Emotional intensity of language used." />
+              <ScoreBar label="Pay Signal" value={insight.willingness_to_pay} color={scoreColor} explanation="Mentions of pricing, budget, willingness to switch." />
+              <ScoreBar label="Market Size" value={insight.market_size_signal} color={scoreColor} explanation="Breadth of affected users across platforms." />
             </div>
 
             {/* Tags */}
             <div className="flex flex-wrap gap-1.5 mt-3">
               {insight.tags.map((tag, i) => (
-                <span key={i} className="rounded-full px-2.5 py-0.5"
-                  style={{ fontSize: 11, fontFamily: "'Outfit', sans-serif", fontWeight: 300, backgroundColor: 'var(--surface-input)', color: 'var(--text-muted)' }}>
-                  {tag}
-                </span>
+                <span key={i} className="badge-muted badge">{tag}</span>
               ))}
             </div>
 
             {/* Expand hint */}
             <div className="mt-3">
-              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--accent-primary)' }}>
-                {expanded ? 'Hide evidence' : `${insight.sources.length} sources — click to expand`}
+              <span className="font-body" style={{ fontSize: 11, fontWeight: 300, color: 'var(--accent-primary)' }}>
+                {expanded ? '▲ Hide evidence' : `▼ ${insight.sources.length} sources — click to expand`}
               </span>
             </div>
           </div>
@@ -261,18 +220,10 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
           <div style={{ height: 1, backgroundColor: 'var(--divider)', marginBottom: 16 }} />
 
           <div className="flex items-center justify-between mb-3">
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
-              EVIDENCE ({insight.sources.length} sources)
-            </p>
+            <p className="font-section-label">EVIDENCE ({insight.sources.length} sources)</p>
             <button
               onClick={(e) => { e.stopPropagation(); setShowMethodology(!showMethodology); }}
-              className="rounded-full px-2.5 py-1 transition-colors duration-150"
-              style={{
-                fontSize: 10, fontFamily: "'Outfit', sans-serif", fontWeight: 300,
-                backgroundColor: showMethodology ? 'rgba(26,26,26,0.06)' : 'var(--surface-input)',
-                color: showMethodology ? 'var(--accent-primary)' : 'var(--text-muted)',
-                border: 'none', cursor: 'pointer',
-              }}
+              className="btn-secondary" style={{ fontSize: 10, padding: '3px 10px', borderRadius: 12 }}
             >
               {showMethodology ? 'Hide methodology' : 'How we scored this'}
             </button>
@@ -280,77 +231,68 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
 
           {showMethodology && <ScoreMethodology insight={insight} />}
 
-          {/* Source evidence */}
-          <div className="flex flex-col gap-3">
+          {/* Source evidence — interactive cards */}
+          <div className="flex flex-col gap-3 stagger-children">
             {insight.sources.map((source, i) => {
-              const meta = PLATFORM_META[source.platform] || { label: source.platform };
+              const meta = PLATFORM_META[source.platform] || { label: source.platform, icon: '🌐', chipClass: 'badge-muted', urlPrefix: '#' };
               return (
-                <div key={i} className="rounded-[10px] p-4" style={{ backgroundColor: 'var(--surface-input)' }}>
-                  <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 14, lineHeight: 1.6, color: 'var(--text-primary)' }}>
+                <div key={i} className="card-base p-4 hover:border-[#C8C6C2]" style={{ borderRadius: 8 }}>
+                  <p className="font-heading" style={{ fontStyle: 'italic', fontSize: 14, lineHeight: 1.6, color: 'var(--text-primary)', fontWeight: 400 }}>
                     "{source.text}"
                   </p>
                   <div className="flex items-center gap-3 mt-3 flex-wrap">
-                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)' }}>{meta.label}</span>
-                    <a href={source.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
-                      className="transition-colors duration-150"
-                      style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--accent-primary)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
+                    {/* Platform chip — clickable */}
+                    <a
+                      href={source.url || '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className={`source-chip ${meta.chipClass}`}
+                    >
+                      {meta.icon} {meta.label}
+                    </a>
+                    {/* Author — clickable */}
+                    <a
+                      href={source.url || '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="font-body transition-colors duration-150"
+                      style={{ fontSize: 12, color: 'var(--accent-primary)', textDecoration: 'underline', textUnderlineOffset: '2px' }}
+                    >
                       {source.author}
                     </a>
                     {source.upvotes != null && (
-                      <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>
-                        {source.upvotes} upvotes
+                      <span className="badge badge-green" style={{ fontSize: 10 }}>
+                        ↑ {source.upvotes}
                       </span>
                     )}
-                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>
-                      {source.date}
-                    </span>
+                    <span className="font-caption" style={{ fontSize: 11 }}>{source.date}</span>
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Note input */}
-          {showNoteInput && (
-            <NoteInput
-              onSubmit={handleAddNote}
-              onCancel={() => setShowNoteInput(false)}
-            />
-          )}
+          {showNoteInput && <NoteInput onSubmit={handleAddNote} onCancel={() => setShowNoteInput(false)} />}
 
           {/* Actions */}
           <div className="flex items-center gap-3 mt-5 flex-wrap">
             <button
               onClick={(e) => { e.stopPropagation(); setSelectedInsight(insight.title); setCurrentStep('analyze'); }}
-              className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
-              style={{ fontSize: 13, fontFamily: "'Outfit', sans-serif", fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
+              className="btn-primary"
             >
-              Deep dive this opportunity
+              Deep dive this opportunity →
             </button>
-            <button
-              onClick={handlePin}
-              disabled={saving || saved}
-              className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
-              style={{
-                fontSize: 13, fontFamily: "'Outfit', sans-serif", fontWeight: 300,
-                backgroundColor: saved ? 'rgba(91,140,126,0.08)' : 'var(--surface-input)',
-                color: saved ? 'var(--accent-teal)' : 'var(--text-secondary)',
-                border: 'none', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.6 : 1,
-              }}
-            >
-              {saved ? 'Pinned' : saving ? 'Pinning…' : 'Pin Insight'}
+            <button onClick={handlePin} disabled={saving || saved} className="btn-secondary"
+              style={{ color: saved ? 'var(--accent-primary)' : undefined, backgroundColor: saved ? 'var(--accent-primary-light)' : undefined, borderColor: saved ? 'var(--accent-primary)' : undefined }}>
+              {saved ? '✓ Pinned' : saving ? 'Pinning…' : '📌 Pin Insight'}
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); setShowNoteInput(!showNoteInput); }}
-              className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
-              style={{
-                fontSize: 13, fontFamily: "'Outfit', sans-serif", fontWeight: 300,
-                backgroundColor: noteSaved ? 'rgba(91,140,126,0.08)' : 'var(--surface-input)',
-                color: noteSaved ? 'var(--accent-teal)' : 'var(--text-secondary)',
-                border: 'none', cursor: 'pointer',
-              }}
-            >
-              {noteSaved ? 'Note added' : 'Add Note'}
+              className="btn-secondary"
+              style={{ color: noteSaved ? 'var(--accent-primary)' : undefined, backgroundColor: noteSaved ? 'var(--accent-primary-light)' : undefined }}>
+              {noteSaved ? '✓ Note added' : '📝 Add Note'}
             </button>
           </div>
         </div>
