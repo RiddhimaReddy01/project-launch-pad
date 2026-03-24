@@ -71,8 +71,8 @@ serve(async (req) => {
     }
 
     const words = idea.trim().split(/\s+/);
-    if (words.length < 3) {
-      return new Response(JSON.stringify({ error: "Tell us a bit more - at least 3 words about your idea" }), {
+    if (words.length < 2) {
+      return new Response(JSON.stringify({ error: "Tell us a bit more - at least 2 words about your idea" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
