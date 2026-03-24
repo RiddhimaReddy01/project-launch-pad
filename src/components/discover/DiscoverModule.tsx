@@ -35,7 +35,7 @@ function SourceSummaryBar({ summary }: { summary: { reddit_count: number; google
 
   return (
     <div className="card-base p-4 mb-6">
-      <p className="font-section-label mb-3">SOURCE DISTRIBUTION</p>
+      <p className="section-label mb-3">SOURCE DISTRIBUTION</p>
       <div className="rounded-full overflow-hidden flex" style={{ height: 8, backgroundColor: 'var(--divider-light)' }}>
         {segments.map((seg, i) => (
           <div key={i} className="animate-progress" style={{
@@ -49,16 +49,23 @@ function SourceSummaryBar({ summary }: { summary: { reddit_count: number; google
         {segments.map((seg, i) => (
           <div key={i} className="flex items-center gap-1.5">
             <div style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: seg.color }} />
-            <span className="font-body" style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
+            <span className="font-caption" style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
               {seg.label} <span style={{ fontWeight: 400 }}>{seg.count}</span>
             </span>
           </div>
         ))}
-        <span className="font-body" style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 'auto' }}>
+        <span className="font-caption" style={{ fontSize: 11, marginLeft: 'auto' }}>
           {total} total signals
         </span>
       </div>
     </div>
+  );
+}
+
+/** Check if insights have interactive (clickable) sources */
+function hasInteractiveSources(result: DiscoverResult): boolean {
+  return result.insights.some(i =>
+    i.sources?.some(s => s.url && s.url !== '#' && s.url.startsWith('http'))
   );
 }
 
@@ -69,6 +76,7 @@ export default function DiscoverModule() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string | null>(null);
   const [cached, setCached] = useState(!!contextDiscover);
+  const [ready, setReady] = useState(false); // Gate: true when sources are interactive
   const containerRef = useRef<HTMLDivElement>(null);
   const hasRun = useRef(!!contextDiscover);
 
@@ -94,9 +102,22 @@ export default function DiscoverModule() {
     }
   }, [result]);
 
+  // Gate: only show results when sources are interactive (or after brief delay for cached)
+  useEffect(() => {
+    if (!result || status !== 'done') { setReady(false); return; }
+    if (hasInteractiveSources(result)) {
+      // Small delay for stagger animation
+      const t = setTimeout(() => setReady(true), 300);
+      return () => clearTimeout(t);
+    }
+    // If no interactive sources, still show after 1s (graceful degradation)
+    const t = setTimeout(() => setReady(true), 1000);
+    return () => clearTimeout(t);
+  }, [result, status]);
+
   const runDiscover = async () => {
     if (!decomposeResult) return;
-    setError(null); setStatus('loading'); setCached(false);
+    setError(null); setStatus('loading'); setCached(false); setReady(false);
     try {
       const startTime = Date.now();
       const data = await discoverInsights(idea);
@@ -119,17 +140,17 @@ export default function DiscoverModule() {
       <div className="mb-6">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <p className="font-section-label mb-2">DISCOVER</p>
+            <p className="section-label mb-2">DISCOVER</p>
             <p className="font-heading" style={{ fontSize: 22, marginBottom: 4 }}>Market Intelligence</p>
-            {result && (
+            {result && ready && (
               <p className="font-caption" style={{ marginTop: 4 }}>
-                {result.source_summary.total_signals} signals across {result.source_summary.reddit_count + result.source_summary.google_count + result.source_summary.yelp_count > 0 ? '3 platforms' : 'multiple platforms'}
+                {result.source_summary.total_signals} signals across multiple platforms
               </p>
             )}
           </div>
           <div className="flex items-center gap-3">
-            {cached && <span className="badge badge-green">Cached</span>}
-            {status === 'done' && (
+            {cached && ready && <span className="badge badge-green">Cached</span>}
+            {status === 'done' && ready && (
               <button onClick={() => { hasRun.current = false; runDiscover(); }} className="btn-secondary" style={{ fontSize: 12 }}>
                 Re-run
               </button>
@@ -138,12 +159,13 @@ export default function DiscoverModule() {
         </div>
       </div>
 
-      {status === 'loading' && <DiscoverLoading />}
+      {/* Loading state */}
+      {(status === 'loading' || (status === 'done' && !ready)) && <DiscoverLoading />}
 
       {status === 'error' && (
         <div className="text-center py-16">
           <div className="card-base p-6 mb-4 inline-block" style={{ borderColor: 'var(--error)' }}>
-            <p className="font-body" style={{ fontSize: 14, color: 'var(--error)' }}>{error}</p>
+            <p style={{ fontSize: 14, color: 'var(--error)' }}>{error}</p>
           </div>
           <div>
             <button onClick={() => { hasRun.current = false; runDiscover(); }} className="btn-primary">Retry</button>
@@ -151,8 +173,8 @@ export default function DiscoverModule() {
         </div>
       )}
 
-      {status === 'done' && result && (
-        <div className="flex gap-6" style={{ alignItems: 'flex-start' }}>
+      {status === 'done' && result && ready && (
+        <div className="flex gap-6 animate-fade-in" style={{ alignItems: 'flex-start' }}>
           {/* Main content */}
           <div className="flex-1 min-w-0">
             {/* Source distribution bar */}
@@ -168,7 +190,7 @@ export default function DiscoverModule() {
                     <button key={tab.key} onClick={() => setFilter(tab.key)}
                       className="flex items-center gap-1.5 rounded-md px-3 py-2 transition-all duration-200 whitespace-nowrap"
                       style={{
-                        fontSize: 12, fontFamily: "'Outfit', sans-serif",
+                        fontSize: 12,
                         fontWeight: isActive ? 400 : 300,
                         backgroundColor: isActive ? 'var(--accent-primary)' : 'var(--surface-input)',
                         color: isActive ? '#fff' : 'var(--text-secondary)',
