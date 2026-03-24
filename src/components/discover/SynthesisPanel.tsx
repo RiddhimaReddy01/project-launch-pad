@@ -92,7 +92,7 @@ export default function SynthesisPanel({
       className="rounded-[14px] p-6 lg:sticky"
       style={{ top: 120, backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
     >
-      <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 16, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 20 }}>
+      <p style={{ fontSize: 16, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 20 }}>
         Founder Synthesis
       </p>
 
