@@ -1,6 +1,7 @@
 /**
  * Prefetch hook: fires Discover + Analyze + Setup APIs in parallel
  * immediately after decompose completes, so tabs load instantly.
+ * Uses simple { idea } format — backend handles decomposition internally.
  */
 import { useEffect, useRef } from 'react';
 import { useIdea } from '@/context/IdeaContext';
@@ -13,12 +14,9 @@ const ALL_SECTIONS: SectionKey[] = [
   'costs', 'risk', 'location', 'moat',
 ];
 
-function decomposeKey(d: { stage1: { business_type: string; location: { city: string; state: string } } }): string {
-  return `${d.stage1.business_type}|${d.stage1.location.city}|${d.stage1.location.state}`;
-}
-
 export function usePrefetch() {
   const {
+    idea,
     decomposeResult,
     setDiscoverResult,
     setAnalyzeData,
@@ -26,40 +24,23 @@ export function usePrefetch() {
     setPrefetchStatus,
   } = useIdea();
 
-  const lastKey = useRef<string | null>(null);
+  const lastIdea = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!decomposeResult) return;
+    if (!decomposeResult || !idea) return;
 
-    const key = decomposeKey(decomposeResult);
-    if (lastKey.current === key) return;
-    lastKey.current = key;
+    const normalizedIdea = idea.trim().toLowerCase();
+    if (lastIdea.current === normalizedIdea) return;
+    lastIdea.current = normalizedIdea;
 
-    const decomp = decomposeResult;
     setPrefetchStatus('running');
-    console.log('[Prefetch] Starting parallel prefetch for:', key);
+    console.log('[Prefetch] Starting parallel prefetch for:', idea);
 
-    const discoverP = discoverInsights({
-      business_type: decomp.stage1.business_type,
-      location: decomp.stage1.location,
-      search_queries: decomp.stage2.search_queries,
-      source_domains: decomp.stage2.source_domains,
-      subreddits: decomp.stage2.subreddits,
-      target_customers: decomp.stage2.target_customers,
-      price_tier: decomp.stage2.price_tier,
-    })
+    const discoverP = discoverInsights(idea)
       .then(data => { setDiscoverResult(data); console.log('[Prefetch] Discover done'); return data; })
       .catch(err => { console.warn('[Prefetch] Discover failed:', err.message); return null; });
 
-    const analyzeCtx = {
-      business_type: decomp.stage1.business_type,
-      city: decomp.stage1.location.city,
-      state: decomp.stage1.location.state,
-      target_customers: decomp.stage2.target_customers,
-      price_tier: decomp.stage2.price_tier,
-    };
-
-    const analyzeP = analyzeSectionsParallel(ALL_SECTIONS, analyzeCtx)
+    const analyzeP = analyzeSectionsParallel(ALL_SECTIONS, idea)
       .then(results => {
         const shared: Record<string, any> = {};
         Object.entries(results).forEach(([k, v]) => { if (v.data) shared[k] = v.data; });
@@ -69,15 +50,7 @@ export function usePrefetch() {
       })
       .catch(err => { console.warn('[Prefetch] Analyze failed:', err.message); return null; });
 
-    const setupCtx = {
-      business_type: decomp.stage1.business_type,
-      city: decomp.stage1.location.city,
-      state: decomp.stage1.location.state,
-      target_customers: decomp.stage2.target_customers,
-      tier: 'mid',
-    };
-
-    const setupP = setupSection('costs', setupCtx)
+    const setupP = setupSection('costs', idea, 'MID')
       .then(data => {
         setSetupData((prev: Record<string, any>) => ({ ...prev, tier: 'mid', costs: data }));
         console.log('[Prefetch] Setup costs done');

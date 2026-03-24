@@ -47,31 +47,15 @@ export interface DiscoverResult {
 const memCache = new Map<string, { result: DiscoverResult; timestamp: number }>();
 const CACHE_TTL = 15 * 60 * 1000;
 
-function cacheKey(decomposition: any): string {
-  return JSON.stringify({
-    bt: decomposition.business_type,
-    loc: decomposition.location,
-  });
-}
+export async function discoverInsights(idea: string): Promise<DiscoverResult> {
+  const key = idea.trim().toLowerCase();
 
-export async function discoverInsights(decomposition: {
-  business_type: string;
-  location: { city: string; state: string };
-  search_queries: string[];
-  source_domains: string[];
-  subreddits?: string[];
-  target_customers?: string[];
-  price_tier?: string;
-}): Promise<DiscoverResult> {
-  const key = cacheKey(decomposition);
-
-  // Check memory cache
   const cached = memCache.get(key);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     return cached.result;
   }
 
-  const result = await invokeApi<DiscoverResult>("discover-insights", { decomposition });
+  const result = await invokeApi<DiscoverResult>("discover-insights", { idea });
 
   memCache.set(key, { result, timestamp: Date.now() });
 

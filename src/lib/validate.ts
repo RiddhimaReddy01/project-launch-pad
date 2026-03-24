@@ -63,12 +63,18 @@ export interface ValidateContext {
   timeline_summary?: string;
 }
 
+/**
+ * Generate validation assets. Supports two modes:
+ * - Simple: idea + channels (backend handles internally)
+ * - Context: full ValidateContext (for Lovable Cloud fallback)
+ */
 export async function generateValidation(
-  context: ValidateContext,
-  requiredOutputs?: string[]
+  ideaOrContext: string | ValidateContext,
+  channelsOrOutputs?: string[]
 ): Promise<ValidateResult> {
-  return await invokeApi<ValidateResult>("validate-idea", {
-    context,
-    required_outputs: requiredOutputs,
-  });
+  const body = typeof ideaOrContext === 'string'
+    ? { idea: ideaOrContext, channels: channelsOrOutputs || [] }
+    : { context: ideaOrContext, required_outputs: channelsOrOutputs };
+
+  return await invokeApi<ValidateResult>("validate-idea", body);
 }

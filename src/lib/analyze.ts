@@ -139,25 +139,33 @@ export interface MoatData {
 
 export type SectionData = OpportunityData | CustomersData | CompetitorsData | RootCauseData | CostsData | RiskData | LocationData | MoatData;
 
+/**
+ * Analyze a section. Supports two modes:
+ * - Simple: { idea, section } — backend handles decompose/discover internally
+ * - Optimized: { section, decomposition, insight } — skips redundant API calls
+ */
 export async function analyzeSection(
   section: SectionKey,
-  context: AnalyzeContext
+  ideaOrContext: string | AnalyzeContext
 ): Promise<SectionData> {
-  const result = await invokeApi<{ data: SectionData }>("analyze-section", { section, context });
+  const body = typeof ideaOrContext === 'string'
+    ? { idea: ideaOrContext, section }
+    : { section, context: ideaOrContext };
+
+  const result = await invokeApi<{ data: SectionData }>("analyze-section", body);
   return result.data ?? (result as unknown as SectionData);
 }
 
 /**
  * Run multiple analyze sections in parallel.
- * Returns a map of section key → result or error.
  */
 export async function analyzeSectionsParallel(
   sections: SectionKey[],
-  context: AnalyzeContext
+  ideaOrContext: string | AnalyzeContext
 ): Promise<Record<SectionKey, { data?: SectionData; error?: string }>> {
   const results = await Promise.allSettled(
     sections.map(async (section) => {
-      const data = await analyzeSection(section, context);
+      const data = await analyzeSection(section, ideaOrContext);
       return { section, data };
     })
   );
