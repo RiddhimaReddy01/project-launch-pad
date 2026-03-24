@@ -28,10 +28,10 @@ function OpportunityGauge({ score }: { score: number }) {
           style={{ transition: 'stroke-dashoffset 1s ease-out' }}
         />
       </svg>
-      <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 28, fontWeight: 400, color, marginTop: -20 }}>
+      <span style={{ fontSize: 28, fontWeight: 400, color, marginTop: -20 }}>
         {score}
       </span>
-      <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 300, color: 'var(--text-muted)', letterSpacing: '0.04em', marginTop: 4 }}>
+      <span className="section-label" style={{ marginTop: 4 }}>
         OPPORTUNITY SCORE
       </span>
     </div>
