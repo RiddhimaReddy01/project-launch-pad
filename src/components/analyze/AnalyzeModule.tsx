@@ -57,7 +57,7 @@ export default function AnalyzeModule() {
   const { user } = useAuth();
 
   const [activeModule, setActiveModule] = useState<SectionKey>('opportunity');
-  const [sections, setSections] = useState<SectionResults>(initSections);
+  const [sections, setSections] = useState<SectionResults>(() => initSections(analyzeData));
   const [inputs, setInputs] = useState<InputSelection>({ ...DEFAULT_INPUTS });
   const [selectedFindings, setSelectedFindings] = useState<Set<string>>(new Set());
   const [railCollapsed, setRailCollapsed] = useState(false);
