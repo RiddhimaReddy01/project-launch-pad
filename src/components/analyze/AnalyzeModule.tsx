@@ -386,7 +386,7 @@ export default function AnalyzeModule() {
 
           <div className="flex items-center gap-2">
             {/* Run All — parallel */}
-            {completedCount < MODULE_DEFS.length && context && (
+            {completedCount < MODULE_DEFS.length && idea && (
               <button
                 onClick={async () => {
                   const remaining = MODULE_DEFS.filter(m => sections[m.key].status !== 'completed').map(m => m.key);
