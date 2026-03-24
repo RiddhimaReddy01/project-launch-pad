@@ -24,6 +24,9 @@ const RENDER_ENDPOINTS: Record<string, string> = {
 // Functions where Lovable Cloud is the ONLY option (no backend endpoint exists)
 const LOVABLE_ONLY = new Set<string>([]);
 
+// Sections not supported by the Render backend — route to Lovable Cloud
+const RENDER_UNSUPPORTED_SECTIONS = new Set(["risk", "location", "moat"]);
+
 async function tryFetch(baseUrl: string, path: string, body: unknown, timeoutMs: number): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
