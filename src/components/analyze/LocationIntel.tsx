@@ -21,7 +21,7 @@ export default function LocationIntel({ context, onData, onError, shouldRun = tr
     return () => { cancelled = true; };
   }, [shouldRun]);
 
-  if (loading) return <SectionSkeleton label="Analyzing location data..." />;
+  if (loading) return <SectionSkeleton label="Analyzing location data..." section="location" />;
   if (error) return (
     <div className="text-center py-12">
       <p style={{ fontSize: 14, color: 'hsl(0 84% 60%)', marginBottom: 12 }}>{error}</p>

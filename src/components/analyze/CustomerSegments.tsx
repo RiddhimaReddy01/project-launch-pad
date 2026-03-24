@@ -22,7 +22,7 @@ export default function CustomerSegments({ context, onData, onError, shouldRun =
     return () => { cancelled = true; };
   }, [shouldRun]);
 
-  if (loading) return <SectionSkeleton label="Segmenting your target customers..." />;
+  if (loading) return <SectionSkeleton label="Segmenting your target customers..." section="customers" />;
   if (error) return (
     <div className="text-center py-12">
       <p style={{ fontSize: 14, color: 'hsl(0 84% 60%)', marginBottom: 12 }}>{error}</p>
