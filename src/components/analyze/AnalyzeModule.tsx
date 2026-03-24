@@ -118,6 +118,22 @@ export default function AnalyzeModule() {
     setAnalyzeFindings(findings);
   }, [selectedFindings, setAnalyzeFindings]);
 
+  // Pick up prefetched analyze data that arrives after mount
+  useEffect(() => {
+    if (!analyzeData || Object.keys(analyzeData).length === 0) return;
+    setSections(prev => {
+      const next = { ...prev };
+      let changed = false;
+      Object.entries(analyzeData).forEach(([k, v]) => {
+        if (v && next[k as SectionKey]?.status === 'idle') {
+          next[k as SectionKey] = { data: v, status: 'completed', lastRun: 'prefetched' };
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
+  }, [analyzeData]);
+
   useEffect(() => {
     const el = containerRef.current;
     if (el) requestAnimationFrame(() => el.classList.add('visible'));
