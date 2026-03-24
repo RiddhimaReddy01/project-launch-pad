@@ -37,7 +37,7 @@ const SCORE_EXPLANATIONS = [
   {
     key: 'market_size_signal' as const,
     label: 'Market Size',
-    icon: '🌍',
+    icon: '',
     getDesc: (v: number) => {
       if (v >= 0.7) return 'Large potential market — this issue affects many people across demographics.';
       if (v >= 0.4) return 'Medium market — affects a meaningful but specific segment.';
