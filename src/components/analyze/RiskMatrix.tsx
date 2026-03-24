@@ -58,11 +58,11 @@ export default function RiskMatrix({ context, onData, onError, shouldRun = true 
       {/* Overall risk */}
       <div className="rounded-[12px] p-5 mb-8" style={{ backgroundColor: LEVEL_CONFIG[data.overall_risk_level].bg, border: `1px solid ${LEVEL_CONFIG[data.overall_risk_level].color}20` }}>
         <div className="flex items-center gap-3 mb-2">
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: LEVEL_CONFIG[data.overall_risk_level].color }}>
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: LEVEL_CONFIG[data.overall_risk_level].color }}>
             Overall Risk: {LEVEL_CONFIG[data.overall_risk_level].label}
           </span>
         </div>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{data.summary}</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{data.summary}</p>
       </div>
 
       {/* Risk matrix grid */}
@@ -71,13 +71,13 @@ export default function RiskMatrix({ context, onData, onError, shouldRun = true 
         <div style={{ display: 'grid', gridTemplateColumns: '40px 1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr 28px', gap: 2, height: 280 }}>
           {/* Y-axis labels */}
           <div style={{ gridRow: 1, gridColumn: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: 9, color: 'var(--text-muted)', transform: 'rotate(-90deg)', whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif", letterSpacing: '0.04em' }}>HIGH</span>
+            <span style={{ fontSize: 9, color: 'var(--text-muted)', transform: 'rotate(-90deg)', whiteSpace: 'nowrap', fontFamily: "'Outfit', sans-serif", letterSpacing: '0.04em' }}>HIGH</span>
           </div>
           <div style={{ gridRow: 2, gridColumn: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: 9, color: 'var(--text-muted)', transform: 'rotate(-90deg)', whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif", letterSpacing: '0.04em' }}>MED</span>
+            <span style={{ fontSize: 9, color: 'var(--text-muted)', transform: 'rotate(-90deg)', whiteSpace: 'nowrap', fontFamily: "'Outfit', sans-serif", letterSpacing: '0.04em' }}>MED</span>
           </div>
           <div style={{ gridRow: 3, gridColumn: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: 9, color: 'var(--text-muted)', transform: 'rotate(-90deg)', whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif", letterSpacing: '0.04em' }}>LOW</span>
+            <span style={{ fontSize: 9, color: 'var(--text-muted)', transform: 'rotate(-90deg)', whiteSpace: 'nowrap', fontFamily: "'Outfit', sans-serif", letterSpacing: '0.04em' }}>LOW</span>
           </div>
 
           {/* Matrix cells */}
@@ -86,7 +86,7 @@ export default function RiskMatrix({ context, onData, onError, shouldRun = true 
             return (
               <div key={`${cell.row}-${cell.col}`} className="rounded-[8px] p-2 relative" style={{ gridRow: cell.gridRow, gridColumn: cell.gridCol + 1, backgroundColor: cell.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                 {risksInCell.map((r, i) => (
-                  <div key={i} className="rounded-full px-2 py-0.5" style={{ fontSize: 9, fontFamily: "'Inter', sans-serif", fontWeight: 400, backgroundColor: 'var(--surface-card)', color: 'var(--text-primary)', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div key={i} className="rounded-full px-2 py-0.5" style={{ fontSize: 9, fontFamily: "'Outfit', sans-serif", fontWeight: 400, backgroundColor: 'var(--surface-card)', color: 'var(--text-primary)', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {r.risk.slice(0, 20)}
                   </div>
                 ))}
@@ -99,16 +99,16 @@ export default function RiskMatrix({ context, onData, onError, shouldRun = true 
 
           {/* X-axis labels */}
           <div style={{ gridRow: 4, gridColumn: 2, textAlign: 'center' }}>
-            <span style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: "'Inter', sans-serif", letterSpacing: '0.04em' }}>LOW</span>
+            <span style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: "'Outfit', sans-serif", letterSpacing: '0.04em' }}>LOW</span>
           </div>
           <div style={{ gridRow: 4, gridColumn: 3, textAlign: 'center' }}>
-            <span style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: "'Inter', sans-serif", letterSpacing: '0.04em' }}>MED</span>
+            <span style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: "'Outfit', sans-serif", letterSpacing: '0.04em' }}>MED</span>
           </div>
           <div style={{ gridRow: 4, gridColumn: 4, textAlign: 'center' }}>
-            <span style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: "'Inter', sans-serif", letterSpacing: '0.04em' }}>HIGH</span>
+            <span style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: "'Outfit', sans-serif", letterSpacing: '0.04em' }}>HIGH</span>
           </div>
         </div>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: 'var(--text-muted)', textAlign: 'center', marginTop: 4, letterSpacing: '0.04em' }}>IMPACT →</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, color: 'var(--text-muted)', textAlign: 'center', marginTop: 4, letterSpacing: '0.04em' }}>IMPACT →</p>
       </div>
 
       {/* Risk cards */}
@@ -127,16 +127,16 @@ export default function RiskMatrix({ context, onData, onError, shouldRun = true 
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{risk.risk}</span>
+                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{risk.risk}</span>
                     <span className="rounded-full px-2 py-0.5" style={{ fontSize: 9, letterSpacing: '0.04em', backgroundColor: LEVEL_CONFIG[risk.likelihood].bg, color: LEVEL_CONFIG[risk.likelihood].color }}>
                       {risk.category}
                     </span>
                   </div>
                   <div className="flex items-center gap-4 mt-2">
-                    <span style={{ fontSize: 11, fontFamily: "'Inter', sans-serif", color: 'var(--text-muted)' }}>
+                    <span style={{ fontSize: 11, fontFamily: "'Outfit', sans-serif", color: 'var(--text-muted)' }}>
                       Likelihood: <span style={{ color: LEVEL_CONFIG[risk.likelihood].color, fontWeight: 400 }}>{risk.likelihood}</span>
                     </span>
-                    <span style={{ fontSize: 11, fontFamily: "'Inter', sans-serif", color: 'var(--text-muted)' }}>
+                    <span style={{ fontSize: 11, fontFamily: "'Outfit', sans-serif", color: 'var(--text-muted)' }}>
                       Impact: <span style={{ color: LEVEL_CONFIG[risk.impact].color, fontWeight: 400 }}>{risk.impact}</span>
                     </span>
                   </div>
@@ -145,7 +145,7 @@ export default function RiskMatrix({ context, onData, onError, shouldRun = true 
               {isHovered && (
                 <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--divider)' }}>
                   <p className="font-caption" style={{ fontSize: 10, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--accent-teal)', marginBottom: 4 }}>Mitigation</p>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{risk.mitigation}</p>
+                  <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{risk.mitigation}</p>
                 </div>
               )}
             </div>

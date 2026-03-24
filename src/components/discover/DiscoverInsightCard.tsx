@@ -43,11 +43,11 @@ function ScoreBar({ label, value, color, explanation }: { label: string; value: 
           onClick={(e) => { e.stopPropagation(); setShowTip(!showTip); }}
           style={{ background: 'none', border: 'none', padding: 0 }}
         >
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 300, color: 'var(--text-muted)', letterSpacing: '0.03em' }}>
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 300, color: 'var(--text-muted)', letterSpacing: '0.03em' }}>
             {label}
           </span>
         </button>
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 400, color: 'var(--text-secondary)' }}>
+        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 400, color: 'var(--text-secondary)' }}>
           {pct}%
         </span>
       </div>
@@ -62,7 +62,7 @@ function ScoreBar({ label, value, color, explanation }: { label: string; value: 
             backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', pointerEvents: 'none',
           }}
         >
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
             {explanation}
           </p>
         </div>
@@ -90,15 +90,15 @@ function NoteInput({ onSubmit, onCancel }: NoteInputProps) {
         placeholder="Add a note about this insight…"
         rows={2}
         className="w-full resize-none"
-        style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-primary)', backgroundColor: 'transparent', border: 'none', outline: 'none', lineHeight: 1.5 }}
+        style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-primary)', backgroundColor: 'transparent', border: 'none', outline: 'none', lineHeight: 1.5 }}
       />
       <div className="flex justify-end gap-2 mt-2">
-        <button onClick={onCancel} style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
+        <button onClick={onCancel} style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
         <button
           onClick={() => { if (text.trim()) onSubmit(text.trim()); }}
           disabled={!text.trim()}
           className="rounded-[8px] px-3 py-1 disabled:opacity-40"
-          style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
+          style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
         >
           Save note
         </button>
@@ -197,7 +197,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
             <div className="flex items-center gap-2 flex-wrap mb-2">
               <span
                 className="inline-block rounded-full px-2.5 py-0.5"
-                style={{ fontSize: 10, fontFamily: "'Inter', sans-serif", fontWeight: 400, letterSpacing: '0.06em', backgroundColor: config.bg, color: config.color }}
+                style={{ fontSize: 10, fontFamily: "'Outfit', sans-serif", fontWeight: 400, letterSpacing: '0.06em', backgroundColor: config.bg, color: config.color }}
               >
                 {config.label}
               </span>
@@ -205,7 +205,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
                 const meta = PLATFORM_META[p] || { label: p };
                 return (
                   <span key={p} className="inline-flex items-center gap-1 rounded-full px-2 py-0.5"
-                    style={{ fontSize: 10, fontFamily: "'Inter', sans-serif", backgroundColor: 'var(--surface-input)', color: 'var(--text-muted)' }}>
+                    style={{ fontSize: 10, fontFamily: "'Outfit', sans-serif", backgroundColor: 'var(--surface-input)', color: 'var(--text-muted)' }}>
                     {meta.label}
                     <span style={{ fontSize: 9 }}>({insight.sources.filter(s => s.platform === p).length})</span>
                   </span>
@@ -214,12 +214,12 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
             </div>
 
             {/* Title */}
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.45 }}>
+            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.45 }}>
               {insight.title}
             </p>
 
             {/* Description */}
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5, marginTop: 6 }}>
+            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5, marginTop: 6 }}>
               {insight.description}
             </p>
 
@@ -239,7 +239,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
             <div className="flex flex-wrap gap-1.5 mt-3">
               {insight.tags.map((tag, i) => (
                 <span key={i} className="rounded-full px-2.5 py-0.5"
-                  style={{ fontSize: 11, fontFamily: "'Inter', sans-serif", fontWeight: 300, backgroundColor: 'var(--surface-input)', color: 'var(--text-muted)' }}>
+                  style={{ fontSize: 11, fontFamily: "'Outfit', sans-serif", fontWeight: 300, backgroundColor: 'var(--surface-input)', color: 'var(--text-muted)' }}>
                   {tag}
                 </span>
               ))}
@@ -247,7 +247,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
 
             {/* Expand hint */}
             <div className="mt-3">
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--accent-primary)' }}>
+              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--accent-primary)' }}>
                 {expanded ? 'Hide evidence' : `${insight.sources.length} sources — click to expand`}
               </span>
             </div>
@@ -261,14 +261,14 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
           <div style={{ height: 1, backgroundColor: 'var(--divider)', marginBottom: 16 }} />
 
           <div className="flex items-center justify-between mb-3">
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
+            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
               EVIDENCE ({insight.sources.length} sources)
             </p>
             <button
               onClick={(e) => { e.stopPropagation(); setShowMethodology(!showMethodology); }}
               className="rounded-full px-2.5 py-1 transition-colors duration-150"
               style={{
-                fontSize: 10, fontFamily: "'Inter', sans-serif", fontWeight: 300,
+                fontSize: 10, fontFamily: "'Outfit', sans-serif", fontWeight: 300,
                 backgroundColor: showMethodology ? 'rgba(26,26,26,0.06)' : 'var(--surface-input)',
                 color: showMethodology ? 'var(--accent-primary)' : 'var(--text-muted)',
                 border: 'none', cursor: 'pointer',
@@ -286,22 +286,22 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
               const meta = PLATFORM_META[source.platform] || { label: source.platform };
               return (
                 <div key={i} className="rounded-[10px] p-4" style={{ backgroundColor: 'var(--surface-input)' }}>
-                  <p style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', fontSize: 14, lineHeight: 1.6, color: 'var(--text-primary)' }}>
+                  <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 14, lineHeight: 1.6, color: 'var(--text-primary)' }}>
                     "{source.text}"
                   </p>
                   <div className="flex items-center gap-3 mt-3 flex-wrap">
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)' }}>{meta.label}</span>
+                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)' }}>{meta.label}</span>
                     <a href={source.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
                       className="transition-colors duration-150"
-                      style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'var(--accent-primary)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
+                      style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--accent-primary)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
                       {source.author}
                     </a>
                     {source.upvotes != null && (
-                      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>
+                      <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>
                         {source.upvotes} upvotes
                       </span>
                     )}
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>
+                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>
                       {source.date}
                     </span>
                   </div>
@@ -323,7 +323,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
             <button
               onClick={(e) => { e.stopPropagation(); setSelectedInsight(insight.title); setCurrentStep('analyze'); }}
               className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
-              style={{ fontSize: 13, fontFamily: "'Inter', sans-serif", fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 13, fontFamily: "'Outfit', sans-serif", fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
             >
               Deep dive this opportunity
             </button>
@@ -332,7 +332,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
               disabled={saving || saved}
               className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
               style={{
-                fontSize: 13, fontFamily: "'Inter', sans-serif", fontWeight: 300,
+                fontSize: 13, fontFamily: "'Outfit', sans-serif", fontWeight: 300,
                 backgroundColor: saved ? 'rgba(91,140,126,0.08)' : 'var(--surface-input)',
                 color: saved ? 'var(--accent-teal)' : 'var(--text-secondary)',
                 border: 'none', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.6 : 1,
@@ -344,7 +344,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
               onClick={(e) => { e.stopPropagation(); setShowNoteInput(!showNoteInput); }}
               className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
               style={{
-                fontSize: 13, fontFamily: "'Inter', sans-serif", fontWeight: 300,
+                fontSize: 13, fontFamily: "'Outfit', sans-serif", fontWeight: 300,
                 backgroundColor: noteSaved ? 'rgba(91,140,126,0.08)' : 'var(--surface-input)',
                 color: noteSaved ? 'var(--accent-teal)' : 'var(--text-secondary)',
                 border: 'none', cursor: 'pointer',

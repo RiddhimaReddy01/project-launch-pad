@@ -87,10 +87,20 @@ export interface TimelineResult {
 
 export type SetupSectionData = CostsResult | SuppliersResult | TeamResult | TimelineResult;
 
+/**
+ * Call setup endpoint. Supports two modes:
+ * - Simple: idea + tier (backend handles internally)
+ * - Context: full SetupContext object (for Lovable Cloud fallback)
+ */
 export async function setupSection(
   section: SetupSectionKey,
-  context: SetupContext
+  ideaOrContext: string | SetupContext,
+  tier?: string
 ): Promise<SetupSectionData> {
-  const result = await invokeApi<{ data: SetupSectionData }>("setup-section", { section, context });
+  const body = typeof ideaOrContext === 'string'
+    ? { idea: ideaOrContext, selected_tier: (tier || 'MID').toUpperCase() }
+    : { section, context: ideaOrContext };
+
+  const result = await invokeApi<{ data: SetupSectionData }>("setup-section", body);
   return result.data ?? (result as unknown as SetupSectionData);
 }

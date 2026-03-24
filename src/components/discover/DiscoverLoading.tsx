@@ -67,7 +67,7 @@ export default function DiscoverLoading() {
               </span>
               <span
                 style={{
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "'Outfit', sans-serif",
                   fontSize: 13,
                   fontWeight: isActive ? 400 : 300,
                   color: isDone ? 'var(--accent-teal)' : isActive ? 'var(--text-primary)' : 'var(--text-muted)',

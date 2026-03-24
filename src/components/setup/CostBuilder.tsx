@@ -35,7 +35,7 @@ export default function CostBuilder({ data, selectedTier, onSelectTier }: { data
   }, [categories, totalMin, totalMax, selectedTier]);
 
   if (!data?.tiers || !data?.breakdown) {
-    return <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: 'var(--text-muted)' }}>Loading cost data...</p>;
+    return <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, color: 'var(--text-muted)' }}>Loading cost data...</p>;
   }
 
   const chartData = categories.map(c => ({
@@ -53,26 +53,26 @@ export default function CostBuilder({ data, selectedTier, onSelectTier }: { data
       {/* Total range banner */}
       <div className="rounded-[12px] p-6 mb-8" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
         <div className="flex items-center justify-between mb-3">
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
             Estimated Launch Cost — {selectedTier.toUpperCase()} Tier
           </p>
           <button onClick={handleExportCSV} className="rounded-[6px] px-3 py-1.5 transition-all duration-200"
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', backgroundColor: 'var(--surface-input)', border: '1px solid var(--divider-light)', cursor: 'pointer' }}>
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', backgroundColor: 'var(--surface-input)', border: '1px solid var(--divider-light)', cursor: 'pointer' }}>
             ↓ Download Spreadsheet
           </button>
         </div>
         <div className="flex items-baseline gap-3 mb-3">
           <span className="font-heading" style={{ fontSize: 28 }}>{formatCurrency(totalMin)}</span>
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)' }}>to</span>
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)' }}>to</span>
           <span className="font-heading" style={{ fontSize: 28 }}>{formatCurrency(totalMax)}</span>
         </div>
-        {tier && <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>{tier.philosophy}</p>}
+        {tier && <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>{tier.philosophy}</p>}
       </div>
 
       {/* Chart */}
       {chartData.length > 0 && (
         <div className="mb-8">
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 12 }}>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 12 }}>
             Cost Distribution
           </p>
           <div className="rounded-[12px] p-4" style={{ height: Math.max(180, chartData.length * 40), backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
@@ -103,9 +103,9 @@ export default function CostBuilder({ data, selectedTier, onSelectTier }: { data
             <div key={cat.category} className="rounded-[12px]" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
               <button onClick={() => toggleCat(cat.category)} className="w-full text-left p-4 flex items-center justify-between"
                 style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{cat.category}</p>
+                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{cat.category}</p>
                 <div className="flex items-center gap-3">
-                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
+                  <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
                     {formatCurrency(catMin)} – {formatCurrency(catMax)}
                   </span>
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 200ms' }}>
@@ -119,10 +119,10 @@ export default function CostBuilder({ data, selectedTier, onSelectTier }: { data
                   {cat.items.map(item => (
                     <div key={item.label} className="flex items-center justify-between py-2.5 px-2 rounded-[6px]">
                       <div className="flex-1">
-                        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)' }}>{item.label}</p>
-                        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginTop: 2 }}>{item.note}</p>
+                        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)' }}>{item.label}</p>
+                        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginTop: 2 }}>{item.note}</p>
                       </div>
-                      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)', whiteSpace: 'nowrap', marginLeft: 16 }}>
+                      <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)', whiteSpace: 'nowrap', marginLeft: 16 }}>
                         {formatCurrency(item.min)} – {formatCurrency(item.max)}
                       </span>
                     </div>

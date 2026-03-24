@@ -46,7 +46,7 @@ function StepperDot({ step, index, currentIndex, onNavigate, locked }: { step: t
       />
       <span
         style={{
-          marginTop: 8, fontFamily: "'Inter', sans-serif", fontSize: 12,
+          marginTop: 8, fontFamily: "'Outfit', sans-serif", fontSize: 12,
           fontWeight: isActive ? 400 : 300,
           color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
           transition: 'all 300ms ease-out',
@@ -95,13 +95,13 @@ export default function Research() {
       {/* Top bar */}
       <header className="flex items-center justify-between px-6" style={{ height: 64 }}>
         <span className="cursor-pointer" style={{ fontSize: 18 }} onClick={() => navigate('/')}>
-          <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400 }}>Launch</span>
-          <span style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', fontWeight: 400 }}>{'\u200B'}Lens</span>
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400 }}>Launch</span>
+          <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontWeight: 400 }}>{'\u200B'}Lens</span>
         </span>
         <div className="flex items-center" style={{ gap: 24 }}>
           <span
             className="cursor-pointer transition-colors duration-200"
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}
             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-primary)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
             onClick={() => navigate('/')}
@@ -111,7 +111,7 @@ export default function Research() {
           {user && (
             <span
               className="cursor-pointer transition-colors duration-200"
-              style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}
+              style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}
               onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-primary)')}
               onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
               onClick={async () => {
@@ -126,7 +126,7 @@ export default function Research() {
           )}
           <span
             className="cursor-pointer"
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}
             onClick={() => navigate(user ? '/dashboard' : '/auth')}
           >
             {user ? 'Dashboard' : 'Log in'}
@@ -140,7 +140,7 @@ export default function Research() {
           className="sticky z-40"
           style={{ top: 0, backdropFilter: 'blur(16px)', backgroundColor: 'rgba(250,250,248,0.85)', padding: '20px 24px', textAlign: 'center' }}
         >
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 6 }}>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 6 }}>
             Your idea
           </p>
           <p className="font-heading" style={{ fontSize: 26, maxWidth: 600, margin: '0 auto', lineHeight: 1.25, letterSpacing: '-0.02em' }}>

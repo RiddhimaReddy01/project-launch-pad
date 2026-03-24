@@ -43,31 +43,31 @@ export default function CommunityGrid() {
             <div className="flex items-center justify-between" style={{ marginBottom: 12 }}>
               <div className="flex items-center" style={{ gap: 10 }}>
                 <span style={{
-                  fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)',
+                  fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)',
                 }}>
                   {ch.name}
                 </span>
                 <span style={{
-                  fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400,
+                  fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400,
                   color: ch.platformColor, padding: '2px 8px', borderRadius: 6,
                   backgroundColor: `${ch.platformColor}10`,
                 }}>
                   {ch.platform}
                 </span>
               </div>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}>
+              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}>
                 {ch.members} members
               </span>
             </div>
 
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 14 }}>
+            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 14 }}>
               {ch.rationale}
             </p>
 
             <button
               onClick={(e) => toggleUsed(ch.id, e)}
               style={{
-                fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400,
+                fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400,
                 color: isUsed ? 'var(--accent-teal)' : 'var(--text-muted)',
                 background: 'none', border: 'none', cursor: 'pointer',
                 transition: 'color 200ms ease-out',

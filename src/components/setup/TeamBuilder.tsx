@@ -24,22 +24,22 @@ export default function TeamBuilder({ data, tier }: { data: TeamResult; tier: st
       {/* Summary */}
       <div className="grid grid-cols-3 gap-3 mb-8">
         <div className="rounded-[10px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Total Payroll</p>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 20, fontWeight: 400, color: 'var(--text-primary)' }}>{fmt(data.total_payroll)}</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Total Payroll</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 400, color: 'var(--text-primary)' }}>{fmt(data.total_payroll)}</p>
         </div>
         <div className="rounded-[10px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Must Have</p>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 20, fontWeight: 400, color: 'var(--text-primary)' }}>{fmt(mustHaveCost)}</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Must Have</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 400, color: 'var(--text-primary)' }}>{fmt(mustHaveCost)}</p>
         </div>
         <div className="rounded-[10px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Nice to Have</p>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 20, fontWeight: 400, color: 'var(--text-muted)' }}>{fmt(niceToHaveCost)}</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Nice to Have</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 400, color: 'var(--text-muted)' }}>{fmt(niceToHaveCost)}</p>
         </div>
       </div>
 
       {/* Gantt-style timeline */}
       <div className="mb-8">
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 12 }}>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 12 }}>
           Hiring Timeline
         </p>
         <div className="rounded-[12px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
@@ -47,7 +47,7 @@ export default function TeamBuilder({ data, tier }: { data: TeamResult; tier: st
           <div className="flex mb-2" style={{ paddingLeft: 120 }}>
             {Array.from({ length: 12 }).map((_, i) => (
               <div key={i} className="flex-1 text-center">
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, color: 'var(--text-muted)' }}>M{i + 1}</span>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, color: 'var(--text-muted)' }}>M{i + 1}</span>
               </div>
             ))}
           </div>
@@ -59,13 +59,13 @@ export default function TeamBuilder({ data, tier }: { data: TeamResult; tier: st
             return (
               <div key={i} className="flex items-center mb-1.5" style={{ height: 28 }}>
                 <div style={{ width: 120, flexShrink: 0 }}>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {member.title}
                   </p>
                 </div>
                 <div className="flex-1 relative" style={{ height: 20 }}>
                   <div style={{ position: 'absolute', top: 0, bottom: 0, left: `${startPct}%`, width: `${widthPct}%`, borderRadius: 4, backgroundColor: typeStyle.bg, border: `1px solid ${typeStyle.color}30` }}>
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, color: typeStyle.color, paddingLeft: 6, lineHeight: '18px' }}>
+                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, color: typeStyle.color, paddingLeft: 6, lineHeight: '18px' }}>
                       {member.salary_label}
                     </span>
                   </div>
@@ -78,7 +78,7 @@ export default function TeamBuilder({ data, tier }: { data: TeamResult; tier: st
             {Object.entries(TYPE_STYLES).map(([type, style]) => (
               <div key={type} className="flex items-center gap-1.5">
                 <div style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: style.bg, border: `1px solid ${style.color}30` }} />
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: 'var(--text-muted)' }}>{type}</span>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, color: 'var(--text-muted)' }}>{type}</span>
               </div>
             ))}
           </div>
@@ -94,14 +94,14 @@ export default function TeamBuilder({ data, tier }: { data: TeamResult; tier: st
             <div key={i} className="rounded-[12px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
               <div className="flex items-start justify-between gap-3 mb-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{member.title}</span>
+                  <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{member.title}</span>
                   <span className="rounded-full px-2 py-0.5" style={{ fontSize: 9, letterSpacing: '0.04em', backgroundColor: typeStyle.bg, color: typeStyle.color }}>{member.type}</span>
                   <span className="rounded-full px-2 py-0.5" style={{ fontSize: 9, letterSpacing: '0.04em', backgroundColor: prioStyle.bg, color: prioStyle.color }}>{prioStyle.label}</span>
                 </div>
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>Month {member.month}</span>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>Month {member.month}</span>
               </div>
               <p className="font-heading" style={{ fontSize: 18, marginBottom: 6 }}>{member.salary_label}</p>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{member.why_needed}</p>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{member.why_needed}</p>
             </div>
           );
         })}

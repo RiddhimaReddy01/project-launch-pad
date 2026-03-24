@@ -175,25 +175,25 @@ export default function Dashboard() {
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface-bg)' }}>
       <header className="flex items-center justify-between px-6" style={{ height: 64, borderBottom: '1px solid var(--divider)' }}>
         <span className="cursor-pointer" style={{ fontSize: 18 }} onClick={() => navigate('/')}>
-          <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400 }}>Launch</span>
-          <span style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', fontWeight: 400 }}>{'\u200B'}Lens</span>
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400 }}>Launch</span>
+          <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontWeight: 400 }}>{'\u200B'}Lens</span>
         </span>
         <div className="flex items-center" style={{ gap: 16 }}>
-          <span className="cursor-pointer transition-colors duration-200" style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }} onClick={() => navigate('/')}>New idea</span>
-          <span className="cursor-pointer" style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: '#8C6060' }} onClick={signOut}>Sign out</span>
+          <span className="cursor-pointer transition-colors duration-200" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }} onClick={() => navigate('/')}>New idea</span>
+          <span className="cursor-pointer" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: '#8C6060' }} onClick={signOut}>Sign out</span>
         </div>
       </header>
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px 120px' }}>
         <p className="font-caption" style={{ fontSize: 11, letterSpacing: '0.06em', marginBottom: 10 }}>DASHBOARD</p>
-        <h1 style={{ fontFamily: "'Instrument Serif', serif", fontSize: 28, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 6 }}>Welcome back</h1>
+        <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 6 }}>Welcome back</h1>
         <p className="font-caption" style={{ fontSize: 13, marginBottom: 32 }}>{user.email}</p>
 
         {/* Tabs */}
         <div className="flex overflow-x-auto" style={{ gap: 0, marginBottom: 32, borderBottom: '1px solid var(--divider-light)', paddingBottom: 0 }}>
           {(Object.keys(TAB_LABELS) as DashboardTab[]).map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)} style={{
-              padding: '10px 18px', fontFamily: "'Inter', sans-serif", fontSize: 13, whiteSpace: 'nowrap',
+              padding: '10px 18px', fontFamily: "'Outfit', sans-serif", fontSize: 13, whiteSpace: 'nowrap',
               fontWeight: activeTab === tab ? 400 : 300,
               color: activeTab === tab ? 'var(--accent-primary)' : 'var(--text-muted)',
               backgroundColor: 'transparent', border: 'none',
@@ -229,7 +229,7 @@ export default function Dashboard() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search projects…"
                     className="w-full rounded-[10px] px-4 py-2.5"
-                    style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider-light)', color: 'var(--text-primary)', outline: 'none' }}
+                    style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider-light)', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
                 <ProjectsTab ideas={filteredIdeas} stepColors={stepColors} onResume={resumeIdea} onDelete={deleteIdea} onNavigate={() => navigate('/')} />
@@ -273,8 +273,8 @@ function OverviewTab({ stats, latestProject, recentExperiments, statusStyles, on
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {statCards.map(s => (
           <div key={s.label} className="rounded-[12px] p-4" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-            <p style={{ fontFamily: "'Instrument Serif', serif", fontSize: 28, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 2 }}>{s.value}</p>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>{s.label}</p>
+            <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 2 }}>{s.value}</p>
+            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>{s.label}</p>
           </div>
         ))}
       </div>
@@ -282,32 +282,32 @@ function OverviewTab({ stats, latestProject, recentExperiments, statusStyles, on
       {/* Resume CTA */}
       {latestProject ? (
         <div className="rounded-[14px] p-6" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 8 }}>Pick up where you left off</p>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>{latestProject.idea_text}</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 8 }}>Pick up where you left off</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>{latestProject.idea_text}</p>
           <div className="flex items-center gap-3 mt-3">
-            <span className="rounded-full px-2.5 py-0.5" style={{ fontSize: 11, fontFamily: "'Inter', sans-serif", color: 'var(--accent-teal)', backgroundColor: 'rgba(91,140,126,0.08)', textTransform: 'capitalize' }}>
+            <span className="rounded-full px-2.5 py-0.5" style={{ fontSize: 11, fontFamily: "'Outfit', sans-serif", color: 'var(--accent-teal)', backgroundColor: 'rgba(91,140,126,0.08)', textTransform: 'capitalize' }}>
               {latestProject.current_step}
             </span>
-            <span style={{ fontSize: 11, fontFamily: "'Inter', sans-serif", color: 'var(--text-muted)' }}>
+            <span style={{ fontSize: 11, fontFamily: "'Outfit', sans-serif", color: 'var(--text-muted)' }}>
               Updated {new Date(latestProject.updated_at).toLocaleDateString()}
             </span>
           </div>
           <button
             onClick={() => onResume(latestProject)}
             className="mt-4 rounded-[10px] px-5 py-2.5 transition-all duration-200 active:scale-[0.97]"
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
           >
             Resume research →
           </button>
         </div>
       ) : (
         <div className="rounded-[14px] p-6 text-center" style={{ backgroundColor: 'var(--surface-card)' }}>
-          <p style={{ fontFamily: "'Instrument Serif', serif", fontSize: 20, color: 'var(--text-primary)', marginBottom: 8 }}>Start your first project</p>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>Enter a business idea and we'll help you research it end-to-end.</p>
+          <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, color: 'var(--text-primary)', marginBottom: 8 }}>Start your first project</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>Enter a business idea and we'll help you research it end-to-end.</p>
           <button
             onClick={onNewIdea}
             className="rounded-[10px] px-5 py-2.5 transition-all duration-200 active:scale-[0.97]"
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
           >
             New idea →
           </button>
@@ -317,17 +317,17 @@ function OverviewTab({ stats, latestProject, recentExperiments, statusStyles, on
       {/* Recent experiments */}
       {recentExperiments.length > 0 && (
         <div>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 10 }}>Recent Experiments</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 10 }}>Recent Experiments</p>
           <div className="flex flex-col gap-2">
             {recentExperiments.map(exp => {
               const sc = statusStyles[exp.status] || statusStyles.planned;
               return (
                 <div key={exp.id} className="rounded-[10px] p-4 flex items-center justify-between" style={{ backgroundColor: 'var(--surface-card)' }}>
                   <div>
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>{exp.method_name}</p>
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>{(exp as any).idea_text?.slice(0, 50)}</p>
+                    <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>{exp.method_name}</p>
+                    <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>{(exp as any).idea_text?.slice(0, 50)}</p>
                   </div>
-                  <span className="rounded-full px-2.5 py-0.5" style={{ fontSize: 11, fontFamily: "'Inter', sans-serif", color: sc.color, backgroundColor: sc.bg, textTransform: 'capitalize' }}>{exp.status}</span>
+                  <span className="rounded-full px-2.5 py-0.5" style={{ fontSize: 11, fontFamily: "'Outfit', sans-serif", color: sc.color, backgroundColor: sc.bg, textTransform: 'capitalize' }}>{exp.status}</span>
                 </div>
               );
             })}
@@ -345,10 +345,10 @@ function ProjectsTab({ ideas, stepColors, onResume, onDelete, onNavigate }: {
 }) {
   if (ideas.length === 0) return (
     <div className="text-center" style={{ padding: 60 }}>
-      <p style={{ fontFamily: "'Instrument Serif', serif", fontSize: 22, color: 'var(--text-primary)', marginBottom: 8 }}>No projects yet</p>
+      <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, color: 'var(--text-primary)', marginBottom: 8 }}>No projects yet</p>
       <p className="font-caption" style={{ marginBottom: 24 }}>Research an idea and save it to see it here.</p>
       <button onClick={onNavigate} className="rounded-[12px] transition-all duration-200 active:scale-[0.97]"
-        style={{ padding: '10px 24px', backgroundColor: 'var(--accent-primary)', color: '#fff', fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, border: 'none', cursor: 'pointer' }}>
+        style={{ padding: '10px 24px', backgroundColor: 'var(--accent-primary)', color: '#fff', fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, border: 'none', cursor: 'pointer' }}>
         Start researching
       </button>
     </div>
@@ -367,24 +367,24 @@ function ProjectsTab({ ideas, stepColors, onResume, onDelete, onNavigate }: {
             onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'translateY(0)'; }}>
             <div className="flex items-start justify-between">
               <div style={{ flex: 1 }}>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 6 }}>
+                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 6 }}>
                   {idea.title || idea.idea_text}
                 </p>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 8 }}>
+                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 8 }}>
                   {idea.idea_text.length > 100 ? idea.idea_text.slice(0, 100) + '…' : idea.idea_text}
                 </p>
                 <div className="flex items-center flex-wrap" style={{ gap: 10 }}>
-                  <span className="rounded-full" style={{ padding: '2px 10px', fontSize: 11, fontFamily: "'Inter', sans-serif", fontWeight: 400, color: stepColors[stepLabel] || 'var(--text-muted)', backgroundColor: `${stepColors[stepLabel] || '#999'}10`, textTransform: 'capitalize' }}>
+                  <span className="rounded-full" style={{ padding: '2px 10px', fontSize: 11, fontFamily: "'Outfit', sans-serif", fontWeight: 400, color: stepColors[stepLabel] || 'var(--text-muted)', backgroundColor: `${stepColors[stepLabel] || '#999'}10`, textTransform: 'capitalize' }}>
                     {stepLabel}
                   </span>
                   {progress > 0 && (
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>{progress}% complete</span>
+                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>{progress}% complete</span>
                   )}
                   <span className="font-caption" style={{ fontSize: 11 }}>{new Date(idea.updated_at).toLocaleDateString()}</span>
                 </div>
               </div>
               <button onClick={(e) => { e.stopPropagation(); onDelete(idea.id); }}
-                style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}>
+                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}>
                 ✕
               </button>
             </div>
@@ -399,7 +399,7 @@ function ProjectsTab({ ideas, stepColors, onResume, onDelete, onNavigate }: {
 function InsightsTab({ insights, onDelete }: { insights: SavedInsight[]; onDelete: (id: string) => void }) {
   if (insights.length === 0) return (
     <div className="text-center" style={{ padding: 60 }}>
-      <p style={{ fontFamily: "'Instrument Serif', serif", fontSize: 22, color: 'var(--text-primary)', marginBottom: 8 }}>No saved insights yet</p>
+      <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, color: 'var(--text-primary)', marginBottom: 8 }}>No saved insights yet</p>
       <p className="font-caption">Pin key findings from any project to collect them here.</p>
     </div>
   );
@@ -419,25 +419,25 @@ function InsightsTab({ insights, onDelete }: { insights: SavedInsight[]; onDelet
               <div className="flex items-start gap-3 flex-1 min-w-0">
                 <div style={{ width: 3, minHeight: 32, borderRadius: 2, backgroundColor: color, flexShrink: 0, marginTop: 2 }} />
                 <div className="flex-1 min-w-0">
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>{insight.title}</p>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 6 }}>{insight.content}</p>
+                  <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>{insight.title}</p>
+                  <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 6 }}>{insight.content}</p>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="rounded-full px-2 py-0.5" style={{ fontSize: 10, fontFamily: "'Inter', sans-serif", color, backgroundColor: `${color}10`, textTransform: 'capitalize' }}>
+                    <span className="rounded-full px-2 py-0.5" style={{ fontSize: 10, fontFamily: "'Outfit', sans-serif", color, backgroundColor: `${color}10`, textTransform: 'capitalize' }}>
                       {insight.section_type}
                     </span>
                     {insight.tags?.map(tag => (
-                      <span key={tag} className="rounded-full px-2 py-0.5" style={{ fontSize: 10, fontFamily: "'Inter', sans-serif", color: 'var(--text-muted)', backgroundColor: 'var(--surface-input)' }}>
+                      <span key={tag} className="rounded-full px-2 py-0.5" style={{ fontSize: 10, fontFamily: "'Outfit', sans-serif", color: 'var(--text-muted)', backgroundColor: 'var(--surface-input)' }}>
                         {tag}
                       </span>
                     ))}
-                    <span style={{ fontSize: 10, fontFamily: "'Inter', sans-serif", color: 'var(--text-muted)' }}>
+                    <span style={{ fontSize: 10, fontFamily: "'Outfit', sans-serif", color: 'var(--text-muted)' }}>
                       {new Date(insight.created_at).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
               </div>
               <button onClick={() => onDelete(insight.id)}
-                style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', flexShrink: 0 }}>
+                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', flexShrink: 0 }}>
                 ✕
               </button>
             </div>
@@ -457,7 +457,7 @@ function ValidationTab({ experiments, statusStyles, onStatusChange, onDelete }: 
 }) {
   if (experiments.length === 0) return (
     <div className="text-center" style={{ padding: 60 }}>
-      <p style={{ fontFamily: "'Instrument Serif', serif", fontSize: 22, color: 'var(--text-primary)', marginBottom: 8 }}>No experiments yet</p>
+      <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, color: 'var(--text-primary)', marginBottom: 8 }}>No experiments yet</p>
       <p className="font-caption">Save your validation toolkit to start tracking experiments here.</p>
     </div>
   );
@@ -492,23 +492,23 @@ function ValidationTab({ experiments, statusStyles, onStatusChange, onDelete }: 
       {/* Scorecard */}
       <div className="rounded-[14px] p-6" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
         <div className="flex items-center justify-between mb-4">
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Validation Scorecard</p>
-          <span className="rounded-full px-3 py-1" style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 500, color: verdictColor, backgroundColor: `${verdictColor}10`, letterSpacing: '0.04em' }}>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Validation Scorecard</p>
+          <span className="rounded-full px-3 py-1" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 500, color: verdictColor, backgroundColor: `${verdictColor}10`, letterSpacing: '0.04em' }}>
             {verdict}
           </span>
         </div>
         <div className="grid grid-cols-3 gap-4 mb-4">
           <div>
-            <p style={{ fontFamily: "'Instrument Serif', serif", fontSize: 24, color: 'var(--text-primary)' }}>{overallPct}%</p>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>Targets met</p>
+            <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, color: 'var(--text-primary)' }}>{overallPct}%</p>
+            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>Targets met</p>
           </div>
           <div>
-            <p style={{ fontFamily: "'Instrument Serif', serif", fontSize: 24, color: 'var(--text-primary)' }}>{completedExp}/{experiments.length}</p>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>Experiments done</p>
+            <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, color: 'var(--text-primary)' }}>{completedExp}/{experiments.length}</p>
+            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>Experiments done</p>
           </div>
           <div>
-            <p style={{ fontFamily: "'Instrument Serif', serif", fontSize: 24, color: 'var(--text-primary)' }}>{metMetrics}/{totalMetrics}</p>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>Metrics hit</p>
+            <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, color: 'var(--text-primary)' }}>{metMetrics}/{totalMetrics}</p>
+            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>Metrics hit</p>
           </div>
         </div>
         <div style={{ height: 4, borderRadius: 2, backgroundColor: 'var(--divider-light)', overflow: 'hidden' }}>
@@ -519,7 +519,7 @@ function ValidationTab({ experiments, statusStyles, onStatusChange, onDelete }: 
       {/* Grouped experiments */}
       {Object.entries(grouped).map(([ideaText, exps]) => (
         <div key={ideaText}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', marginBottom: 10 }}>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', marginBottom: 10 }}>
             {ideaText.slice(0, 80)}{ideaText.length > 80 ? '…' : ''}
           </p>
           <div className="flex flex-col" style={{ gap: 8 }}>
@@ -533,15 +533,15 @@ function ValidationTab({ experiments, statusStyles, onStatusChange, onDelete }: 
               return (
                 <div key={exp.id} className="rounded-[12px] p-5" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
                   <div className="flex items-center justify-between mb-3">
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{exp.method_name}</p>
+                    <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{exp.method_name}</p>
                     <div className="flex items-center gap-2">
                       <button onClick={() => onStatusChange(exp)} className="rounded-full transition-all duration-200"
-                        style={{ padding: '2px 12px', fontSize: 11, fontWeight: 400, fontFamily: "'Inter', sans-serif", color: sc.color, backgroundColor: sc.bg, border: 'none', cursor: 'pointer', textTransform: 'capitalize' }}
+                        style={{ padding: '2px 12px', fontSize: 11, fontWeight: 400, fontFamily: "'Outfit', sans-serif", color: sc.color, backgroundColor: sc.bg, border: 'none', cursor: 'pointer', textTransform: 'capitalize' }}
                         title="Click to advance status">
                         {exp.status}
                       </button>
                       <button onClick={() => onDelete(exp.id)}
-                        style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px' }}>
+                        style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px' }}>
                         ✕
                       </button>
                     </div>
@@ -550,10 +550,10 @@ function ValidationTab({ experiments, statusStyles, onStatusChange, onDelete }: 
                   {metricEntries.length > 0 && (
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>
+                        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>
                           {metMet}/{metCount} targets met
                         </span>
-                        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, color: metMet === metCount && metCount > 0 ? 'var(--accent-teal)' : 'var(--text-muted)' }}>
+                        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: metMet === metCount && metCount > 0 ? 'var(--accent-teal)' : 'var(--text-muted)' }}>
                           {metCount > 0 ? Math.round((metMet / metCount) * 100) : 0}%
                         </span>
                       </div>
@@ -569,7 +569,7 @@ function ValidationTab({ experiments, statusStyles, onStatusChange, onDelete }: 
                           const met = val.target > 0 && val.actual >= val.target;
                           return (
                             <span key={key} className="rounded-[6px]" style={{
-                              padding: '3px 8px', fontSize: 11, fontFamily: "'Inter', sans-serif",
+                              padding: '3px 8px', fontSize: 11, fontFamily: "'Outfit', sans-serif",
                               backgroundColor: met ? 'rgba(91,140,126,0.06)' : 'var(--surface-input)',
                               color: met ? 'var(--accent-teal)' : 'var(--text-secondary)',
                             }}>
@@ -622,24 +622,24 @@ function AccountTab({ user, onSignOut }: { user: any; onSignOut: () => void }) {
   return (
     <div className="space-y-8" style={{ maxWidth: 480 }}>
       <div className="rounded-[14px] p-6" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 16 }}>Profile</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 16 }}>Profile</p>
 
-        <label style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>Email</label>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: 'var(--text-primary)', marginBottom: 16 }}>{user.email}</p>
+        <label style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>Email</label>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, color: 'var(--text-primary)', marginBottom: 16 }}>{user.email}</p>
 
-        <label style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>Display Name</label>
+        <label style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>Display Name</label>
         <div className="flex gap-2">
           <input
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             className="flex-1 rounded-[8px] px-3 py-2"
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, backgroundColor: 'var(--surface-input)', border: '1px solid var(--divider-light)', color: 'var(--text-primary)', outline: 'none' }}
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, backgroundColor: 'var(--surface-input)', border: '1px solid var(--divider-light)', color: 'var(--text-primary)', outline: 'none' }}
           />
           <button
             onClick={handleSaveName}
             disabled={saving}
             className="rounded-[8px] px-4 py-2 transition-all duration-200"
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
           >
             {saving ? 'Saving…' : 'Save'}
           </button>
@@ -647,22 +647,22 @@ function AccountTab({ user, onSignOut }: { user: any; onSignOut: () => void }) {
       </div>
 
       <div className="rounded-[14px] p-6" style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 16 }}>Security</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 16 }}>Security</p>
         <button
           onClick={handlePasswordReset}
           className="rounded-[10px] px-4 py-2 transition-all duration-200"
-          style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, backgroundColor: 'var(--surface-input)', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer' }}
+          style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, backgroundColor: 'var(--surface-input)', color: 'var(--text-secondary)', border: 'none', cursor: 'pointer' }}
         >
           Reset password via email
         </button>
       </div>
 
       <div className="rounded-[14px] p-6" style={{ backgroundColor: 'rgba(140,96,96,0.03)', border: '1px solid rgba(140,96,96,0.12)' }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: '#8C6060', textTransform: 'uppercase', marginBottom: 12 }}>Danger Zone</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.06em', color: '#8C6060', textTransform: 'uppercase', marginBottom: 12 }}>Danger Zone</p>
         <button
           onClick={onSignOut}
           className="rounded-[10px] px-4 py-2 transition-all duration-200"
-          style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'transparent', color: '#8C6060', border: '1px solid rgba(140,96,96,0.2)', cursor: 'pointer' }}
+          style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'transparent', color: '#8C6060', border: '1px solid rgba(140,96,96,0.2)', cursor: 'pointer' }}
         >
           Sign out
         </button>

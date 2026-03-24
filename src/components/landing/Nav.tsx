@@ -23,13 +23,13 @@ export default function Nav() {
       }}>
       
       <span style={{ fontSize: 18, cursor: 'pointer' }} onClick={() => navigate('/')}>
-        <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400 }}>Launch</span>
-        <span style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', fontWeight: 400 }}>{'\u200B'}Lens</span>
+        <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400 }}>Launch</span>
+        <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontWeight: 400 }}>{'\u200B'}Lens</span>
       </span>
       <span
         onClick={() => navigate(user ? '/dashboard' : '/auth')}
         style={{
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Outfit', sans-serif",
           fontSize: 14,
           fontWeight: 300,
           color: '#6B6B6B',

@@ -24,20 +24,20 @@ export default function ValidationSummary({ selectedMethods }: Props) {
     <div>
       {/* Summary */}
       <div style={{ padding: 32, borderRadius: 16, backgroundColor: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', marginBottom: 32 }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           Validation plan
         </p>
-        <p style={{ fontFamily: "'Instrument Serif', serif", fontSize: 26, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.25, letterSpacing: '-0.02em', marginBottom: 20 }}>
+        <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 26, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.25, letterSpacing: '-0.02em', marginBottom: 20 }}>
           Your experiment at a glance
         </p>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75 }}>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75 }}>
           You plan to validate demand through <span style={{ fontWeight: 400, color: 'var(--text-primary)' }}>{methods.length} channel{methods.length !== 1 ? 's' : ''}</span> — {channelText}. Track your results in the Dashboard tab to get a data-driven go/no-go recommendation.
         </p>
       </div>
 
       {/* Iteration */}
       <div style={{ padding: 28, borderRadius: 14, backgroundColor: 'var(--surface-bg)', marginBottom: 32 }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 16 }}>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 16 }}>
           What's next?
         </p>
         {[
@@ -56,10 +56,10 @@ export default function ValidationSummary({ selectedMethods }: Props) {
               cursor: 'pointer', transition: 'all 200ms ease-out',
             }}
           >
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--accent-primary)', marginBottom: 4 }}>
+            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--accent-primary)', marginBottom: 4 }}>
               {item.label}
             </p>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}>
+            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}>
               {item.desc}
             </p>
           </div>

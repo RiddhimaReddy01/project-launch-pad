@@ -33,7 +33,7 @@ export default function MentionsPanel({ insight, onClose }: MentionsPanelProps) 
             onClick={onClose}
             className="mb-6 transition-colors duration-200 active:scale-[0.96]"
             style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Outfit', sans-serif",
               fontSize: 13,
               fontWeight: 300,
               color: 'var(--text-muted)',
@@ -64,7 +64,7 @@ export default function MentionsPanel({ insight, onClose }: MentionsPanelProps) 
               >
                 <p
                   style={{
-                    fontFamily: "'Instrument Serif', serif",
+                    fontFamily: "'Playfair Display', serif",
                     fontStyle: 'italic',
                     fontSize: 15,
                     lineHeight: 1.6,
@@ -80,7 +80,7 @@ export default function MentionsPanel({ insight, onClose }: MentionsPanelProps) 
                     rel="noopener noreferrer"
                     className="transition-colors duration-200"
                     style={{
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: "'Outfit', sans-serif",
                       fontSize: 12,
                       fontWeight: 400,
                       color: 'var(--accent-primary)',

@@ -38,7 +38,7 @@ function OpportunityGauge({ score }: { score: number }) {
         />
       </svg>
       <span style={{
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Outfit', sans-serif",
         fontSize: 28,
         fontWeight: 400,
         color,
@@ -47,7 +47,7 @@ function OpportunityGauge({ score }: { score: number }) {
         {score}
       </span>
       <span style={{
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Outfit', sans-serif",
         fontSize: 10,
         fontWeight: 300,
         color: 'var(--text-muted)',
@@ -76,7 +76,7 @@ function ClickableSection({
   return (
     <div className="mb-5">
       <p style={{
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Outfit', sans-serif",
         fontSize: 10,
         fontWeight: 300,
         letterSpacing: '0.06em',
@@ -99,7 +99,7 @@ function ClickableSection({
               onClick={() => onItemClick?.(item)}
             >
               <p style={{
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Outfit', sans-serif",
                 fontSize: 13,
                 fontWeight: 300,
                 lineHeight: 1.5,
@@ -140,7 +140,7 @@ export default function SynthesisPanel({
       }}
     >
       <p style={{
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Outfit', sans-serif",
         fontSize: 16,
         fontWeight: 400,
         color: 'var(--text-primary)',

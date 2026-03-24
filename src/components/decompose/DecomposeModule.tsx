@@ -51,7 +51,7 @@ export default function DecomposeModule() {
             animation: 'spin 0.8s linear infinite',
           }}
         />
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}>
+        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}>
           Analyzing your idea…
         </span>
       </div>
@@ -62,14 +62,14 @@ export default function DecomposeModule() {
   if (status === 'error') {
     return (
       <div className="flex items-center justify-center gap-4 py-6">
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: 'var(--destructive)' }}>
+        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, color: 'var(--destructive)' }}>
           {error}
         </span>
         <button
           onClick={() => { hasRun.current = false; runDecompose(); }}
           className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
           style={{
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Outfit', sans-serif",
             fontSize: 13,
             fontWeight: 400,
             backgroundColor: 'var(--accent-primary)',
@@ -94,13 +94,13 @@ export default function DecomposeModule() {
           style={{ backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
         >
           <span style={{ fontSize: 14 }}>✓</span>
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
             {result.stage1.business_type}
           </span>
           {loc && (
             <>
               <span style={{ color: 'var(--divider-light)' }}>·</span>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)' }}>
+              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)' }}>
                 {loc}
               </span>
             </>
@@ -111,7 +111,7 @@ export default function DecomposeModule() {
               <span
                 className="rounded-full px-2 py-0.5"
                 style={{
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "'Outfit', sans-serif",
                   fontSize: 11,
                   fontWeight: 400,
                   backgroundColor: 'rgba(166,139,91,0.08)',
@@ -123,7 +123,7 @@ export default function DecomposeModule() {
             </>
           )}
           {result.cached && (
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--accent-teal)' }}>
+            <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--accent-teal)' }}>
               ⚡ cached
             </span>
           )}

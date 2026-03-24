@@ -44,20 +44,20 @@ export default function StartupCostsPreview({ context, onData, onError, shouldRu
     <div>
       {/* Total range */}
       <div className="rounded-[12px] p-6 mb-8" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 12 }}>Estimated Startup Range</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 12 }}>Estimated Startup Range</p>
         <div className="flex items-baseline gap-3 mb-3">
           <span className="font-heading" style={{ fontSize: 28 }}>{fmtDollar(data.total_range.min)}</span>
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)' }}>to</span>
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)' }}>to</span>
           <span className="font-heading" style={{ fontSize: 28 }}>{fmtDollar(data.total_range.max)}</span>
         </div>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}>
           Based on {context.city}, {context.state} market rates
         </p>
       </div>
 
       {/* Bar chart */}
       <div className="mb-8">
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 16 }}>Cost Breakdown</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 16 }}>Cost Breakdown</p>
         <div className="rounded-[12px] p-4" style={{ height: 280, backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} layout="vertical" margin={{ left: 20, right: 30 }}>
@@ -79,8 +79,8 @@ export default function StartupCostsPreview({ context, onData, onError, shouldRu
       <div className="flex flex-col gap-0 mb-8">
         {data.breakdown.map((cat, i) => (
           <div key={i} className="flex items-center justify-between py-3 px-1" style={{ borderBottom: '1px solid var(--divider)' }}>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)' }}>{cat.category}</p>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
+            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)' }}>{cat.category}</p>
+            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
               {fmtDollar(cat.min)} – {fmtDollar(cat.max)}
             </p>
           </div>
@@ -89,8 +89,8 @@ export default function StartupCostsPreview({ context, onData, onError, shouldRu
 
       {/* Cost driver note */}
       <div className="rounded-[10px] p-4" style={{ backgroundColor: 'rgba(212,136,15,0.03)', borderLeft: '3px solid var(--accent-amber)' }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--accent-amber)', marginBottom: 4 }}>Biggest Cost Driver</p>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{data.note}</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--accent-amber)', marginBottom: 4 }}>Biggest Cost Driver</p>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{data.note}</p>
       </div>
     </div>
   );

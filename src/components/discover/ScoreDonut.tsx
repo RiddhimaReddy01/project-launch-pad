@@ -38,7 +38,7 @@ export default function ScoreDonut({ score, size = 52, color }: ScoreDonutProps)
       <span
         className="absolute"
         style={{
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Outfit', sans-serif",
           fontSize: size * 0.3,
           fontWeight: 400,
           color,

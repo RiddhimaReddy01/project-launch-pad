@@ -41,7 +41,7 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
               style={{
                 width: 32, height: 32, borderRadius: 8,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                fontSize: 11, fontWeight: 500, fontFamily: "'Outfit', sans-serif",
                 backgroundColor: isActive ? 'var(--text-primary)' : m.status === 'completed' ? 'rgba(91,140,126,0.08)' : 'transparent',
                 color: isActive ? '#fff' : m.status === 'completed' ? 'var(--accent-teal)' : 'var(--text-muted)',
                 border: 'none', cursor: 'pointer',
@@ -52,7 +52,7 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
           );
         })}
         <div className="mt-auto pt-3" style={{ borderTop: '1px solid var(--divider)' }}>
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, color: 'var(--text-muted)' }}>
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, color: 'var(--text-muted)' }}>
             {completedCount}/{modules.length}
           </span>
         </div>
@@ -71,7 +71,7 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
       }}
     >
       <div className="flex items-center justify-between px-4 mb-4">
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
           Modules
         </p>
         <button
@@ -104,7 +104,7 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: 26, height: 26, borderRadius: 7,
-                  fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                  fontSize: 11, fontWeight: 500, fontFamily: "'Outfit', sans-serif",
                   letterSpacing: '0.02em',
                   backgroundColor: isActive ? 'var(--text-primary)' : m.status === 'completed' ? 'rgba(91,140,126,0.08)' : 'var(--surface-input)',
                   color: isActive ? '#fff' : m.status === 'completed' ? 'var(--accent-teal)' : 'var(--text-muted)',
@@ -114,7 +114,7 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
                 </span>
                 <div className="flex-1 min-w-0">
                   <p style={{
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: "'Outfit', sans-serif",
                     fontSize: 13,
                     fontWeight: isActive ? 400 : 300,
                     color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
@@ -122,7 +122,7 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
                   }}>
                     {m.label}
                   </p>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: 'var(--text-muted)', lineHeight: 1.3 }}>
+                  <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, color: 'var(--text-muted)', lineHeight: 1.3 }}>
                     {m.subtitle}
                   </p>
                 </div>
@@ -131,11 +131,11 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
               {/* Status indicator */}
               <div className="flex items-center gap-1.5 mt-2 ml-9">
                 <div style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: statusColor }} className={m.status === 'loading' ? 'animate-pulse' : ''} />
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: 'var(--text-muted)' }}>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, color: 'var(--text-muted)' }}>
                   {m.status === 'idle' ? 'Not run' : m.status === 'loading' ? 'Running...' : m.status === 'completed' ? 'Complete' : m.status === 'error' ? 'Failed' : 'Stale'}
                 </span>
                 {m.lastRun && m.status === 'completed' && (
-                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, color: 'var(--text-muted)', marginLeft: 'auto' }}>
+                  <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, color: 'var(--text-muted)', marginLeft: 'auto' }}>
                     {m.lastRun}
                   </span>
                 )}
@@ -146,7 +146,7 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
       </div>
 
       <div className="px-4 pt-3 mt-auto" style={{ borderTop: '1px solid var(--divider)' }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>
           {completedCount} of {modules.length} complete
         </p>
       </div>

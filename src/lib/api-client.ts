@@ -1,11 +1,8 @@
 /**
  * 3-tier fallback API client:
- *   1. PRIMARY: https://launchlens.com (Cloudflare Tunnel)
- *   2. BACKUP:  https://launch-lean-ed28c2e7.onrender.com (Render)
+ *   1. PRIMARY: Render (5s timeout)
+ *   2. BACKUP:  Ngrok (90s timeout)
  *   3. LOVABLE: Lovable Cloud edge functions (supabase.functions.invoke)
- *
- * The Render backend uses different request/response formats than Lovable Cloud.
- * This module handles translation between them.
  */
 
 import { supabase } from "@/integrations/supabase/client";
@@ -48,107 +45,14 @@ async function tryFetch(baseUrl: string, path: string, body: unknown, timeoutMs:
 }
 
 /**
- * Transform Lovable Cloud request body into Render backend format.
- * Each function has a different mapping.
- */
-function transformRequestForRender(functionName: string, body: any): any {
-  switch (functionName) {
-    case "decompose-idea":
-      // Same format: { idea: string }
-      return body;
-
-    case "discover-insights":
-      // Render expects: { decomposition: DecomposeResponse (flat) }
-      // Lovable sends: { decomposition: { business_type, location, search_queries, ... } }
-      // Already compatible if decomposition is flat
-      return body;
-
-    case "analyze-section": {
-      // Render expects: { section, insight, decomposition }
-      // Lovable sends: { section, context: { business_type, city, state, ... } }
-      const ctx = body.context || {};
-      return {
-        section: body.section,
-        insight: {
-          title: ctx.insight_title || "",
-          type: "pain_point",
-          evidence: ctx.insight_evidence ? [{ text: ctx.insight_evidence }] : [],
-          source_platforms: [],
-        },
-        decomposition: {
-          business_type: ctx.business_type || "",
-          location: { city: ctx.city || "", state: ctx.state || "" },
-          target_customers: ctx.target_customers || [],
-          price_tier: ctx.price_tier || "",
-          source_domains: [],
-          subreddits: [],
-          search_queries: [],
-        },
-      };
-    }
-
-    case "setup-section": {
-      // Render expects: { insight, decomposition, selected_tier }
-      // Lovable sends: { section, context: { business_type, city, state, tier, ... } }
-      const ctx = body.context || {};
-      return {
-        insight: {
-          title: ctx.insight_title || "",
-          type: "pain_point",
-          evidence: [],
-          source_platforms: [],
-        },
-        decomposition: {
-          business_type: ctx.business_type || "",
-          location: { city: ctx.city || "", state: ctx.state || "" },
-          target_customers: ctx.target_customers || [],
-          price_tier: ctx.price_tier || "",
-          source_domains: [],
-          subreddits: [],
-          search_queries: [],
-        },
-        selected_tier: ctx.tier?.toUpperCase() || "MID",
-      };
-    }
-
-    case "validate-idea": {
-      // Render expects: { insight, decomposition, channels }
-      // Lovable sends: { context: { business_type, city, state, ... }, required_outputs }
-      const ctx = body.context || {};
-      return {
-        insight: {
-          title: ctx.insight_title || "",
-          type: "pain_point",
-          evidence: [],
-          source_platforms: [],
-        },
-        decomposition: {
-          business_type: ctx.business_type || "",
-          location: { city: ctx.city || "", state: ctx.state || "" },
-          target_customers: ctx.target_customers || [],
-          price_tier: ctx.price_tier || "",
-          source_domains: [],
-          subreddits: [],
-          search_queries: [],
-        },
-        channels: body.required_outputs || [],
-      };
-    }
-
-    default:
-      return body;
-  }
-}
-
-/**
- * Transform Render backend response into the format Lovable Cloud edge functions return.
+ * Transform Render backend response into the format the frontend expects.
  */
 function transformResponseFromRender(functionName: string, data: any): any {
   switch (functionName) {
     case "decompose-idea":
       // Render returns flat: { business_type, location, target_customers, ... }
-      // Lovable expects: { stage1: { business_type, location }, stage2: { ... } }
-      if (data.stage1) return data; // Already in Lovable format
+      // Frontend expects: { stage1: { business_type, location }, stage2: { ... } }
+      if (data.stage1) return data; // Already in expected format
       return {
         cached: data.cached ?? false,
         stage1: {
@@ -165,9 +69,8 @@ function transformResponseFromRender(functionName: string, data: any): any {
       };
 
     case "discover-insights":
-      // Render returns: { sources, insights } — may differ from Lovable's { insights, synthesis, source_summary }
-      if (data.synthesis) return data; // Already Lovable format
-      const normalizeScore = (v: number) => v > 1 ? v / 10 : v; // Render uses 0-10, Lovable uses 0-1
+      if (data.synthesis) return data; // Already expected format
+      const normalizeScore = (v: number) => v > 1 ? v / 10 : v;
       return {
         insights: (data.insights || []).map((ins: any) => ({
           title: ins.title || "",
@@ -204,15 +107,12 @@ function transformResponseFromRender(functionName: string, data: any): any {
       };
 
     case "analyze-section":
-      // Render may return data directly or wrapped in { data: ... }
       return data.data ? data : { data: data };
 
     case "setup-section":
-      // Render may return data directly or wrapped
       return data.data ? data : { data: data };
 
     case "validate-idea":
-      // Transform to match Lovable format if needed
       return data;
 
     default:
@@ -231,8 +131,8 @@ async function tryExternalApi<T>(baseUrl: string, functionName: string, body: un
   const path = RENDER_ENDPOINTS[functionName];
   if (!path) throw new Error(`No endpoint for ${functionName}`);
 
-  const renderBody = transformRequestForRender(functionName, body);
-  const resp = await tryFetch(baseUrl, path, renderBody, timeoutMs);
+  // Backend accepts simple inputs directly — no transform needed
+  const resp = await tryFetch(baseUrl, path, body, timeoutMs);
   const rawData = await resp.json();
   if (rawData?.error) throw new Error(rawData.error);
   if (rawData?.detail) throw new Error(JSON.stringify(rawData.detail));
@@ -244,10 +144,9 @@ async function tryExternalApi<T>(baseUrl: string, functionName: string, body: un
  * Invoke an API function with 3-tier fallback:
  *   1. PRIMARY: Render (5s timeout)
  *   2. BACKUP:  Ngrok tunnel (90s timeout)
- *   3. LOVABLE Cloud edge functions (features not on backend)
+ *   3. LOVABLE Cloud edge functions
  */
 export async function invokeApi<T = unknown>(functionName: string, body: unknown): Promise<T> {
-  // If no backend endpoint exists, go straight to Lovable Cloud
   if (LOVABLE_ONLY.has(functionName) || !RENDER_ENDPOINTS[functionName]) {
     console.log(`[API] Using Lovable Cloud for ${functionName} (no backend endpoint)`);
     return await tryLovableCloud<T>(functionName, body);
