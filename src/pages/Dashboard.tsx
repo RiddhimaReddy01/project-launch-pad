@@ -61,11 +61,11 @@ interface ValidationAsset {
 type DashboardTab = 'overview' | 'projects' | 'insights' | 'validation' | 'account';
 
 const TAB_LABELS: Record<DashboardTab, { label: string; icon: string }> = {
-  overview: { label: 'Overview', icon: '📊' },
-  projects: { label: 'My Projects', icon: '📁' },
-  insights: { label: 'Saved Insights', icon: '💡' },
-  validation: { label: 'Validation', icon: '🧪' },
-  account: { label: 'Account', icon: '👤' },
+  overview: { label: 'Overview', icon: '' },
+  projects: { label: 'My Projects', icon: '' },
+  insights: { label: 'Saved Insights', icon: '' },
+  validation: { label: 'Validation', icon: '' },
+  account: { label: 'Account', icon: '' },
 };
 
 const STATUS_FLOW = ['planned', 'running', 'completed'] as const;
