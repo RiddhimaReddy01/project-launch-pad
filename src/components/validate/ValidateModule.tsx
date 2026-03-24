@@ -245,7 +245,7 @@ export default function ValidateModule() {
   }, [phase, visibleTabs, activeTab]);
 
   const generate = useCallback(async () => {
-    if (!context) return;
+    if (!idea) return;
     setPhase('generating');
     setErrorMsg('');
     try {
@@ -257,15 +257,16 @@ export default function ValidateModule() {
       });
       requiredOutputs.add('scorecard');
 
-      const data = await generateValidation(context, Array.from(requiredOutputs));
-      data.scorecard = deriveScorecard(data.scorecard);
+      // Use simple { idea, channels } format — backend handles context
+      const data = await generateValidation(idea, Array.from(requiredOutputs));
+      data.scorecard = deriveScorecard(data.scorecard || []);
       setResult(data);
       setPhase('toolkit');
     } catch (err: any) {
       setErrorMsg(err.message || 'Something went wrong — please try again');
       setPhase('select');
     }
-  }, [context, deriveScorecard, selectedMethods]);
+  }, [idea, deriveScorecard, selectedMethods]);
 
   const toggleMethod = (id: string) => {
     setSelectedMethods(prev => {
