@@ -30,7 +30,7 @@ export default function RiskMatrix({ context, onData, onError, shouldRun = true 
     return () => { cancelled = true; };
   }, [shouldRun]);
 
-  if (loading) return <SectionSkeleton label="Assessing business risks..." />;
+  if (loading) return <SectionSkeleton label="Assessing business risks..." section="risk" />;
   if (error) return (
     <div className="text-center py-12">
       <p style={{ fontSize: 14, color: 'hsl(0 84% 60%)', marginBottom: 12 }}>{error}</p>

@@ -227,7 +227,7 @@ function RiskSkeleton() {
       <Pulse w={160} h={10} delay={200} />
       <div className="mt-3 mb-8 rounded-xl border border-border bg-card p-4" style={{ display: 'grid', gridTemplateColumns: '40px 1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr', gap: 2, height: 240 }}>
         {Array.from({ length: 9 }).map((_, i) => (
-          <Pulse key={i} w="100%" h="100%" r={8} delay={300 + i * 40} className="col-start-auto" />
+          <Pulse key={i} w="100%" h={60} r={8} delay={300 + i * 40} className="col-start-auto" />
         ))}
       </div>
       {[0, 1, 2].map(i => (

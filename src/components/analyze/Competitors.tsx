@@ -75,7 +75,7 @@ export default function Competitors({ context, onData, onError, shouldRun = true
     return () => { cancelled = true; };
   }, [shouldRun]);
 
-  if (loading) return <SectionSkeleton label="Analyzing competitive landscape..." />;
+  if (loading) return <SectionSkeleton label="Analyzing competitive landscape..." section="competitors" />;
   if (error) return (
     <div className="text-center py-12">
       <p style={{ fontSize: 14, color: 'hsl(var(--destructive))', marginBottom: 12 }}>{error}</p>

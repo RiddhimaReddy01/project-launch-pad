@@ -79,7 +79,7 @@ export default function RootCauses({ context, onData, onError, shouldRun = true 
     return () => { cancelled = true; };
   }, [shouldRun]);
 
-  if (loading) return <SectionSkeleton label="Analyzing why this gap exists..." />;
+  if (loading) return <SectionSkeleton label="Analyzing why this gap exists..." section="rootcause" />;
   if (error) return (
     <div className="text-center py-12">
       <p style={{ fontSize: 14, color: 'hsl(0 84% 60%)', marginBottom: 12 }}>{error}</p>

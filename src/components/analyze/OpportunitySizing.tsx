@@ -28,7 +28,7 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
     return () => { cancelled = true; };
   }, [shouldRun]);
 
-  if (loading) return <SectionSkeleton label="Calculating TAM / SAM / SOM..." />;
+  if (loading) return <SectionSkeleton label="Calculating TAM / SAM / SOM..." section="opportunity" />;
   if (error) return (
     <div className="text-center py-12">
       <p style={{ fontSize: 14, color: 'hsl(var(--destructive))', marginBottom: 12 }}>{error}</p>

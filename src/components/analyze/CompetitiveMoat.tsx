@@ -21,7 +21,7 @@ export default function CompetitiveMoat({ context, onData, onError, shouldRun = 
     return () => { cancelled = true; };
   }, [shouldRun]);
 
-  if (loading) return <SectionSkeleton label="Evaluating competitive defensibility..." />;
+  if (loading) return <SectionSkeleton label="Evaluating competitive defensibility..." section="moat" />;
   if (error) return (
     <div className="text-center py-12">
       <p style={{ fontSize: 14, color: 'hsl(0 84% 60%)', marginBottom: 12 }}>{error}</p>
