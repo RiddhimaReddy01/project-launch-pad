@@ -140,6 +140,13 @@ async function tryExternalApi<T>(baseUrl: string, functionName: string, body: un
   if (rawData?.error) throw new Error(rawData.error);
   if (rawData?.detail) throw new Error(JSON.stringify(rawData.detail));
 
+  // Treat empty Render responses as failures so we fall through to Cloud
+  if (functionName === 'setup-section') {
+    const isEmpty = Array.isArray(rawData?.cost_tiers) && rawData.cost_tiers.length === 0 &&
+      Array.isArray(rawData?.suppliers) && rawData.suppliers.length === 0;
+    if (isEmpty) throw new Error('Render returned empty setup data');
+  }
+
   return transformResponseFromRender(functionName, rawData) as T;
 }
 
