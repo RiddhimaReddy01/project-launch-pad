@@ -238,7 +238,28 @@ serve(async (req) => {
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
-    const { section, context } = await req.json();
+    const body = await req.json();
+    const section = body.section;
+
+    // Support both { section, context } and { idea, section } formats
+    let context = body.context;
+    if (!context && body.idea) {
+      // Extract basic context from the idea string
+      const idea = body.idea as string;
+      context = {
+        business_type: idea,
+        city: "",
+        state: "",
+      };
+      // Try to parse location from idea (e.g., "juice bar in Plano TX")
+      const locMatch = idea.match(/\bin\s+([A-Za-z\s]+?)(?:,?\s+([A-Z]{2}))?\s*$/i);
+      if (locMatch) {
+        context.city = locMatch[1].trim();
+        context.state = locMatch[2] || "";
+        context.business_type = idea.replace(/\bin\s+[A-Za-z\s,]+$/i, "").trim() || idea;
+      }
+    }
+
     if (!section || !context) {
       return new Response(JSON.stringify({ error: "Missing section or context" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
