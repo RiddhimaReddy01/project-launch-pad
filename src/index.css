@@ -1,4 +1,4 @@
-/* Fonts loaded via index.html link tags for faster rendering */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,34 +6,34 @@
 
 @layer base {
   :root {
-    --background: 48 14% 97%;
+    --background: 40 20% 97%;
     --foreground: 0 0% 10%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
-    --primary: 153 30% 30%;
+    --primary: 153 42% 30%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 45 10% 96%;
+    --secondary: 40 10% 93%;
     --secondary-foreground: 0 0% 10%;
-    --muted: 45 10% 96%;
-    --muted-foreground: 40 3% 55%;
-    --accent: 45 10% 96%;
-    --accent-foreground: 0 0% 10%;
-    --destructive: 4 42% 51%;
+    --muted: 40 10% 93%;
+    --muted-foreground: 30 3% 62%;
+    --accent: 153 42% 30%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 4 55% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 40 8% 90%;
-    --input: 40 10% 95%;
-    --ring: 153 30% 30%;
+    --border: 37 10% 88%;
+    --input: 37 12% 91%;
+    --ring: 153 42% 30%;
     --radius: 0.5rem;
 
     /* Calm Intelligence tokens */
     --surface-bg: #F8F7F5;
     --surface-card: #FFFFFF;
-    --surface-input: #F5F4F2;
+    --surface-input: #F3F2EE;
     --divider: #E5E3DF;
-    --divider-light: #EDECE9;
-    --divider-section: #D8D6D2;
+    --divider-light: #EDEBE7;
+    --divider-section: #D6D3CE;
 
     --text-primary: #1A1A1A;
     --text-secondary: #6E6C68;
@@ -42,7 +42,7 @@
 
     --accent-primary: #2D6B52;
     --accent-primary-light: #E6F2EC;
-    --accent-teal: #2D6B52;
+    --accent-teal: #5B8C7E;
     --accent-blue: #4A6FA5;
     --accent-amber: #B8860B;
     --accent-purple: #7B68A8;
@@ -50,6 +50,15 @@
     --signal-medium: #B8860B;
     --signal-low: #A09E9A;
     --error: #C4453E;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 153 42% 30%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.3% 26.1%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 153 42% 30%;
   }
 }
 
@@ -105,19 +114,42 @@ html {
   color: var(--text-muted);
 }
 
-.font-section-label {
+.font-section-label,
+.section-label {
   font-family: 'Outfit', sans-serif;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
+.mono-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--text-primary);
+  color: #fff;
+}
+
 .font-button {
   font-family: 'Outfit', sans-serif;
   font-size: 14px;
   font-weight: 400;
+}
+
+.animate-fade-in {
+  animation: fadeIn 300ms ease-out;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Card system */

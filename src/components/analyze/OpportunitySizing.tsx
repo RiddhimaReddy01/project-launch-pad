@@ -4,7 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 
 import SectionSkeleton from './SectionSkeleton';
 
 const CONFIDENCE_CONFIG = {
-  low: { color: 'hsl(0 84% 60%)', label: 'Low confidence' },
+  low: { color: 'hsl(var(--destructive))', label: 'Low confidence' },
   medium: { color: 'var(--accent-amber)', label: 'Medium confidence' },
   high: { color: 'var(--accent-teal)', label: 'High confidence' },
 };
@@ -31,9 +31,9 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
   if (loading) return <SectionSkeleton label="Calculating TAM / SAM / SOM..." />;
   if (error) return (
     <div className="text-center py-12">
-      <p style={{ fontSize: 14, color: 'hsl(0 84% 60%)', marginBottom: 12 }}>{error}</p>
+      <p style={{ fontSize: 14, color: 'hsl(var(--destructive))', marginBottom: 12 }}>{error}</p>
       <button onClick={() => { setLoading(true); setError(null); analyzeSection('opportunity', context).then(r => { setData(r as OpportunityData); setLoading(false); }).catch(e => { setError(e.message); setLoading(false); }); }}
-        className="rounded-[10px] px-4 py-2" style={{ backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 13 }}>Retry</button>
+        className="btn-primary rounded-[10px] px-4 py-2">Retry</button>
     </div>
   );
   if (!data) return null;
@@ -45,7 +45,7 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
   ];
 
   const chartData = tiers.map(t => ({ name: t.key, value: t.value }));
-  const barColors = ['var(--text-primary)', 'var(--text-secondary)', 'var(--accent-teal)'];
+  const barColors = ['var(--text-primary)', 'var(--accent-blue)', 'var(--accent-primary)'];
 
   const funnelData = [
     { name: 'Population', value: data.funnel.population },
@@ -72,12 +72,12 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
     <div>
       {/* Tier cards */}
       <div className="flex flex-col gap-4 mb-10">
-        {tiers.map((t, idx) => {
+        {tiers.map((t) => {
           const conf = CONFIDENCE_CONFIG[t.confidence];
           return (
-            <div key={t.key} className="rounded-[12px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+            <div key={t.key} className="card-base p-5">
               <div className="flex items-center gap-2 mb-2">
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>{t.key}</span>
+                <span className="section-label">{t.key}</span>
                 <span style={{ width: 1, height: 10, backgroundColor: 'var(--divider-section)' }} />
                 <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, letterSpacing: '0.04em', color: conf.color }}>{conf.label}</span>
               </div>
@@ -91,8 +91,8 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
 
       {/* Bar chart */}
       <div className="mb-10">
-        <p className="font-caption" style={{ fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 16 }}>Market Size Comparison</p>
-        <div style={{ height: 180 }}>
+        <p className="section-label mb-4">Market Size Comparison</p>
+        <div className="card-base p-4" style={{ height: 180 }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 30 }}>
               <XAxis type="number" tickFormatter={fmt} style={{ fontSize: 10 }} />
@@ -106,24 +106,26 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
         </div>
       </div>
 
-      {/* Customer funnel */}
+      {/* Customer funnel — visual pyramid */}
       <div className="mb-10">
-        <p className="font-caption" style={{ fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 16 }}>Customer Funnel</p>
-        <div className="flex flex-col items-center gap-1.5">
-          {funnelData.map((step, i) => {
-            const widthPct = Math.max(((funnelData.length - i) / funnelData.length) * 100, 20);
-            const opacity = 0.06 + (i * 0.03);
-            return (
-              <div key={step.name} className="flex items-center gap-3" style={{ width: '100%' }}>
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, color: 'var(--text-muted)', width: 80, textAlign: 'right', flexShrink: 0, letterSpacing: '0.02em' }}>{step.name}</span>
-                <div style={{ flex: 1 }}>
-                  <div className="rounded-[4px]" style={{ width: `${widthPct}%`, height: 24, backgroundColor: `rgba(26,26,26,${opacity})`, display: 'flex', alignItems: 'center', paddingLeft: 10, transition: 'width 600ms ease-out' }}>
-                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>{fmtNum(step.value)}</span>
+        <p className="section-label mb-4">Customer Funnel</p>
+        <div className="card-base p-6">
+          <div className="flex flex-col items-center gap-1.5">
+            {funnelData.map((step, i) => {
+              const widthPct = Math.max(((funnelData.length - i) / funnelData.length) * 100, 20);
+              const colors = ['var(--text-primary)', 'var(--text-secondary)', 'var(--accent-blue)', 'var(--accent-amber)', 'var(--accent-primary)'];
+              return (
+                <div key={step.name} className="flex items-center gap-3" style={{ width: '100%' }}>
+                  <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, color: 'var(--text-muted)', width: 80, textAlign: 'right', flexShrink: 0, letterSpacing: '0.02em' }}>{step.name}</span>
+                  <div style={{ flex: 1 }}>
+                    <div className="rounded-[4px]" style={{ width: `${widthPct}%`, height: 28, backgroundColor: colors[i], opacity: 0.15, display: 'flex', alignItems: 'center', paddingLeft: 10, transition: 'width 600ms ease-out', position: 'relative' }}>
+                      <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-primary)', whiteSpace: 'nowrap', position: 'absolute', left: 10 }}>{fmtNum(step.value)}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -132,7 +134,7 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
         {methodOpen ? 'Hide methodology' : 'How we estimated this'}
       </button>
       {methodOpen && (
-        <div className="rounded-[10px] mt-3 p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+        <div className="card-base mt-3 p-4">
           {tiers.map(t => (
             <p key={t.key} style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 8, lineHeight: 1.5 }}>
               <span style={{ fontWeight: 400, color: 'var(--text-primary)' }}>{t.key}:</span> {t.methodology}

@@ -121,7 +121,7 @@ export default function Research() {
                 setTimeout(() => setSaveStatus('idle'), 2000);
               }}
             >
-              {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? '✓ Saved' : 'Save'}
+              {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved' : 'Save'}
             </span>
           )}
           <span
