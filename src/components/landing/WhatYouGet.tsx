@@ -6,32 +6,32 @@ const steps = [
     title: 'Customer signals',
     desc: 'Real complaints, wishes, and gaps from Reddit, Yelp, and local forums. Not guesses — direct quotes from people who want what you\'re building.',
     sample: '"Every juice bar in Plano is overpriced franchise garbage. I\'d pay more for something real." — r/plano',
-    bg: 'rgba(26,26,26,0.04)',
-    color: 'var(--text-secondary)',
+    color: 'var(--accent-primary)',
+    glow: 'rgba(0,212,230,0.08)',
   },
   {
     num: 2,
     title: 'Market reality',
     desc: 'Competitors, opportunity size, customer segments — and why this gap still exists. The root cause nobody else tells you.',
     sample: 'Root cause: Franchise chains hold exclusive strip-center leases. Your opening: the Legacy West food hall has open vendor slots.',
-    bg: 'rgba(91,140,126,0.06)',
     color: 'var(--accent-teal)',
+    glow: 'rgba(0,191,166,0.08)',
   },
   {
     num: 3,
     title: 'Launch costs',
     desc: 'Not generic advice. Specific: kiosk vs. storefront pricing, local suppliers, who to hire and what they earn in your city.',
     sample: 'Minimum viable: $47K (food hall kiosk). Recommended: $95K (600 sq ft near Legacy). Supplier: Profound Foods, Lucas TX.',
-    bg: 'rgba(122,143,160,0.06)',
     color: 'var(--accent-blue)',
+    glow: 'rgba(91,141,239,0.08)',
   },
   {
     num: 4,
     title: 'Validation toolkit',
     desc: 'A landing page headline, a 7-question survey, and the exact communities to test in. Plus a scorecard: go, pivot, or walk away.',
     sample: 'Headline: "Plano deserves a real juice bar." Test in: r/plano (42K), Dallas Foodies (89K), Nextdoor Frisco.',
-    bg: 'rgba(166,139,91,0.06)',
     color: 'var(--accent-amber)',
+    glow: 'rgba(245,166,35,0.08)',
   },
 ];
 
@@ -39,9 +39,9 @@ export default function WhatYouGet() {
   const headingRef = useScrollReveal();
 
   return (
-    <section className="px-6 mx-auto" style={{ maxWidth: 500 }}>
+    <section className="px-6 mx-auto" style={{ maxWidth: 520 }}>
       <div ref={headingRef} className="scroll-reveal text-center">
-        <h2 className="font-heading">What you get</h2>
+        <h2 className="font-heading" style={{ fontSize: 28 }}>What you get</h2>
         <p className="font-caption" style={{ marginTop: 8 }}>
           One sentence in. A complete plan out.
         </p>
@@ -63,31 +63,34 @@ export default function WhatYouGet() {
               <div
                 className="shrink-0 flex items-center justify-center font-button"
                 style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 8,
-                  backgroundColor: step.bg,
+                  width: 32,
+                  height: 32,
+                  borderRadius: 10,
+                  backgroundColor: step.glow,
                   color: step.color,
                   fontSize: 14,
+                  fontWeight: 600,
+                  border: `1px solid ${step.color}20`,
                 }}
               >
                 {step.num}
               </div>
               <div className="flex-1 min-w-0">
-                <p style={{ fontSize: 15, fontWeight: 400, color: 'var(--text-primary)' }}>
+                <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-primary)' }}>
                   {step.title}
                 </p>
-                <p style={{ fontSize: 13, fontWeight: 300, color: '#6B6B6B', marginTop: 4, lineHeight: 1.6 }}>
+                <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)', marginTop: 4, lineHeight: 1.6 }}>
                   {step.desc}
                 </p>
                 <div
                   style={{
                     marginTop: 12,
                     padding: '12px 14px',
-                    backgroundColor: 'var(--surface-input)',
+                    backgroundColor: 'var(--surface-card)',
+                    border: '1px solid var(--divider)',
                     borderRadius: 10,
                     fontSize: 12,
-                    fontWeight: 300,
+                    fontWeight: 400,
                     fontStyle: 'italic',
                     color: 'var(--text-secondary)',
                     lineHeight: 1.6,

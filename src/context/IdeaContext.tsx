@@ -2,7 +2,7 @@ import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { DecomposeResult } from '@/lib/decompose';
 import type { DiscoverResult } from '@/lib/discover';
 
-export type Step = 'understand' | 'discover' | 'analyze' | 'setup' | 'validate';
+export type Step = 'discover' | 'analyze' | 'setup' | 'validate';
 
 export type PrefetchStatus = 'idle' | 'running' | 'done';
 
@@ -38,7 +38,7 @@ const IdeaContext = createContext<IdeaState | null>(null);
 
 export function IdeaProvider({ children }: { children: ReactNode }) {
   const [idea, setIdea] = useState('');
-  const [currentStep, setCurrentStep] = useState<Step>('understand');
+  const [currentStep, setCurrentStep] = useState<Step>('discover');
   const [selectedInsight, setSelectedInsight] = useState<string | null>(null);
   const [decomposeResult, setDecomposeResult] = useState<DecomposeResult | null>(null);
   const [discoverResult, setDiscoverResult] = useState<DiscoverResult | null>(null);

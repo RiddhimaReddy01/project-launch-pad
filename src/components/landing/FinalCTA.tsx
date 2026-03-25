@@ -1,31 +1,27 @@
 import { forwardRef } from 'react';
 import { useScrollReveal } from '@/hooks/use-scroll-reveal';
+import { useNavigate } from 'react-router-dom';
 
 const FinalCTA = forwardRef<HTMLElement>((_props, _ref) => {
   const scrollRef = useScrollReveal();
+  const navigate = useNavigate();
 
   return (
     <section ref={scrollRef} className="scroll-reveal px-6 mx-auto text-center" style={{ maxWidth: 500 }}>
-      <h2 className="font-heading">Stop researching. Start validating.</h2>
+      <h2 className="font-heading" style={{ fontSize: 28 }}>
+        Stop researching.{' '}
+        <span style={{ color: 'var(--accent-primary)' }}>Start validating.</span>
+      </h2>
 
       <button
-        className="font-button transition-all duration-200"
-        style={{
-          marginTop: 28,
-          backgroundColor: 'var(--accent-primary)',
-          color: '#FFFFFF',
-          fontSize: 15,
-          borderRadius: 14,
-          padding: '14px 28px',
-        }}
-        onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.97)')}
-        onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+        className="btn-primary font-button"
+        style={{ marginTop: 28, fontSize: 15, padding: '14px 28px' }}
+        onClick={() => navigate('/')}
       >
         Try it free →
       </button>
 
-      <p className="font-caption" style={{ marginTop: 12 }}>
+      <p className="font-caption" style={{ marginTop: 12, color: 'var(--text-muted)' }}>
         No signup required.
       </p>
     </section>

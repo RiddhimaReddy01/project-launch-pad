@@ -47,14 +47,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Calm Intelligence palette
-        calm: {
-          green: "#2D6B52",
-          "green-light": "#E6F2EC",
-          amber: "#B8860B",
-          blue: "#4A6FA5",
-          purple: "#7B68A8",
-          error: "#C4453E",
+        // Dark Futuristic palette
+        neon: {
+          cyan: "#00D4E6",
+          teal: "#00BFA6",
+          blue: "#5B8DEF",
+          purple: "#A87CFF",
+          amber: "#F5A623",
+          red: "#EF4444",
         },
       },
       borderRadius: {
@@ -63,8 +63,13 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        heading: ["'Playfair Display'", "serif"],
-        body: ["'Outfit'", "sans-serif"],
+        heading: ["'Space Grotesk'", "sans-serif"],
+        body: ["'Inter'", "-apple-system", "sans-serif"],
+      },
+      boxShadow: {
+        glow: "0 0 20px rgba(0,212,230,0.15)",
+        "glow-lg": "0 0 40px rgba(0,212,230,0.2)",
+        "glow-purple": "0 0 20px rgba(168,124,255,0.15)",
       },
     },
   },
