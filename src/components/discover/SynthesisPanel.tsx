@@ -10,28 +10,28 @@ function OpportunityGauge({ score }: { score: number }) {
   const offset = circumference * (1 - pct);
 
   const color =
-    score >= 70 ? 'var(--accent-teal)' :
+    score >= 70 ? 'var(--accent-primary)' :
     score >= 40 ? 'var(--accent-amber)' :
-    '#8C6B6B';
+    'var(--error)';
 
   return (
     <div className="flex flex-col items-center">
       <svg width={size} height={size / 2 + 10} viewBox={`0 0 ${size} ${size / 2 + 10}`}>
         <path
           d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
-          fill="none" stroke="var(--divider-light)" strokeWidth={strokeWidth} strokeLinecap="round"
+          fill="none" stroke="var(--divider)" strokeWidth={strokeWidth} strokeLinecap="round"
         />
         <path
           d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
           fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round"
           strokeDasharray={circumference} strokeDashoffset={offset}
-          style={{ transition: 'stroke-dashoffset 1s ease-out' }}
+          style={{ transition: 'stroke-dashoffset 1s ease-out', filter: `drop-shadow(0 0 6px ${color})` }}
         />
       </svg>
-      <span style={{ fontSize: 28, fontWeight: 400, color, marginTop: -20 }}>
+      <span style={{ fontSize: 28, fontWeight: 700, color, marginTop: -20 }}>
         {score}
       </span>
-      <span className="section-label" style={{ marginTop: 4 }}>
+      <span className="section-label" style={{ marginTop: 4, fontWeight: 700 }}>
         OPPORTUNITY SCORE
       </span>
     </div>
@@ -46,22 +46,23 @@ function ClickableSection({
 }) {
   return (
     <div className="mb-5">
-      <p className="section-label" style={{ marginBottom: 8 }}>{title}</p>
+      <p className="section-label" style={{ marginBottom: 8, fontWeight: 700 }}>{title}</p>
       <div className="flex flex-col gap-1.5">
         {items.map((item, i) => {
           const isActive = activeItem === item;
           return (
             <div
               key={i}
-              className="rounded-[8px] px-3 py-2 transition-all duration-150 cursor-pointer"
+              className="rounded-lg px-3 py-2.5 transition-all duration-150 cursor-pointer"
               style={{
-                backgroundColor: isActive ? 'rgba(45,107,82,0.06)' : 'transparent',
-                border: isActive ? '1px solid rgba(45,107,82,0.15)' : '1px solid transparent',
+                backgroundColor: isActive ? 'rgba(0,212,230,0.06)' : 'transparent',
+                border: isActive ? '1px solid rgba(0,212,230,0.2)' : '1px solid transparent',
               }}
               onClick={() => onItemClick?.(item)}
             >
-              <p className="font-caption" style={{
+              <p style={{
                 fontSize: 13,
+                fontWeight: 500,
                 color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
               }}>
                 {item}
@@ -89,16 +90,16 @@ export default function SynthesisPanel({
 
   return (
     <div
-      className="rounded-[14px] p-6 lg:sticky"
-      style={{ top: 120, backgroundColor: 'var(--surface-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
+      className="rounded-xl p-6 lg:sticky"
+      style={{ top: 120, backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}
     >
-      <p style={{ fontSize: 16, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 20 }}>
+      <p className="font-heading" style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20 }}>
         Founder Synthesis
       </p>
 
       <OpportunityGauge score={synthesis.opportunity_score} />
 
-      <div style={{ height: 1, backgroundColor: 'var(--divider)', margin: '20px 0' }} />
+      <div style={{ height: 1, backgroundColor: 'var(--divider-section)', margin: '20px 0' }} />
 
       <ClickableSection title="TOP PAIN POINTS" items={synthesis.top_pain_points} onItemClick={handleClick} activeItem={activeItem} />
       <ClickableSection title="WHAT THEY DO INSTEAD" items={synthesis.current_workarounds} onItemClick={handleClick} activeItem={activeItem} />

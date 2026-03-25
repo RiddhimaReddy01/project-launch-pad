@@ -28,15 +28,15 @@ function buildTabs(insights: { type: string }[]) {
 function SourceSummaryBar({ summary }: { summary: { reddit_count: number; google_count: number; yelp_count: number; total_signals: number } }) {
   const total = summary.total_signals || 1;
   const segments = [
-    { label: 'Reddit', count: summary.reddit_count, color: '#C84B31' },
-    { label: 'Google', count: summary.google_count, color: '#4285F4' },
-    { label: 'Yelp', count: summary.yelp_count, color: '#AF0606' },
+    { label: 'Reddit', count: summary.reddit_count, color: '#FF6B35' },
+    { label: 'Google', count: summary.google_count, color: '#5B8DEF' },
+    { label: 'Yelp', count: summary.yelp_count, color: '#EF4444' },
   ].filter(s => s.count > 0);
 
   return (
-    <div className="card-base p-4 mb-6">
-      <p className="section-label mb-3">SOURCE DISTRIBUTION</p>
-      <div className="rounded-full overflow-hidden flex" style={{ height: 8, backgroundColor: 'var(--divider-light)' }}>
+    <div className="rounded-xl p-5 mb-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+      <p className="section-label mb-3" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>SOURCE DISTRIBUTION</p>
+      <div className="rounded-full overflow-hidden flex" style={{ height: 8, backgroundColor: 'var(--divider)' }}>
         {segments.map((seg, i) => (
           <div key={i} className="animate-progress" style={{
             width: `${(seg.count / total) * 100}%`,
@@ -45,16 +45,16 @@ function SourceSummaryBar({ summary }: { summary: { reddit_count: number; google
           }} />
         ))}
       </div>
-      <div className="flex items-center gap-4 mt-3">
+      <div className="flex items-center gap-5 mt-3">
         {segments.map((seg, i) => (
-          <div key={i} className="flex items-center gap-1.5">
-            <div style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: seg.color }} />
-            <span className="font-caption" style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
-              {seg.label} <span style={{ fontWeight: 400 }}>{seg.count}</span>
+          <div key={i} className="flex items-center gap-2">
+            <div style={{ width: 8, height: 8, borderRadius: 3, backgroundColor: seg.color }} />
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+              {seg.label} <span style={{ fontWeight: 500, color: 'var(--text-muted)' }}>{seg.count}</span>
             </span>
           </div>
         ))}
-        <span className="font-caption" style={{ fontSize: 11, marginLeft: 'auto' }}>
+        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginLeft: 'auto' }}>
           {total} total signals
         </span>
       </div>
@@ -62,7 +62,6 @@ function SourceSummaryBar({ summary }: { summary: { reddit_count: number; google
   );
 }
 
-/** Check if insights have interactive (clickable) sources */
 function hasInteractiveSources(result: DiscoverResult): boolean {
   return result.insights.some(i =>
     i.sources?.some(s => s.url && s.url !== '#' && s.url.startsWith('http'))
@@ -76,7 +75,7 @@ export default function DiscoverModule() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string | null>(null);
   const [cached, setCached] = useState(!!contextDiscover);
-  const [ready, setReady] = useState(false); // Gate: true when sources are interactive
+  const [ready, setReady] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const hasRun = useRef(!!contextDiscover);
 
@@ -102,15 +101,12 @@ export default function DiscoverModule() {
     }
   }, [result]);
 
-  // Gate: only show results when sources are interactive (or after brief delay for cached)
   useEffect(() => {
     if (!result || status !== 'done') { setReady(false); return; }
     if (hasInteractiveSources(result)) {
-      // Small delay for stagger animation
       const t = setTimeout(() => setReady(true), 300);
       return () => clearTimeout(t);
     }
-    // If no interactive sources, still show after 1s (graceful degradation)
     const t = setTimeout(() => setReady(true), 1000);
     return () => clearTimeout(t);
   }, [result, status]);
@@ -137,21 +133,20 @@ export default function DiscoverModule() {
   return (
     <div ref={containerRef} className="scroll-reveal">
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-8">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <p className="section-label mb-2">DISCOVER</p>
-            <p className="font-heading" style={{ fontSize: 22, marginBottom: 4 }}>Market Intelligence</p>
+            <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>DISCOVER</p>
+            <p className="font-heading" style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>Market Intelligence</p>
             {result && ready && (
-              <p className="font-caption" style={{ marginTop: 4 }}>
+              <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 4 }}>
                 {result.source_summary.total_signals} signals across multiple platforms
               </p>
             )}
           </div>
           <div className="flex items-center gap-3">
-            
             {status === 'done' && ready && (
-              <button onClick={() => { hasRun.current = false; runDiscover(); }} className="btn-secondary" style={{ fontSize: 12 }}>
+              <button onClick={() => { hasRun.current = false; runDiscover(); }} className="btn-secondary rounded-lg px-4 py-2" style={{ fontSize: 13, fontWeight: 600 }}>
                 Re-run
               </button>
             )}
@@ -164,44 +159,41 @@ export default function DiscoverModule() {
 
       {status === 'error' && (
         <div className="text-center py-16">
-          <div className="card-base p-6 mb-4 inline-block" style={{ borderColor: 'var(--error)' }}>
-            <p style={{ fontSize: 14, color: 'var(--error)' }}>{error}</p>
+          <div className="rounded-xl p-6 mb-4 inline-block" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid rgba(239,68,68,0.3)' }}>
+            <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--error)' }}>{error}</p>
           </div>
           <div>
-            <button onClick={() => { hasRun.current = false; runDiscover(); }} className="btn-primary">Retry</button>
+            <button onClick={() => { hasRun.current = false; runDiscover(); }} className="btn-primary rounded-xl px-6 py-2.5" style={{ fontSize: 14, fontWeight: 600 }}>Retry</button>
           </div>
         </div>
       )}
 
       {status === 'done' && result && ready && (
         <div className="flex gap-6 animate-fade-in" style={{ alignItems: 'flex-start' }}>
-          {/* Main content */}
           <div className="flex-1 min-w-0">
-            {/* Source distribution bar */}
             <SourceSummaryBar summary={result.source_summary} />
 
-            {/* Category tabs */}
             {visibleTabs.length > 1 && (
-              <div className="flex gap-1.5 mb-6 overflow-x-auto pb-1 hide-scrollbar">
+              <div className="flex gap-2 mb-6 overflow-x-auto pb-1 hide-scrollbar">
                 {visibleTabs.map((tab) => {
                   const isActive = filter === tab.key;
                   const count = counts[tab.key] || 0;
                   return (
                     <button key={tab.key} onClick={() => setFilter(tab.key)}
-                      className="flex items-center gap-1.5 rounded-md px-3 py-2 transition-all duration-200 whitespace-nowrap"
+                      className="flex items-center gap-2 rounded-lg px-4 py-2.5 transition-all duration-200 whitespace-nowrap"
                       style={{
-                        fontSize: 12,
-                        fontWeight: isActive ? 400 : 300,
-                        backgroundColor: isActive ? 'var(--accent-primary)' : 'var(--surface-input)',
-                        color: isActive ? '#fff' : 'var(--text-secondary)',
+                        fontSize: 13,
+                        fontWeight: isActive ? 600 : 500,
+                        backgroundColor: isActive ? 'var(--accent-primary)' : 'var(--surface-card)',
+                        color: isActive ? '#080810' : 'var(--text-secondary)',
                         border: isActive ? '1px solid var(--accent-primary)' : '1px solid var(--divider)',
                         cursor: 'pointer',
                       }}>
                       {tab.label}
-                      <span className="rounded-full px-1.5 py-0.5" style={{
-                        fontSize: 10, fontWeight: 400, minWidth: 18, textAlign: 'center',
-                        backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : 'var(--divider-light)',
-                        color: isActive ? '#fff' : 'var(--text-muted)',
+                      <span className="rounded-full px-2 py-0.5" style={{
+                        fontSize: 10, fontWeight: 700, minWidth: 20, textAlign: 'center',
+                        backgroundColor: isActive ? 'rgba(8,8,16,0.2)' : 'var(--surface-elevated)',
+                        color: isActive ? '#080810' : 'var(--text-muted)',
                       }}>{count}</span>
                     </button>
                   );
@@ -209,7 +201,6 @@ export default function DiscoverModule() {
               </div>
             )}
 
-            {/* Insights */}
             <div className="flex flex-col gap-3">
               {filtered.map((insight, i) => (
                 <div key={i} className="scroll-reveal" style={{ animationDelay: `${i * 50}ms` }}
@@ -219,13 +210,12 @@ export default function DiscoverModule() {
               ))}
               {filtered.length === 0 && (
                 <div className="text-center py-16">
-                  <p className="font-caption">No insights match this filter</p>
+                  <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-muted)' }}>No insights match this filter</p>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Synthesis sidebar — only on wider screens */}
           {result.synthesis && result.synthesis.opportunity_score > 0 && (
             <div className="hidden lg:block" style={{ width: 300, flexShrink: 0 }}>
               <SynthesisPanel synthesis={result.synthesis} />
