@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { DecomposeResult } from '@/lib/decompose';
-import type { DiscoverResult } from '@/lib/discover';
+import { normalizeDiscoverResult, type DiscoverResult } from '@/lib/discover';
 import type { ValidateResult } from '@/lib/validate';
 
 export type Step = 'discover' | 'analyze' | 'setup' | 'validate';
@@ -54,19 +54,23 @@ export function IdeaProvider({ children }: { children: ReactNode }) {
   const [currentStep, setCurrentStep] = useState<Step>('discover');
   const [selectedInsight, setSelectedInsight] = useState<string | null>(null);
   const [decomposeResult, setDecomposeResult] = useState<DecomposeResult | null>(null);
-  const [discoverResult, setDiscoverResult] = useState<DiscoverResult | null>(null);
+  const [discoverResult, setDiscoverResultState] = useState<DiscoverResult | null>(null);
   const [analyzeFindings, setAnalyzeFindings] = useState<AnalyzeFinding[]>([]);
   const [analyzeData, setAnalyzeData] = useState<Record<string, any>>({});
   const [setupData, setSetupData] = useState<Record<string, any>>({});
   const [validateData, setValidateData] = useState<ValidateResult | null>(null);
   const [prefetchStatus, setPrefetchStatus] = useState<PrefetchStatus>('idle');
 
+  const setDiscoverResult = (result: DiscoverResult | null) => {
+    setDiscoverResultState(result ? normalizeDiscoverResult(result) : null);
+  };
+
   const resetProject = () => {
     setIdea('');
     setCurrentStep('discover');
     setSelectedInsight(null);
     setDecomposeResult(null);
-    setDiscoverResult(null);
+    setDiscoverResultState(null);
     setAnalyzeFindings([]);
     setAnalyzeData({});
     setSetupData({});
@@ -87,7 +91,7 @@ export function IdeaProvider({ children }: { children: ReactNode }) {
     setCurrentStep(project.currentStep || 'discover');
     setSelectedInsight(null);
     setDecomposeResult(project.decomposeResult || null);
-    setDiscoverResult(project.discoverResult || null);
+    setDiscoverResultState(project.discoverResult ? normalizeDiscoverResult(project.discoverResult) : null);
     setAnalyzeFindings([]);
     setAnalyzeData(project.analyzeData || {});
     setSetupData(project.setupData || {});

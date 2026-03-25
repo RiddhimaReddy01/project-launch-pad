@@ -56,6 +56,57 @@ function StepperDot({ step, index, currentIndex, onNavigate, locked }: { step: t
   );
 }
 
+function ResearchTabLoading({ step }: { step: Step }) {
+  const copy: Record<Step, { label: string; title: string; body: string }> = {
+    discover: {
+      label: 'DISCOVER',
+      title: 'Collecting live market signals',
+      body: 'Pulling quotes, sources, and demand signals so the opportunity page has real evidence behind it.',
+    },
+    analyze: {
+      label: 'ANALYZE',
+      title: 'Turning signals into clear takeaways',
+      body: 'Sizing the market, mapping customer behavior, and shaping the strongest next move for this idea.',
+    },
+    setup: {
+      label: 'SETUP',
+      title: 'Building your launch plan',
+      body: 'Estimating costs, vendors, team needs, and a rollout plan so this tab feels ready when it opens.',
+    },
+    validate: {
+      label: 'VALIDATE',
+      title: 'Preparing your validation toolkit',
+      body: 'Getting the next screen ready so you can move straight into landing pages, surveys, and outreach.',
+    },
+  };
+
+  const current = copy[step];
+
+  return (
+    <div className="rounded-2xl p-8" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+      <p className="section-label mb-3" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>{current.label}</p>
+      <p className="font-heading" style={{ fontSize: 28, fontWeight: 700, marginBottom: 10 }}>{current.title}</p>
+      <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, maxWidth: 620, marginBottom: 28 }}>
+        {current.body}
+      </p>
+      <div className="flex flex-col gap-3">
+        {[100, 86, 72].map((width, index) => (
+          <div key={index} className="rounded-xl p-4" style={{ backgroundColor: 'var(--surface-elevated)', border: '1px solid var(--divider)' }}>
+            <div className="rounded-full overflow-hidden" style={{ height: 10, backgroundColor: 'rgba(255,255,255,0.05)' }}>
+              <div className="animate-progress" style={{
+                width: `${width}%`,
+                height: '100%',
+                borderRadius: 999,
+                background: 'linear-gradient(90deg, var(--accent-primary), var(--accent-teal))',
+              }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Research() {
   const {
     idea,
@@ -87,6 +138,7 @@ export default function Research() {
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [tabTransitioning, setTabTransitioning] = useState(false);
 
   const currentIndex = STEPS.findIndex((s) => s.key === currentStep);
 
@@ -98,6 +150,7 @@ export default function Research() {
 
   const handleNavigate = (step: Step) => {
     if (isTabLocked(step)) return;
+    setTabTransitioning(true);
     setCurrentStep(step);
   };
 
@@ -109,6 +162,17 @@ export default function Research() {
     const el = contentRef.current;
     if (el) requestAnimationFrame(() => el.classList.add('visible'));
   }, [currentStep]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setTabTransitioning(false), 280);
+    return () => window.clearTimeout(timer);
+  }, [currentStep]);
+
+  const showStepLoading =
+    tabTransitioning ||
+    (!decomposeResult && !!idea) ||
+    (currentStep === 'analyze' && prefetchStatus === 'running' && Object.keys(analyzeData).length === 0) ||
+    (currentStep === 'setup' && prefetchStatus === 'running' && !setupData?.costs);
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface-bg)' }}>
@@ -196,7 +260,9 @@ export default function Research() {
         className="scroll-reveal"
         style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 24px 160px' }}
       >
-        {currentStep === 'discover' ? (
+        {showStepLoading ? (
+          <ResearchTabLoading step={currentStep} />
+        ) : currentStep === 'discover' ? (
           <DiscoverModule />
         ) : currentStep === 'analyze' ? (
           <AnalyzeModule />
