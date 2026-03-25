@@ -78,15 +78,16 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
-      className="rounded-[6px] px-2.5 py-1 transition-all duration-200"
+      className="rounded-lg px-3 py-1.5 transition-all duration-200"
       style={{
-        fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400,
-        color: copied ? 'var(--accent-teal)' : 'var(--text-muted)',
-        backgroundColor: copied ? 'rgba(91,140,126,0.06)' : 'var(--surface-input)',
-        border: 'none', cursor: 'pointer',
+        fontSize: 12, fontWeight: 500,
+        color: copied ? 'var(--accent-teal)' : 'var(--text-secondary)',
+        backgroundColor: copied ? 'rgba(0,191,166,0.1)' : 'var(--surface-elevated)',
+        border: `1px solid ${copied ? 'var(--accent-teal)' : 'var(--divider)'}`,
+        cursor: 'pointer',
       }}
     >
-      {copied ? 'Copied' : 'Copy'}
+      {copied ? '✓ Copied' : 'Copy'}
     </button>
   );
 }
@@ -105,8 +106,9 @@ function EditableText({ value, onChange, multiline, style }: { value: string; on
         onKeyDown={(e) => { if (e.key === 'Escape') { setEditing(false); setDraft(value); } if (!multiline && e.key === 'Enter') { setEditing(false); onChange(draft); } }}
         autoFocus
         style={{
-          ...style, width: '100%', border: '1px solid var(--text-primary)',
-          borderRadius: 8, padding: '6px 10px', backgroundColor: '#fff', outline: 'none',
+          ...style, width: '100%', border: '1px solid var(--accent-primary)',
+          borderRadius: 8, padding: '8px 12px', backgroundColor: 'var(--surface-elevated)', outline: 'none',
+          color: 'var(--text-primary)',
           resize: multiline ? 'vertical' : 'none', minHeight: multiline ? 80 : undefined,
         }}
       />
@@ -114,7 +116,7 @@ function EditableText({ value, onChange, multiline, style }: { value: string; on
   }
   return (
     <span onClick={() => { setDraft(value); setEditing(true); }}
-      style={{ ...style, cursor: 'text', borderBottom: '1px dashed var(--divider-light)' }} title="Click to edit">
+      style={{ ...style, cursor: 'text', borderBottom: '1px dashed var(--divider-section)' }} title="Click to edit">
       {value}
     </span>
   );
@@ -141,12 +143,11 @@ export default function ValidateModule() {
     if (el) requestAnimationFrame(() => el.classList.add('visible'));
   }, []);
 
-  // AI-suggested methods based on analyze data
   const suggestedMethods = useMemo(() => {
     const suggestions: string[] = [];
-    const opp = analyzeData?.opportunity;
     const cust = analyzeData?.customers;
     const comp = analyzeData?.competitors;
+    const opp = analyzeData?.opportunity;
 
     const maxPain = Array.isArray(cust?.segments) ? cust.segments.reduce((max: number, s: any) => Math.max(max, s.pain_intensity || 0), 0) : 0;
     if (maxPain >= 8) { suggestions.push('landing', 'presale'); }
@@ -155,9 +156,7 @@ export default function ValidateModule() {
 
     const competitorCount = comp?.competitors?.length || 0;
     if (competitorCount <= 3) suggestions.push('community');
-
     if (opp?.som?.value && opp.som.value > 1000000) suggestions.push('smoke_ad');
-
     if (!suggestions.includes('community')) suggestions.push('community');
 
     return [...new Set(suggestions)].slice(0, 4);
@@ -194,8 +193,6 @@ export default function ValidateModule() {
     return ctx;
   }, [decomposeResult, discoverResult, selectedInsight, analyzeData, setupData]);
 
-
-  // Always show all tabs, but track which are "relevant" to selected methods
   const relevantOutputs = useMemo(() => {
     const outputs = new Set<string>();
     selectedMethods.forEach(mId => {
@@ -205,7 +202,7 @@ export default function ValidateModule() {
     return outputs;
   }, [selectedMethods]);
 
-  const visibleTabs = ALL_TABS; // Always show all 4 tabs
+  const visibleTabs = ALL_TABS;
 
   useEffect(() => {
     if (phase === 'toolkit' && visibleTabs.length > 0 && (!activeTab || !visibleTabs.find(t => t.key === activeTab))) {
@@ -218,10 +215,7 @@ export default function ValidateModule() {
     setPhase('generating');
     setErrorMsg('');
     try {
-      // Always generate all 4 asset types
       const allOutputs = ['landing_page', 'survey', 'whatsapp', 'communities', 'scorecard'];
-
-      // Use rich context when available, fall back to simple idea string
       const data = context
         ? await generateValidation(context, allOutputs)
         : await generateValidation(idea, allOutputs);
@@ -268,7 +262,6 @@ export default function ValidateModule() {
 
       if (ideaId) {
         await supabase.from('experiments').delete().eq('idea_id', ideaId).eq('user_id', user.id);
-
         const methodEntries = Array.from(selectedMethods).map(mId => {
           const method = ALL_METHODS.find(am => am.id === mId);
           return {
@@ -303,18 +296,18 @@ export default function ValidateModule() {
     const loc = context ? `${context.city}, ${context.state}` : '';
     let html = `<!DOCTYPE html><html><head><title>Launch Lean Validation - ${biz}</title>
       <style>body{font-family:Inter,-apple-system,sans-serif;max-width:800px;margin:40px auto;padding:0 24px;color:#1a1a1a}
-      h1{font-size:24px;font-weight:400;margin-bottom:4px}h2{font-size:18px;font-weight:500;margin:28px 0 12px;border-bottom:1px solid #e5e5e5;padding-bottom:8px}
+      h1{font-size:24px;font-weight:600;margin-bottom:4px}h2{font-size:18px;font-weight:600;margin:28px 0 12px;border-bottom:1px solid #e5e5e5;padding-bottom:8px}
       .meta{font-size:13px;color:#999;margin-bottom:32px}table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
-      td,th{text-align:left;padding:6px 10px;border-bottom:1px solid #eee}th{font-weight:500;color:#666}
+      td,th{text-align:left;padding:6px 10px;border-bottom:1px solid #eee}th{font-weight:600;color:#666}
       .benefit{margin:4px 0;padding-left:16px}blockquote{border-left:3px solid #ddd;margin:12px 0;padding:8px 16px;color:#666;font-style:italic}
       @media print{body{margin:20px}}</style>
     </head><body>
-      <h1>Validation Kit - ${biz}</h1><p class="meta">${loc} - Generated ${new Date().toLocaleDateString()}</p>`;
+      <h1>Validation Kit — ${biz}</h1><p class="meta">${loc} · Generated ${new Date().toLocaleDateString()}</p>`;
     html += `<p><strong>Methods:</strong> ${Array.from(selectedMethods).map(m => ALL_METHODS.find(am => am.id === m)?.name || m).join(', ')}</p>`;
     const lp = result.landing_page;
     if (lp) {
-      html += `<h2>Landing Page Copy</h2><p style="font-size:20px;font-weight:500">${lp.headline}</p><p style="color:#666">${lp.subheadline}</p>`;
-      lp.benefits.forEach(b => { html += `<p class="benefit">- ${b}</p>`; });
+      html += `<h2>Landing Page Copy</h2><p style="font-size:20px;font-weight:600">${lp.headline}</p><p style="color:#666">${lp.subheadline}</p>`;
+      lp.benefits.forEach(b => { html += `<p class="benefit">— ${b}</p>`; });
       html += `<p><strong>CTA:</strong> ${lp.cta}</p><blockquote>${lp.social_proof}</blockquote>`;
     }
     if (result.survey) {
@@ -341,9 +334,9 @@ export default function ValidateModule() {
   // ═══ EMPTY STATE ═══
   if (!decomposeResult) return (
     <div className="flex items-center justify-center" style={{ height: '60vh' }}>
-      <div className="text-center" style={{ maxWidth: 400 }}>
-        <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Start with your idea first</p>
-        <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+      <div className="text-center" style={{ maxWidth: 420 }}>
+        <p className="font-heading" style={{ fontSize: 24, fontWeight: 700, marginBottom: 10 }}>Start with your idea first</p>
+        <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
           Enter your business idea on the home page. We need that context before building your validation toolkit.
         </p>
       </div>
@@ -354,34 +347,40 @@ export default function ValidateModule() {
   if (phase === 'select') return (
     <div ref={containerRef} className="scroll-reveal">
       <div className="mb-10">
-        <p className="section-label mb-1.5">VALIDATE</p>
-        <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>How do you want to test demand?</p>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-          Pick the methods that fit your stage. We will build a ready-to-deploy toolkit with landing page copy, survey questions, outreach messages, target communities, and success benchmarks.
+        <p className="section-label mb-2" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em' }}>VALIDATE</p>
+        <p className="font-heading" style={{ fontSize: 28, fontWeight: 700, marginBottom: 8, color: 'var(--text-primary)' }}>
+          How do you want to test demand?
+        </p>
+        <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, maxWidth: 600 }}>
+          Pick the methods that fit your stage. We'll build a ready-to-deploy toolkit with landing page copy, survey questions, outreach messages, and target communities.
         </p>
       </div>
 
       {/* AI Suggestion Banner */}
       {suggestedMethods.length > 0 && (
-        <div className="card-base mb-8 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="mono-badge">AI</span>
-            <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
+        <div className="mb-8 rounded-xl overflow-hidden" style={{ 
+          background: 'linear-gradient(135deg, rgba(0,212,230,0.06), rgba(168,124,255,0.04))',
+          border: '1px solid rgba(0,212,230,0.15)',
+          padding: '20px 24px',
+        }}>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="mono-badge" style={{ width: 30, height: 30, fontSize: 11, fontWeight: 700 }}>AI</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
               Recommended based on your analysis
             </span>
           </div>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+          <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
             {analyzeData?.customers?.segments?.[0]?.pain_intensity >= 8
-              ? 'High customer pain detected -- landing page and pre-sale are your strongest validation methods.'
+              ? 'High customer pain detected — landing page and pre-sale are your strongest validation methods.'
               : analyzeData?.competitors?.competitors?.length <= 3
-                ? 'Low competition in your market -- community outreach will help you capture early adopters.'
+                ? 'Low competition in your market — community outreach will help you capture early adopters.'
                 : 'Based on your market analysis, these methods balance speed and signal quality.'}
           </p>
         </div>
       )}
 
       {/* Method Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 14 }}>
         {ALL_METHODS.map(m => {
           const isSelected = selectedMethods.has(m.id);
           const isSuggested = suggestedMethods.includes(m.id);
@@ -392,21 +391,22 @@ export default function ValidateModule() {
       </div>
 
       {/* Generate button */}
-      <div className="flex items-center justify-between mt-10 pt-6" style={{ borderTop: '1px solid var(--divider)' }}>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}>
+      <div className="flex items-center justify-between mt-12 pt-8" style={{ borderTop: '1px solid var(--divider-section)' }}>
+        <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)' }}>
           {selectedMethods.size} method{selectedMethods.size !== 1 ? 's' : ''} selected
         </p>
         <button
           onClick={generate}
           disabled={selectedMethods.size === 0 || !context}
-          className="btn-primary rounded-[10px] px-6 py-3"
+          className="btn-primary rounded-xl px-8 py-3.5"
+          style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.01em' }}
         >
-          Build My Toolkit
+          Build My Starter Toolkit →
         </button>
       </div>
 
       {errorMsg && (
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'hsl(var(--destructive))', marginTop: 12, textAlign: 'right' }}>{errorMsg}</p>
+        <p style={{ fontSize: 13, fontWeight: 500, color: 'hsl(var(--destructive))', marginTop: 12, textAlign: 'right' }}>{errorMsg}</p>
       )}
     </div>
   );
@@ -415,8 +415,9 @@ export default function ValidateModule() {
   if (phase === 'generating') return (
     <div ref={containerRef} className="scroll-reveal">
       <div className="mb-10">
-        <p className="section-label mb-1.5">VALIDATE</p>
-        <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>Crafting your toolkit</p>
+        <p className="section-label mb-2" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em' }}>VALIDATE</p>
+        <p className="font-heading" style={{ fontSize: 28, fontWeight: 700 }}>Crafting your toolkit</p>
+        <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 6 }}>This takes about 15-30 seconds</p>
       </div>
       <SectionSkeleton label="Writing landing page copy, designing survey questions, drafting outreach messages, finding communities, and setting benchmarks..." />
     </div>
@@ -428,45 +429,45 @@ export default function ValidateModule() {
       {/* Header */}
       <div className="flex items-center justify-between mb-10">
         <div>
-          <p className="section-label mb-1.5">VALIDATE</p>
-          <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>Validation Toolkit</p>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-            {selectedMethods.size} methods -- {Array.from(selectedMethods).map(m => ALL_METHODS.find(am => am.id === m)?.name).filter(Boolean).join(', ')}
+          <p className="section-label mb-2" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em' }}>VALIDATE</p>
+          <p className="font-heading" style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>Your Starter Toolkit</p>
+          <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+            {selectedMethods.size} methods — {Array.from(selectedMethods).map(m => ALL_METHODS.find(am => am.id === m)?.name).filter(Boolean).join(', ')}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={handleSave} disabled={saving} className="btn-primary rounded-[8px] px-3 py-1.5">
+          <button onClick={handleSave} disabled={saving} className="btn-primary rounded-lg px-4 py-2" style={{ fontSize: 13, fontWeight: 600 }}>
             {saving ? 'Saving...' : 'Save to Dashboard'}
           </button>
-          <button onClick={handleExportPDF} disabled={exporting} className="btn-secondary rounded-[8px] px-3 py-1.5">
+          <button onClick={handleExportPDF} disabled={exporting} className="btn-secondary rounded-lg px-4 py-2" style={{ fontSize: 13, fontWeight: 500 }}>
             {exporting ? 'Exporting...' : 'Export PDF'}
           </button>
-          <button onClick={() => setPhase('select')} className="btn-secondary rounded-[8px] px-3 py-1.5">
+          <button onClick={() => setPhase('select')} className="btn-secondary rounded-lg px-4 py-2" style={{ fontSize: 13, fontWeight: 500 }}>
             Change Methods
           </button>
-          <button onClick={generate} className="btn-secondary rounded-[8px] px-3 py-1.5">
+          <button onClick={generate} className="btn-secondary rounded-lg px-4 py-2" style={{ fontSize: 13, fontWeight: 500 }}>
             Regenerate
           </button>
         </div>
       </div>
 
       {/* Tab navigation */}
-      <div className="flex gap-1 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider)' }}>
+      <div className="flex gap-1 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider-section)' }}>
         {visibleTabs.map(tab => {
           const isActive = activeTab === tab.key;
           const isRelevant = relevantOutputs.has(tab.outputKey);
           return (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-              className="relative flex items-center gap-2 px-4 py-3 transition-all duration-200 whitespace-nowrap"
-              style={{ fontSize: 13, fontWeight: isActive ? 500 : 400, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
+              className="relative flex items-center gap-2.5 px-5 py-3.5 transition-all duration-200 whitespace-nowrap"
+              style={{ fontSize: 14, fontWeight: isActive ? 600 : 500, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
               <span className="mono-badge" style={{
-                width: 20, height: 20, fontSize: 9,
-                backgroundColor: isActive ? 'var(--accent-primary)' : isRelevant ? 'rgba(0,212,230,0.12)' : 'var(--divider)',
+                width: 22, height: 22, fontSize: 10, fontWeight: 700,
+                backgroundColor: isActive ? 'var(--accent-primary)' : isRelevant ? 'rgba(0,212,230,0.15)' : 'var(--surface-elevated)',
                 color: isActive ? '#080810' : isRelevant ? 'var(--accent-primary)' : 'var(--text-muted)',
               }}>{tab.mono}</span>
               {tab.label}
               {isRelevant && !isActive && (
-                <span style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: 'var(--accent-primary)', boxShadow: '0 0 6px rgba(0,212,230,0.4)' }} />
+                <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--accent-primary)', boxShadow: '0 0 8px rgba(0,212,230,0.5)' }} />
               )}
               {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 2, background: 'linear-gradient(90deg, var(--accent-primary), var(--accent-purple))', borderRadius: 1 }} />}
             </button>
@@ -479,23 +480,23 @@ export default function ValidateModule() {
         const currentTab = ALL_TABS.find(t => t.key === activeTab);
         if (!currentTab) return null;
         return (
-          <div className="rounded-[10px] mb-6 overflow-hidden" style={{ border: '1px solid var(--divider-light)' }}>
-            <div className="flex items-center gap-3 px-4 py-2.5" style={{ backgroundColor: 'rgba(91,140,126,0.04)', borderBottom: '1px solid var(--divider-light)' }}>
-              <span className="section-label" style={{ flexShrink: 0, marginBottom: 0 }}>Target</span>
-              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, color: 'var(--text-primary)' }}>{currentTab.target}</span>
+          <div className="rounded-xl mb-8 overflow-hidden" style={{ border: '1px solid var(--divider)' }}>
+            <div className="flex items-center gap-3 px-5 py-3" style={{ backgroundColor: 'rgba(0,212,230,0.04)', borderBottom: '1px solid var(--divider)' }}>
+              <span className="section-label" style={{ flexShrink: 0, marginBottom: 0, fontWeight: 700 }}>TARGET</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{currentTab.target}</span>
             </div>
-            <div className="flex items-center gap-3 px-4 py-2.5" style={{ backgroundColor: 'var(--surface-input)' }}>
-              <span className="section-label" style={{ flexShrink: 0, marginBottom: 0 }}>Deploy</span>
-              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5, flex: 1 }}>
+            <div className="flex items-center gap-4 px-5 py-3" style={{ backgroundColor: 'var(--surface-card)' }}>
+              <span className="section-label" style={{ flexShrink: 0, marginBottom: 0, fontWeight: 700 }}>DEPLOY</span>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.6, flex: 1 }}>
                 {currentTab.deployGuide.instruction}
               </span>
               {currentTab.deployGuide.urls.length > 0 && (
-                <div className="flex items-center gap-1.5 flex-shrink-0">
+                <div className="flex items-center gap-2 flex-shrink-0">
                   {currentTab.deployGuide.urls.map(u => (
                     <a key={u.name} href={u.url} target="_blank" rel="noopener noreferrer"
-                      className="btn-secondary rounded-[6px] px-2.5 py-1 whitespace-nowrap"
-                      style={{ fontSize: 10, textDecoration: 'none' }}>
-                      {u.name}
+                      className="btn-secondary rounded-lg px-3 py-1.5 whitespace-nowrap"
+                      style={{ fontSize: 11, fontWeight: 600, textDecoration: 'none' }}>
+                      {u.name} ↗
                     </a>
                   ))}
                 </div>
@@ -506,14 +507,13 @@ export default function ValidateModule() {
       })()}
 
       {/* Content */}
-      <div style={{ minHeight: 300, maxWidth: 800 }}>
+      <div style={{ minHeight: 300, maxWidth: 820 }}>
         {result && (
           <>
             {activeTab === 'landing' && result.landing_page && <LandingSection data={result.landing_page} onChange={(lp) => updateResult({ landing_page: lp })} />}
             {activeTab === 'survey' && result.survey && <SurveySection data={result.survey} onChange={(s) => updateResult({ survey: s })} />}
             {activeTab === 'whatsapp' && result.whatsapp && <WhatsAppSection data={result.whatsapp} onChange={(w) => updateResult({ whatsapp: w })} />}
             {activeTab === 'communities' && result.communities && <CommunitiesSection data={result.communities} />}
-            
           </>
         )}
       </div>
@@ -530,44 +530,51 @@ function MethodCard({ method, isSelected, isSuggested, onToggle }: { method: Val
       onClick={onToggle}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="card-base transition-all duration-200"
+      className="transition-all duration-200"
       style={{
-        padding: 24, cursor: 'pointer',
-        backgroundColor: isSelected ? 'rgba(26,26,26,0.02)' : 'var(--surface-card)',
-        border: isSelected ? '1.5px solid var(--text-primary)' : '1px solid var(--divider-light)',
-        transform: hovered ? 'translateY(-1px)' : 'translateY(0)',
-        boxShadow: hovered ? '0 4px 16px rgba(0,0,0,0.06)' : 'none',
+        padding: '22px 24px', cursor: 'pointer', borderRadius: 14,
+        backgroundColor: isSelected ? 'rgba(0,212,230,0.04)' : 'var(--surface-card)',
+        border: isSelected ? '1.5px solid var(--accent-primary)' : '1px solid var(--divider)',
+        transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
+        boxShadow: isSelected 
+          ? '0 0 20px rgba(0,212,230,0.08)' 
+          : hovered ? '0 8px 24px rgba(0,0,0,0.3)' : 'none',
       }}
     >
       <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)' }}>{method.name}</span>
+        <div className="flex items-center gap-2.5">
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>{method.name}</span>
           {isSuggested && (
-            <span className="rounded-full px-2 py-0.5" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, backgroundColor: 'rgba(26,26,26,0.06)', color: 'var(--text-muted)' }}>
+            <span className="rounded-full px-2.5 py-0.5" style={{ 
+              fontSize: 10, fontWeight: 700, 
+              backgroundColor: 'rgba(0,212,230,0.1)', 
+              color: 'var(--accent-primary)',
+              letterSpacing: '0.04em',
+            }}>
               Recommended
             </span>
           )}
         </div>
         <div style={{
-          width: 20, height: 20, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          border: isSelected ? '2px solid var(--accent-primary)' : '2px solid var(--divider-light)',
+          width: 22, height: 22, borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          border: isSelected ? '2px solid var(--accent-primary)' : '2px solid var(--divider-section)',
           backgroundColor: isSelected ? 'var(--accent-primary)' : 'transparent', transition: 'all 200ms ease-out',
         }}>
           {isSelected && (
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M2.5 6L5 8.5L9.5 3.5" stroke="#080810" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           )}
         </div>
       </div>
-      <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: 14 }}>{method.description}</p>
+      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 16 }}>{method.description}</p>
       <div className="flex items-center gap-3">
         <span style={{
-          fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400,
-          color: EFFORT_COLORS[method.effort], padding: '2px 8px', borderRadius: 6,
-          backgroundColor: `${EFFORT_COLORS[method.effort]}10`,
+          fontSize: 12, fontWeight: 600,
+          color: EFFORT_COLORS[method.effort], padding: '3px 10px', borderRadius: 6,
+          backgroundColor: `${EFFORT_COLORS[method.effort]}15`,
         }}>{method.effort} effort</span>
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)' }}>{SPEED_LABELS[method.speed]}</span>
+        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)' }}>{SPEED_LABELS[method.speed]}</span>
       </div>
     </div>
   );
@@ -579,35 +586,40 @@ function LandingSection({ data, onChange }: { data: NonNullable<ValidateResult['
   const allText = `${data.headline}\n${data.subheadline}\n\n${data.benefits.join('\n')}\n\n${data.cta}\n\n${data.social_proof}`;
   return (
     <div>
-      <div className="flex items-center justify-between mb-5">
-        <p className="section-label">LANDING PAGE COPY</p>
+      <div className="flex items-center justify-between mb-6">
+        <p className="section-label" style={{ fontWeight: 700 }}>LANDING PAGE COPY</p>
         <CopyButton text={allText} />
       </div>
-      <div className="card-base overflow-hidden">
-        <div style={{ padding: '48px 32px', textAlign: 'center', backgroundColor: 'var(--surface-bg)' }}>
-          <div style={{ marginBottom: 16 }}>
+      <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--divider)' }}>
+        <div style={{ padding: '56px 40px', textAlign: 'center', backgroundColor: 'var(--surface-card)' }}>
+          <div style={{ marginBottom: 20 }}>
             <EditableText value={data.headline} onChange={(v) => onChange({ ...data, headline: v })}
-              style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 400, color: 'var(--text-primary)', letterSpacing: '-0.02em', lineHeight: 1.25, display: 'inline' }} />
+              style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 30, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', lineHeight: 1.2, display: 'inline' }} />
           </div>
-          <div style={{ marginBottom: 32 }}>
+          <div style={{ marginBottom: 36 }}>
             <EditableText value={data.subheadline} onChange={(v) => onChange({ ...data, subheadline: v })}
-              style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6, display: 'inline' }} />
+              style={{ fontSize: 16, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, display: 'inline' }} />
           </div>
-          <div style={{ maxWidth: 380, margin: '0 auto 32px', textAlign: 'left' }}>
+          <div style={{ maxWidth: 420, margin: '0 auto 36px', textAlign: 'left' }}>
             {data.benefits.map((b, i) => (
-              <div key={i} className="flex items-start" style={{ gap: 10, marginBottom: 10 }}>
-                <span style={{ color: 'var(--accent-teal)', fontSize: 13, marginTop: 2, flexShrink: 0 }}>--</span>
+              <div key={i} className="flex items-start" style={{ gap: 12, marginBottom: 12 }}>
+                <span style={{ color: 'var(--accent-primary)', fontSize: 14, marginTop: 2, flexShrink: 0, fontWeight: 700 }}>✓</span>
                 <EditableText value={b} onChange={(v) => { const next = [...data.benefits]; next[i] = v; onChange({ ...data, benefits: next }); }}
-                  style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }} />
+                  style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7 }} />
               </div>
             ))}
           </div>
-          <div className="rounded-[10px] inline-block" style={{ padding: '12px 28px', backgroundColor: 'var(--accent-primary)', color: '#fff', fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400 }}>
-            <EditableText value={data.cta} onChange={(v) => onChange({ ...data, cta: v })} style={{ color: '#fff' }} />
+          <div className="rounded-xl inline-block" style={{ 
+            padding: '14px 32px', 
+            background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-teal))',
+            color: '#080810', fontSize: 15, fontWeight: 700,
+            boxShadow: '0 0 24px rgba(0,212,230,0.2)',
+          }}>
+            <EditableText value={data.cta} onChange={(v) => onChange({ ...data, cta: v })} style={{ color: '#080810' }} />
           </div>
-          <div style={{ marginTop: 24 }}>
+          <div style={{ marginTop: 28 }}>
             <EditableText value={data.social_proof} onChange={(v) => onChange({ ...data, social_proof: v })}
-              style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 13, color: 'var(--text-muted)', display: 'inline' }} />
+              style={{ fontStyle: 'italic', fontSize: 14, fontWeight: 500, color: 'var(--text-muted)', display: 'inline' }} />
           </div>
         </div>
       </div>
@@ -622,31 +634,31 @@ function SurveySection({ data, onChange }: { data: NonNullable<ValidateResult['s
   const typeLabels: Record<string, string> = { scale: 'Scale', multiple_choice: 'Multiple choice', open: 'Open text', yes_no: 'Yes / No', email: 'Email capture' };
   return (
     <div>
-      <div className="flex items-center justify-between mb-5">
-        <p className="section-label">CUSTOMER DISCOVERY SURVEY</p>
+      <div className="flex items-center justify-between mb-6">
+        <p className="section-label" style={{ fontWeight: 700 }}>CUSTOMER DISCOVERY SURVEY</p>
         <CopyButton text={allText} />
       </div>
-      <div className="flex flex-col" style={{ gap: 8 }}>
+      <div className="flex flex-col" style={{ gap: 10 }}>
         {data.map((q, i) => (
-          <div key={q.id} className="card-base p-5">
-            <div className="flex items-start gap-3">
-              <span className="mono-badge" style={{ width: 24, height: 24, fontSize: 11, backgroundColor: 'rgba(26,26,26,0.05)', color: 'var(--text-muted)' }}>{i + 1}</span>
+          <div key={q.id} className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+            <div className="flex items-start gap-4">
+              <span className="mono-badge" style={{ width: 28, height: 28, fontSize: 12, fontWeight: 700, backgroundColor: 'rgba(0,212,230,0.1)', color: 'var(--accent-primary)' }}>{i + 1}</span>
               <div className="flex-1">
                 <EditableText value={q.question} onChange={(v) => { const next = [...data]; next[i] = { ...q, question: v }; onChange(next); }}
-                  style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.5 }} />
-                <div className="flex items-center gap-2 mt-2">
-                  <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', padding: '2px 8px', borderRadius: 4, backgroundColor: 'var(--surface-input)' }}>{typeLabels[q.type] || q.type}</span>
+                  style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.6 }} />
+                <div className="flex items-center gap-2 mt-2.5">
+                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', padding: '3px 10px', borderRadius: 6, backgroundColor: 'var(--surface-elevated)', letterSpacing: '0.02em' }}>{typeLabels[q.type] || q.type}</span>
                 </div>
                 {q.options && (
-                  <div className="flex flex-wrap mt-3" style={{ gap: 6 }}>
+                  <div className="flex flex-wrap mt-3" style={{ gap: 8 }}>
                     {q.options.map((o, oi) => (
-                      <span key={oi} style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', padding: '4px 10px', borderRadius: 6, border: '1px solid var(--divider-light)' }}>{o}</span>
+                      <span key={oi} style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', padding: '5px 12px', borderRadius: 8, border: '1px solid var(--divider-section)' }}>{o}</span>
                     ))}
                   </div>
                 )}
                 {q.type === 'email' && (
-                  <div className="mt-3 rounded-[8px]" style={{ padding: '8px 12px', border: '1px solid var(--divider-light)', backgroundColor: 'var(--surface-input)' }}>
-                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)' }}>email@example.com</span>
+                  <div className="mt-3 rounded-lg" style={{ padding: '10px 14px', border: '1px solid var(--divider)', backgroundColor: 'var(--surface-elevated)' }}>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)' }}>email@example.com</span>
                   </div>
                 )}
               </div>
@@ -663,17 +675,17 @@ function SurveySection({ data, onChange }: { data: NonNullable<ValidateResult['s
 function WhatsAppSection({ data, onChange }: { data: NonNullable<ValidateResult['whatsapp']>; onChange: (d: NonNullable<ValidateResult['whatsapp']>) => void }) {
   return (
     <div>
-      <div className="flex items-center justify-between mb-5">
-        <p className="section-label">COMMUNITY OUTREACH MESSAGE</p>
+      <div className="flex items-center justify-between mb-6">
+        <p className="section-label" style={{ fontWeight: 700 }}>COMMUNITY OUTREACH MESSAGE</p>
         <CopyButton text={data.message} />
       </div>
-      <div className="card-base p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', padding: '2px 8px', borderRadius: 4, backgroundColor: 'var(--surface-input)' }}>Tone: {data.tone}</span>
+      <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+        <div className="flex items-center gap-2 mb-5">
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--accent-primary)', padding: '3px 10px', borderRadius: 6, backgroundColor: 'rgba(0,212,230,0.1)' }}>Tone: {data.tone}</span>
         </div>
-        <div className="rounded-[12px]" style={{ padding: '20px 24px', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--divider-light)' }}>
+        <div className="rounded-xl" style={{ padding: '24px 28px', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--divider)' }}>
           <EditableText value={data.message} onChange={(v) => onChange({ ...data, message: v })} multiline
-            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75, whiteSpace: 'pre-line' }} />
+            style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.8, whiteSpace: 'pre-line' }} />
         </div>
       </div>
     </div>
@@ -686,32 +698,34 @@ function CommunitiesSection({ data }: { data: NonNullable<ValidateResult['commun
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   return (
     <div>
-      <div className="flex items-center justify-between mb-5">
-        <p className="section-label">COMMUNITIES TO TEST</p>
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>{data.length} communities</span>
+      <div className="flex items-center justify-between mb-6">
+        <p className="section-label" style={{ fontWeight: 700 }}>COMMUNITIES TO TEST</p>
+        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>{data.length} communities</span>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
         {data.map((c, i) => {
           const isHov = hoveredId === i;
           const platformColor = PLATFORM_COLORS[c.platform] || 'var(--text-muted)';
           return (
-            <div key={i} className="card-base p-5 transition-all duration-200"
+            <div key={i} className="rounded-xl p-5 transition-all duration-200"
               style={{
-                transform: isHov ? 'translateY(-1px)' : 'translateY(0)',
-                boxShadow: isHov ? '0 4px 16px rgba(0,0,0,0.06)' : 'none',
+                backgroundColor: 'var(--surface-card)',
+                border: `1px solid ${isHov ? 'var(--divider-section)' : 'var(--divider)'}`,
+                transform: isHov ? 'translateY(-2px)' : 'translateY(0)',
+                boxShadow: isHov ? '0 8px 24px rgba(0,0,0,0.3)' : 'none',
               }}
               onMouseEnter={() => setHoveredId(i)} onMouseLeave={() => setHoveredId(null)}>
               <div className="flex items-center justify-between mb-3">
                 <a href={c.url} target="_blank" rel="noopener noreferrer"
-                  style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', textDecoration: 'none' }}>{c.name}</a>
-                <span className="rounded-full px-2 py-0.5" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, backgroundColor: platformColor, color: '#fff' }}>{c.platform}</span>
+                  style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', textDecoration: 'none' }}>{c.name}</a>
+                <span className="rounded-full px-2.5 py-0.5" style={{ fontSize: 10, fontWeight: 700, backgroundColor: platformColor, color: '#fff' }}>{c.platform}</span>
               </div>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, color: 'var(--text-muted)', marginBottom: 6 }}>{c.members} members</p>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{c.rationale}</p>
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 8 }}>{c.members} members</p>
+              <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7 }}>{c.rationale}</p>
               <a href={c.url} target="_blank" rel="noopener noreferrer"
-                className="btn-secondary inline-block mt-3 rounded-[6px] px-3 py-1.5"
-                style={{ fontSize: 11, textDecoration: 'none' }}>
-                Visit community
+                className="btn-secondary inline-block mt-4 rounded-lg px-4 py-2"
+                style={{ fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
+                Visit community ↗
               </a>
             </div>
           );
@@ -720,4 +734,3 @@ function CommunitiesSection({ data }: { data: NonNullable<ValidateResult['commun
     </div>
   );
 }
-
