@@ -454,17 +454,21 @@ export default function ValidateModule() {
       <div className="flex gap-1 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider)' }}>
         {visibleTabs.map(tab => {
           const isActive = activeTab === tab.key;
+          const isRelevant = relevantOutputs.has(tab.outputKey);
           return (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               className="relative flex items-center gap-2 px-4 py-3 transition-all duration-200 whitespace-nowrap"
-              style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: isActive ? 400 : 300, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
+              style={{ fontSize: 13, fontWeight: isActive ? 500 : 400, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
               <span className="mono-badge" style={{
                 width: 20, height: 20, fontSize: 9,
-                backgroundColor: isActive ? 'var(--text-primary)' : 'var(--divider-light)',
-                color: isActive ? '#fff' : 'var(--text-muted)',
+                backgroundColor: isActive ? 'var(--accent-primary)' : isRelevant ? 'rgba(0,212,230,0.12)' : 'var(--divider)',
+                color: isActive ? '#080810' : isRelevant ? 'var(--accent-primary)' : 'var(--text-muted)',
               }}>{tab.mono}</span>
               {tab.label}
-              {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 1.5, backgroundColor: 'var(--accent-primary)', borderRadius: 1 }} />}
+              {isRelevant && !isActive && (
+                <span style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: 'var(--accent-primary)', boxShadow: '0 0 6px rgba(0,212,230,0.4)' }} />
+              )}
+              {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 2, background: 'linear-gradient(90deg, var(--accent-primary), var(--accent-purple))', borderRadius: 1 }} />}
             </button>
           );
         })}
