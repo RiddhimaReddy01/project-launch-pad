@@ -24,35 +24,22 @@ function useTypewriter(texts: string[], speed = 55, pause = 2000) {
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
-
     const tick = () => {
       const currentText = texts[indexRef.current];
-
       if (dirRef.current === 'type') {
         charRef.current++;
         setDisplay(currentText.slice(0, charRef.current));
-        if (charRef.current >= currentText.length) {
-          dirRef.current = 'pause';
-          timeout = setTimeout(tick, pause);
-        } else {
-          timeout = setTimeout(tick, speed + Math.random() * 30);
-        }
+        if (charRef.current >= currentText.length) { dirRef.current = 'pause'; timeout = setTimeout(tick, pause); }
+        else { timeout = setTimeout(tick, speed + Math.random() * 30); }
       } else if (dirRef.current === 'pause') {
-        dirRef.current = 'erase';
-        timeout = setTimeout(tick, speed);
+        dirRef.current = 'erase'; timeout = setTimeout(tick, speed);
       } else {
         charRef.current--;
         setDisplay(currentText.slice(0, charRef.current));
-        if (charRef.current <= 0) {
-          indexRef.current = (indexRef.current + 1) % texts.length;
-          dirRef.current = 'type';
-          timeout = setTimeout(tick, 400);
-        } else {
-          timeout = setTimeout(tick, 25);
-        }
+        if (charRef.current <= 0) { indexRef.current = (indexRef.current + 1) % texts.length; dirRef.current = 'type'; timeout = setTimeout(tick, 400); }
+        else { timeout = setTimeout(tick, 25); }
       }
     };
-
     timeout = setTimeout(tick, 600);
     return () => clearTimeout(timeout);
   }, [texts, speed, pause]);
@@ -76,20 +63,29 @@ export default function Hero() {
   const inputRef = useScrollReveal(160);
 
   return (
-    <section className="flex flex-col items-center px-6" style={{ paddingTop: 160 }}>
-      <h1 ref={headlineRef} className="scroll-reveal font-heading text-center" style={{ maxWidth: 520 }}>
-        Don't build something nobody wants.
+    <section className="flex flex-col items-center px-6" style={{ paddingTop: 140 }}>
+      {/* Accent glow */}
+      <div style={{
+        position: 'absolute', top: -100, left: '50%', transform: 'translateX(-50%)',
+        width: 600, height: 400, borderRadius: '50%',
+        background: 'radial-gradient(ellipse, rgba(0,212,230,0.08) 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
+
+      <h1 ref={headlineRef} className="scroll-reveal font-heading text-center" style={{ maxWidth: 560, fontSize: 40, position: 'relative' }}>
+        Don't build something{' '}
+        <span style={{ color: 'var(--accent-primary)', textShadow: '0 0 30px rgba(0,212,230,0.3)' }}>nobody wants.</span>
       </h1>
 
       <p
         ref={subtitleRef}
         className="scroll-reveal font-body text-center"
-        style={{ maxWidth: 440, marginTop: 16 }}
+        style={{ maxWidth: 460, marginTop: 20 }}
       >
         Describe your idea. Get real customer signals, market gaps, launch costs, and a validation plan — in ten minutes.
       </p>
 
-      <div ref={inputRef} className="scroll-reveal w-full flex flex-col items-center" style={{ marginTop: 44, maxWidth: 500 }}>
+      <div ref={inputRef} className="scroll-reveal w-full flex flex-col items-center" style={{ marginTop: 48, maxWidth: 520, position: 'relative' }}>
         <textarea
           value={idea}
           onChange={(e) => setIdea(e.target.value)}
@@ -97,37 +93,37 @@ export default function Hero() {
           rows={1}
           className="w-full resize-none outline-none transition-all duration-200"
           style={{
-            minHeight: 52,
-            padding: '16px 18px',
-            border: '1px solid var(--divider-light)',
+            minHeight: 56,
+            padding: '16px 20px',
+            border: '1px solid var(--divider)',
             borderRadius: 14,
             backgroundColor: 'var(--surface-card)',
-            fontFamily: "'Outfit', sans-serif",
+            fontFamily: "'Inter', sans-serif",
             fontSize: 15,
-            fontWeight: 300,
+            fontWeight: 400,
             lineHeight: 1.75,
             color: 'var(--text-primary)',
           }}
           onFocus={(e) => {
             e.currentTarget.style.borderColor = 'var(--accent-primary)';
-            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(26,26,26,0.06)';
+            e.currentTarget.style.boxShadow = '0 0 20px rgba(0,212,230,0.1)';
           }}
           onBlur={(e) => {
-            e.currentTarget.style.borderColor = 'var(--divider-light)';
+            e.currentTarget.style.borderColor = 'var(--divider)';
             e.currentTarget.style.boxShadow = 'none';
           }}
         />
 
-        <div className="w-full flex items-center justify-between" style={{ marginTop: 10 }}>
-          <p style={{ fontSize: 13, color: '#6B6B6B', fontWeight: 300 }}>
+        <div className="w-full flex items-center justify-between" style={{ marginTop: 12 }}>
+          <p style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 400 }}>
             Try:{' '}
             {suggestions.map((s, i) => (
               <span key={s.label}>
                 <span
                   className="cursor-pointer transition-colors duration-200"
-                  style={{ color: '#6B6B6B' }}
+                  style={{ color: 'var(--text-muted)' }}
                   onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-primary)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = '#6B6B6B')}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
                   onClick={() => setIdea(s.value)}
                 >
                   {s.label}
@@ -138,20 +134,14 @@ export default function Hero() {
           </p>
 
           <button
-            className="font-button shrink-0 transition-all duration-200"
+            className="font-button shrink-0 btn-primary"
             style={{
-              backgroundColor: 'var(--accent-primary)',
-              color: '#FFFFFF',
               fontSize: 14,
-              borderRadius: 12,
-              padding: '10px 20px',
-              opacity: idea.trim() ? 1 : 0.5,
+              padding: '12px 24px',
+              opacity: idea.trim() ? 1 : 0.4,
               cursor: idea.trim() ? 'pointer' : 'default',
             }}
             onClick={handleStart}
-            onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.97)')}
-            onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
           >
             Research this idea →
           </button>

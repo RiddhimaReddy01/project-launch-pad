@@ -195,14 +195,17 @@ export default function ValidateModule() {
   }, [decomposeResult, discoverResult, selectedInsight, analyzeData, setupData]);
 
 
-  const visibleTabs = useMemo(() => {
-    const selectedOutputs = new Set<string>();
+  // Always show all tabs, but track which are "relevant" to selected methods
+  const relevantOutputs = useMemo(() => {
+    const outputs = new Set<string>();
     selectedMethods.forEach(mId => {
       const method = ALL_METHODS.find(m => m.id === mId);
-      method?.outputs.forEach(o => selectedOutputs.add(o));
+      method?.outputs.forEach(o => outputs.add(o));
     });
-    return ALL_TABS.filter(tab => selectedOutputs.has(tab.outputKey));
+    return outputs;
   }, [selectedMethods]);
+
+  const visibleTabs = ALL_TABS; // Always show all 4 tabs
 
   useEffect(() => {
     if (phase === 'toolkit' && visibleTabs.length > 0 && (!activeTab || !visibleTabs.find(t => t.key === activeTab))) {
@@ -215,16 +218,13 @@ export default function ValidateModule() {
     setPhase('generating');
     setErrorMsg('');
     try {
-      const requiredOutputs = new Set<string>();
-      selectedMethods.forEach(mId => {
-        const method = ALL_METHODS.find(m => m.id === mId);
-        method?.outputs.forEach(o => requiredOutputs.add(o));
-      });
+      // Always generate all 4 asset types
+      const allOutputs = ['landing_page', 'survey', 'whatsapp', 'communities', 'scorecard'];
 
       // Use rich context when available, fall back to simple idea string
       const data = context
-        ? await generateValidation(context, Array.from(requiredOutputs))
-        : await generateValidation(idea, Array.from(requiredOutputs));
+        ? await generateValidation(context, allOutputs)
+        : await generateValidation(idea, allOutputs);
       setResult(data);
       setPhase('toolkit');
     } catch (err: any) {
@@ -343,8 +343,8 @@ export default function ValidateModule() {
     <div className="flex items-center justify-center" style={{ height: '60vh' }}>
       <div className="text-center" style={{ maxWidth: 400 }}>
         <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Start with your idea first</p>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-          Head to the Understand tab to enter your business idea. We need that context before building your validation toolkit.
+        <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+          Enter your business idea on the home page. We need that context before building your validation toolkit.
         </p>
       </div>
     </div>
@@ -454,17 +454,21 @@ export default function ValidateModule() {
       <div className="flex gap-1 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider)' }}>
         {visibleTabs.map(tab => {
           const isActive = activeTab === tab.key;
+          const isRelevant = relevantOutputs.has(tab.outputKey);
           return (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               className="relative flex items-center gap-2 px-4 py-3 transition-all duration-200 whitespace-nowrap"
-              style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: isActive ? 400 : 300, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
+              style={{ fontSize: 13, fontWeight: isActive ? 500 : 400, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
               <span className="mono-badge" style={{
                 width: 20, height: 20, fontSize: 9,
-                backgroundColor: isActive ? 'var(--text-primary)' : 'var(--divider-light)',
-                color: isActive ? '#fff' : 'var(--text-muted)',
+                backgroundColor: isActive ? 'var(--accent-primary)' : isRelevant ? 'rgba(0,212,230,0.12)' : 'var(--divider)',
+                color: isActive ? '#080810' : isRelevant ? 'var(--accent-primary)' : 'var(--text-muted)',
               }}>{tab.mono}</span>
               {tab.label}
-              {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 1.5, backgroundColor: 'var(--accent-primary)', borderRadius: 1 }} />}
+              {isRelevant && !isActive && (
+                <span style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: 'var(--accent-primary)', boxShadow: '0 0 6px rgba(0,212,230,0.4)' }} />
+              )}
+              {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 2, background: 'linear-gradient(90deg, var(--accent-primary), var(--accent-purple))', borderRadius: 1 }} />}
             </button>
           );
         })}

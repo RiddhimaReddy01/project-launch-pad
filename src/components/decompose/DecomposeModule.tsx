@@ -109,11 +109,7 @@ export default function DecomposeModule() {
               </span>
             </>
           )}
-          {result.cached && (
-            <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--accent-teal)' }}>
-              cached
-            </span>
-          )}
+          
         </div>
       </div>
     );

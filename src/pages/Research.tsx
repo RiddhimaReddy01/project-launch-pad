@@ -2,7 +2,7 @@ import { useIdea, type Step } from '@/context/IdeaContext';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
-import UnderstandModule from '@/components/understand/UnderstandModule';
+import { decomposeIdea } from '@/lib/decompose';
 import DiscoverModule from '@/components/discover/DiscoverModule';
 import AnalyzeModule from '@/components/analyze/AnalyzeModule';
 import SetupModule from '@/components/setup/SetupModule';
@@ -11,7 +11,6 @@ import { saveIdea } from '@/lib/saved-ideas';
 import { usePrefetch } from '@/hooks/use-prefetch';
 
 const STEPS: { key: Step; label: string }[] = [
-  { key: 'understand', label: 'Understand' },
   { key: 'discover', label: 'Discover' },
   { key: 'analyze', label: 'Analyze' },
   { key: 'setup', label: 'Setup' },
@@ -23,13 +22,11 @@ function StepperDot({ step, index, currentIndex, onNavigate, locked }: { step: t
   const isCompleted = index < currentIndex;
   const isFuture = index > currentIndex;
 
-  const dotColor = isCompleted || isActive ? 'var(--accent-primary)' : 'var(--divider-light)';
-
   return (
     <div
       className="flex flex-col items-center"
       style={{
-        opacity: locked ? 0.35 : isFuture ? 0.55 : 1,
+        opacity: locked ? 0.3 : isFuture ? 0.5 : 1,
         transition: 'opacity 300ms ease-out',
         cursor: locked ? 'not-allowed' : 'pointer',
       }}
@@ -39,16 +36,17 @@ function StepperDot({ step, index, currentIndex, onNavigate, locked }: { step: t
       <div
         style={{
           width: 10, height: 10, borderRadius: '50%',
-          backgroundColor: isCompleted ? 'var(--accent-primary)' : 'transparent',
-          border: `2px solid ${dotColor}`,
+          backgroundColor: isCompleted ? 'var(--accent-primary)' : isActive ? 'var(--accent-primary)' : 'transparent',
+          border: `2px solid ${isCompleted || isActive ? 'var(--accent-primary)' : 'var(--divider-section)'}`,
+          boxShadow: isActive ? '0 0 12px rgba(0,212,230,0.4)' : 'none',
           transition: 'all 300ms ease-out',
         }}
       />
       <span
         style={{
-          marginTop: 8, fontFamily: "'Outfit', sans-serif", fontSize: 12,
-          fontWeight: isActive ? 400 : 300,
-          color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
+          marginTop: 8, fontFamily: "'Inter', sans-serif", fontSize: 12,
+          fontWeight: isActive ? 500 : 400,
+          color: isActive ? 'var(--accent-primary)' : 'var(--text-muted)',
           transition: 'all 300ms ease-out',
         }}
       >
@@ -59,8 +57,19 @@ function StepperDot({ step, index, currentIndex, onNavigate, locked }: { step: t
 }
 
 export default function Research() {
-  const { idea, currentStep, setCurrentStep, discoverResult, prefetchStatus } = useIdea();
+  const { idea, currentStep, setCurrentStep, decomposeResult, setDecomposeResult, discoverResult, prefetchStatus } = useIdea();
   const { user } = useAuth();
+
+  // Auto-decompose silently when idea is set
+  const hasDecomposed = useRef(false);
+  useEffect(() => {
+    if (idea && !decomposeResult && !hasDecomposed.current) {
+      hasDecomposed.current = true;
+      decomposeIdea(idea).then(setDecomposeResult).catch(err => {
+        console.warn('[Research] Auto-decompose failed:', err.message);
+      });
+    }
+  }, [idea, decomposeResult, setDecomposeResult]);
 
   // Fire parallel prefetch for all tabs after decompose completes
   usePrefetch();
@@ -72,7 +81,7 @@ export default function Research() {
 
   // Tabs after Discover require discoverResult
   const isTabLocked = (step: Step): boolean => {
-    if (step === 'understand' || step === 'discover') return false;
+    if (step === 'discover') return false;
     return !discoverResult;
   };
 
@@ -82,8 +91,8 @@ export default function Research() {
   };
 
   useEffect(() => {
-    if (!idea && currentStep !== 'understand') navigate('/', { replace: true });
-  }, [idea, navigate, currentStep]);
+    if (!idea) navigate('/', { replace: true });
+  }, [idea, navigate]);
 
   useEffect(() => {
     const el = contentRef.current;
@@ -93,15 +102,15 @@ export default function Research() {
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface-bg)' }}>
       {/* Top bar */}
-      <header className="flex items-center justify-between px-6" style={{ height: 64 }}>
-        <span className="cursor-pointer" style={{ fontSize: 18 }} onClick={() => navigate('/')}>
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400 }}>Launch</span>
-          <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontWeight: 400 }}>{'\u200B'}Lens</span>
+      <header className="glass flex items-center justify-between px-6 sticky top-0 z-50" style={{ height: 56 }}>
+        <span className="cursor-pointer flex items-center gap-1.5" onClick={() => navigate('/')}>
+          <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: 17, color: 'var(--text-primary)' }}>Launch</span>
+          <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: 17, color: 'var(--accent-primary)' }}>Lean</span>
         </span>
-        <div className="flex items-center" style={{ gap: 24 }}>
+        <div className="flex items-center" style={{ gap: 20 }}>
           <span
             className="cursor-pointer transition-colors duration-200"
-            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}
+            style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)' }}
             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-primary)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
             onClick={() => navigate('/')}
@@ -111,7 +120,7 @@ export default function Research() {
           {user && (
             <span
               className="cursor-pointer transition-colors duration-200"
-              style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}
+              style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)' }}
               onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-primary)')}
               onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
               onClick={async () => {
@@ -121,12 +130,12 @@ export default function Research() {
                 setTimeout(() => setSaveStatus('idle'), 2000);
               }}
             >
-              {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved' : 'Save'}
+              {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? '✓ Saved' : 'Save'}
             </span>
           )}
           <span
             className="cursor-pointer"
-            style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}
+            style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)' }}
             onClick={() => navigate(user ? '/dashboard' : '/auth')}
           >
             {user ? 'Dashboard' : 'Log in'}
@@ -135,27 +144,27 @@ export default function Research() {
       </header>
 
       {/* Context strip */}
-      {currentStep !== 'understand' && idea && (
-        <div
-          className="sticky z-40"
-          style={{ top: 0, backdropFilter: 'blur(16px)', backgroundColor: 'rgba(250,250,248,0.85)', padding: '20px 24px', textAlign: 'center' }}
-        >
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 6 }}>
-            Your idea
+      {idea && (
+        <div className="glass sticky z-40" style={{ top: 56, padding: '16px 24px', textAlign: 'center' }}>
+          <p style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
+            Researching
           </p>
-          <p className="font-heading" style={{ fontSize: 26, maxWidth: 600, margin: '0 auto', lineHeight: 1.25, letterSpacing: '-0.02em' }}>
+          <p className="font-heading" style={{ fontSize: 22, maxWidth: 600, margin: '0 auto', lineHeight: 1.25 }}>
             {idea}
           </p>
         </div>
       )}
 
       {/* Stepper */}
-      <div style={{ maxWidth: 520, margin: '48px auto 0', padding: '0 24px', position: 'relative' }}>
-        <div style={{ position: 'absolute', top: 5, left: '10%', right: '10%', height: 1, backgroundColor: 'var(--divider-light)' }} />
+      <div style={{ maxWidth: 420, margin: '40px auto 0', padding: '0 24px', position: 'relative' }}>
+        <div style={{ position: 'absolute', top: 5, left: '10%', right: '10%', height: 1, backgroundColor: 'var(--divider)' }} />
         <div style={{
           position: 'absolute', top: 5, left: '10%',
           width: `${(currentIndex / (STEPS.length - 1)) * 80}%`,
-          height: 1, backgroundColor: 'var(--accent-primary)', transition: 'width 500ms ease-out',
+          height: 1, 
+          background: 'linear-gradient(90deg, var(--accent-primary), var(--accent-purple))',
+          boxShadow: '0 0 8px rgba(0,212,230,0.3)',
+          transition: 'width 500ms ease-out',
         }} />
         <div className="relative flex items-start justify-between">
           {STEPS.map((step, i) => (
@@ -169,11 +178,9 @@ export default function Research() {
         ref={contentRef}
         key={currentStep}
         className="scroll-reveal"
-        style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 24px 160px' }}
+        style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 24px 160px' }}
       >
-        {currentStep === 'understand' ? (
-          <UnderstandModule />
-        ) : currentStep === 'discover' ? (
+        {currentStep === 'discover' ? (
           <DiscoverModule />
         ) : currentStep === 'analyze' ? (
           <AnalyzeModule />
