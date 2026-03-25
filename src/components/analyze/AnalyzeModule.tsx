@@ -7,7 +7,6 @@ import type { AnalyzeContext, SectionKey, OpportunityData, CustomersData, Compet
 import { analyzeSectionsParallel } from '@/lib/analyze';
 import SectionSkeleton from './SectionSkeleton';
 import ModuleRail, { type ModuleInfo } from './ModuleRail';
-import InputComposer, { type InputSelection, DEFAULT_INPUTS } from './InputComposer';
 
 const OpportunitySizing = lazy(() => import('./OpportunitySizing'));
 const CustomerSegments = lazy(() => import('./CustomerSegments'));
@@ -28,6 +27,26 @@ const MODULE_DEFS: { key: SectionKey; label: string; mono: string; subtitle: str
   { key: 'location', label: 'Location', mono: 'L', subtitle: 'Location intelligence' },
   { key: 'moat', label: 'Moat', mono: 'M', subtitle: 'Competitive defensibility' },
 ];
+
+interface InputSelection {
+  business_type: boolean;
+  location: boolean;
+  target_customers: boolean;
+  selected_insight: boolean;
+  discover_insights: boolean;
+  customer_evidence: boolean;
+  prior_sections: Set<SectionKey>;
+}
+
+const DEFAULT_INPUTS: InputSelection = {
+  business_type: true,
+  location: true,
+  target_customers: true,
+  selected_insight: true,
+  discover_insights: true,
+  customer_evidence: true,
+  prior_sections: new Set(),
+};
 
 interface SectionState {
   data: SectionData | null;
@@ -58,10 +77,9 @@ export default function AnalyzeModule() {
 
   const [activeModule, setActiveModule] = useState<SectionKey>('opportunity');
   const [sections, setSections] = useState<SectionResults>(() => initSections(analyzeData));
-  const [inputs, setInputs] = useState<InputSelection>({ ...DEFAULT_INPUTS });
+  const [inputs] = useState<InputSelection>({ ...DEFAULT_INPUTS });
   const [selectedFindings, setSelectedFindings] = useState<Set<string>>(new Set());
   const [railCollapsed, setRailCollapsed] = useState(false);
-  const [composerCollapsed, setComposerCollapsed] = useState(false);
   const [exporting, setExporting] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -97,13 +115,6 @@ export default function AnalyzeModule() {
     ctx.price_tier = decomposeResult.stage2?.price_tier;
     return ctx;
   }, [decomposeResult, selectedInsight, discoverResult, inputs]);
-
-  // Detect dirty state
-  const isDirty = useMemo(() => {
-    const sec = sections[activeModule];
-    if (!sec.inputsUsed || sec.status !== 'completed') return false;
-    return JSON.stringify(sec.inputsUsed) !== JSON.stringify(inputs);
-  }, [sections, activeModule, inputs]);
 
   // Sync findings
   useEffect(() => {
@@ -142,19 +153,8 @@ export default function AnalyzeModule() {
   // Responsive collapse
   useEffect(() => {
     const w = window.innerWidth;
-    if (w < 900) { setRailCollapsed(true); setComposerCollapsed(true); }
-    else if (w < 1200) { setComposerCollapsed(true); }
+    if (w < 900) { setRailCollapsed(true); }
   }, []);
-
-  const handleCompile = useCallback(() => {
-    if (!context) return;
-    setSections(prev => ({
-      ...prev,
-      [activeModule]: { ...prev[activeModule], status: 'loading', error: undefined },
-    }));
-    // The section component will handle the actual API call
-    // We just mark it as loading and let the component do the rest
-  }, [context, activeModule]);
 
   const handleSectionData = useCallback((section: SectionKey, data: SectionData) => {
     setSections(prev => {
@@ -447,7 +447,7 @@ export default function AnalyzeModule() {
                 Ready to research
               </p>
               <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', textAlign: 'center', maxWidth: 360, lineHeight: 1.6, marginBottom: 20 }}>
-                Set up your inputs in the panel on the right, then hit the button below.
+                Run this section when you want a focused answer for this part of the idea.
               </p>
               <button
                 onClick={() => {
@@ -539,24 +539,6 @@ export default function AnalyzeModule() {
         </div>
       </div>
 
-      {/* Right: Input Composer */}
-      <InputComposer
-        collapsed={composerCollapsed}
-        onToggle={() => setComposerCollapsed(!composerCollapsed)}
-        activeModule={activeModule}
-        inputs={inputs}
-        onInputsChange={setInputs}
-        completedSections={completedSections}
-        decomposeResult={decomposeResult}
-        discoverResult={discoverResult}
-        selectedInsight={selectedInsight}
-        isDirty={isDirty}
-        isRunning={activeSec.status === 'loading'}
-        hasResult={activeSec.status === 'completed' || activeSec.status === 'stale'}
-        onCompile={() => {
-          setSections(prev => ({ ...prev, [activeModule]: { ...prev[activeModule], status: 'loading', error: undefined } }));
-        }}
-      />
     </div>
   );
 }

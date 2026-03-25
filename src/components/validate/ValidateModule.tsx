@@ -125,7 +125,7 @@ function EditableText({ value, onChange, multiline, style }: { value: string; on
 // ═══ MAIN MODULE ═══
 
 export default function ValidateModule() {
-  const { idea, decomposeResult, discoverResult, selectedInsight, analyzeData, setupData, analyzeFindings } = useIdea();
+  const { idea, decomposeResult, discoverResult, selectedInsight, analyzeData, setupData, validateData, setValidateData, analyzeFindings } = useIdea();
   const { user } = useAuth();
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -133,7 +133,7 @@ export default function ValidateModule() {
   const [phase, setPhase] = useState<'select' | 'generating' | 'toolkit'>('select');
   const [selectedMethods, setSelectedMethods] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<TabKey | null>(null);
-  const [result, setResult] = useState<ValidateResult | null>(null);
+  const [result, setResult] = useState<ValidateResult | null>(validateData);
   const [errorMsg, setErrorMsg] = useState('');
   const [saving, setSaving] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -142,6 +142,20 @@ export default function ValidateModule() {
     const el = containerRef.current;
     if (el) requestAnimationFrame(() => el.classList.add('visible'));
   }, []);
+
+  useEffect(() => {
+    if (validateData && !result) {
+      setResult(validateData);
+      setPhase('toolkit');
+    }
+  }, [validateData, result]);
+
+  useEffect(() => {
+    const savedMethods = (validateData as ValidateResult & { selected_methods?: string[] } | null)?.selected_methods;
+    if (savedMethods?.length) {
+      setSelectedMethods(new Set(savedMethods));
+    }
+  }, [validateData]);
 
   const suggestedMethods = useMemo(() => {
     const suggestions: string[] = [];
@@ -202,7 +216,7 @@ export default function ValidateModule() {
     return outputs;
   }, [selectedMethods]);
 
-  const visibleTabs = ALL_TABS;
+  const visibleTabs = ALL_TABS.filter((tab) => relevantOutputs.has(tab.outputKey));
 
   useEffect(() => {
     if (phase === 'toolkit' && visibleTabs.length > 0 && (!activeTab || !visibleTabs.find(t => t.key === activeTab))) {
@@ -215,17 +229,19 @@ export default function ValidateModule() {
     setPhase('generating');
     setErrorMsg('');
     try {
-      const allOutputs = ['landing_page', 'survey', 'whatsapp', 'communities', 'scorecard'];
+      const requestedOutputs = Array.from(relevantOutputs);
+      if (!requestedOutputs.includes('scorecard')) requestedOutputs.push('scorecard');
       const data = context
-        ? await generateValidation(context, allOutputs)
-        : await generateValidation(idea, allOutputs);
+        ? await generateValidation(context, requestedOutputs)
+        : await generateValidation(idea, requestedOutputs);
       setResult(data);
+      setValidateData(data);
       setPhase('toolkit');
     } catch (err: any) {
       setErrorMsg(err.message || 'Something went wrong - please try again');
       setPhase('select');
     }
-  }, [idea, selectedMethods, context]);
+  }, [idea, context, relevantOutputs, setValidateData]);
 
   const toggleMethod = (id: string) => {
     setSelectedMethods(prev => {
@@ -237,7 +253,9 @@ export default function ValidateModule() {
 
   const updateResult = (patch: Partial<ValidateResult>) => {
     if (!result) return;
-    setResult({ ...result, ...patch });
+    const next = { ...result, ...patch };
+    setResult(next);
+    setValidateData(next);
   };
 
   const handleSave = async () => {
@@ -352,11 +370,11 @@ export default function ValidateModule() {
           How do you want to test demand?
         </p>
         <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, maxWidth: 600 }}>
-          Pick the methods that fit your stage. We'll build a ready-to-deploy toolkit with landing page copy, survey questions, outreach messages, and target communities.
+          Pick the methods that fit your stage. We&apos;ll build only the materials you selected, ready to use right away.
         </p>
       </div>
 
-      {/* AI Suggestion Banner */}
+      {/* Suggested method banner */}
       {suggestedMethods.length > 0 && (
         <div className="mb-8 rounded-xl overflow-hidden" style={{ 
           background: 'linear-gradient(135deg, rgba(0,212,230,0.06), rgba(168,124,255,0.04))',
@@ -364,9 +382,9 @@ export default function ValidateModule() {
           padding: '20px 24px',
         }}>
           <div className="flex items-center gap-3 mb-3">
-            <span className="mono-badge" style={{ width: 30, height: 30, fontSize: 11, fontWeight: 700 }}>AI</span>
+            <span className="mono-badge" style={{ width: 30, height: 30, fontSize: 11, fontWeight: 700 }}>TOP</span>
             <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
-              Recommended based on your analysis
+              Recommended methods for this idea
             </span>
           </div>
           <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
@@ -419,7 +437,7 @@ export default function ValidateModule() {
         <p className="font-heading" style={{ fontSize: 28, fontWeight: 700 }}>Crafting your toolkit</p>
         <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 6 }}>This takes about 15-30 seconds</p>
       </div>
-      <SectionSkeleton label="Writing landing page copy, designing survey questions, drafting outreach messages, finding communities, and setting benchmarks..." />
+      <SectionSkeleton label="Preparing your selected validation materials and benchmarks..." />
     </div>
   );
 

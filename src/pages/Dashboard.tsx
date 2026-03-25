@@ -73,7 +73,7 @@ const STATUS_FLOW = ['planned', 'running', 'completed'] as const;
 export default function Dashboard() {
   const { user, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
-  const { setIdea, setCurrentStep } = useIdea();
+  const { hydrateProject } = useIdea();
   const [ideas, setIdeas] = useState<SavedIdea[]>([]);
   const [experiments, setExperiments] = useState<Experiment[]>([]);
   const [insights, setInsights] = useState<SavedInsight[]>([]);
@@ -107,8 +107,15 @@ export default function Dashboard() {
   };
 
   const resumeIdea = (idea: SavedIdea) => {
-    setIdea(idea.idea_text);
-    setCurrentStep((idea.current_step || 'discover') as any);
+    hydrateProject({
+      idea: idea.idea_text,
+      currentStep: (idea.current_step || 'discover') as any,
+      decomposeResult: idea.analysis_data?.decompose || null,
+      discoverResult: idea.discover_data || null,
+      analyzeData: idea.analysis_data?.sections || {},
+      setupData: idea.setup_data || {},
+      validateData: idea.validate_data || null,
+    });
     navigate('/research');
   };
 

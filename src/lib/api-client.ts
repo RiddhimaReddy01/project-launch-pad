@@ -27,6 +27,40 @@ const LOVABLE_ONLY = new Set<string>(["setup-section"]);
 // Sections not supported by the Render backend — route to Lovable Cloud
 const RENDER_UNSUPPORTED_SECTIONS = new Set(["risk", "location", "moat"]);
 
+function normalizePlatformName(value: unknown): "reddit" | "google" | "yelp" {
+  const raw = String(value || "").trim().toLowerCase();
+  if (raw.includes("reddit")) return "reddit";
+  if (raw.includes("yelp")) return "yelp";
+  return "google";
+}
+
+function normalizeDiscoverSource(source: any) {
+  return {
+    platform: normalizePlatformName(
+      source?.platform ||
+      source?.source ||
+      source?.site ||
+      source?.domain ||
+      source?.channel
+    ),
+    text: source?.text || source?.quote || source?.snippet || source?.content || "",
+    url: source?.url || source?.link || source?.permalink || source?.href || "",
+    author: source?.author || source?.username || source?.user || source?.title || "",
+    date: source?.date || source?.created_at || source?.posted_at || "",
+    upvotes: source?.upvotes || source?.score || null,
+  };
+}
+
+function buildSourceSummary(insights: any[]) {
+  const sources = insights.flatMap((insight) => insight.sources || []);
+  return {
+    reddit_count: sources.filter((source) => source.platform === "reddit").length,
+    google_count: sources.filter((source) => source.platform === "google").length,
+    yelp_count: sources.filter((source) => source.platform === "yelp").length,
+    total_signals: sources.length,
+  };
+}
+
 async function tryFetch(baseUrl: string, path: string, body: unknown, timeoutMs: number): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -72,41 +106,29 @@ function transformResponseFromRender(functionName: string, data: any): any {
       };
 
     case "discover-insights":
-      if (data.synthesis) return data; // Already expected format
       const normalizeScore = (v: number) => v > 1 ? v / 10 : v;
+      const insights = (data.insights || []).map((ins: any) => ({
+        title: ins.title || "",
+        type: ins.type || "pain_point",
+        description: ins.description || ins.title || "",
+        frequency_score: normalizeScore(ins.frequency_score || ins.score || 0),
+        severity_score: normalizeScore(ins.intensity_score || ins.severity_score || 0),
+        willingness_to_pay: normalizeScore(ins.willingness_to_pay_score || ins.willingness_to_pay || 0),
+        market_size_signal: normalizeScore(ins.market_size_signal || 0),
+        composite_score: normalizeScore(ins.score || ins.composite_score || 0),
+        tags: ins.tags || ins.source_platforms || [],
+        sources: (ins.evidence || ins.sources || ins.mentions || []).map(normalizeDiscoverSource),
+      }));
       return {
-        insights: (data.insights || []).map((ins: any) => ({
-          title: ins.title || "",
-          type: ins.type || "pain_point",
-          description: ins.description || ins.title || "",
-          frequency_score: normalizeScore(ins.frequency_score || ins.score || 0),
-          severity_score: normalizeScore(ins.intensity_score || ins.severity_score || 0),
-          willingness_to_pay: normalizeScore(ins.willingness_to_pay_score || ins.willingness_to_pay || 0),
-          market_size_signal: normalizeScore(ins.market_size_signal || 0),
-          composite_score: normalizeScore(ins.score || ins.composite_score || 0),
-          tags: ins.tags || ins.source_platforms || [],
-          sources: (ins.evidence || ins.sources || []).map((s: any) => ({
-            platform: s.platform || s.source || "google",
-            text: s.text || s.quote || "",
-            url: s.url || "",
-            author: s.author || "",
-            date: s.date || "",
-            upvotes: s.upvotes || null,
-          })),
-        })),
-        synthesis: {
+        insights,
+        synthesis: data.synthesis || {
           top_pain_points: [],
           current_workarounds: [],
           what_they_value: [],
           willingness_signals: [],
           opportunity_score: 0,
         },
-        source_summary: {
-          reddit_count: data.sources?.filter((s: any) => s.platform === "reddit")?.length || 0,
-          google_count: data.sources?.filter((s: any) => s.platform === "google")?.length || 0,
-          yelp_count: data.sources?.filter((s: any) => s.platform === "yelp")?.length || 0,
-          total_signals: data.sources?.length || 0,
-        },
+        source_summary: buildSourceSummary(insights),
       };
 
     case "analyze-section":

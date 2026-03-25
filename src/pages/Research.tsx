@@ -57,7 +57,18 @@ function StepperDot({ step, index, currentIndex, onNavigate, locked }: { step: t
 }
 
 export default function Research() {
-  const { idea, currentStep, setCurrentStep, decomposeResult, setDecomposeResult, discoverResult, prefetchStatus } = useIdea();
+  const {
+    idea,
+    currentStep,
+    setCurrentStep,
+    decomposeResult,
+    setDecomposeResult,
+    discoverResult,
+    analyzeData,
+    setupData,
+    validateData,
+    prefetchStatus,
+  } = useIdea();
   const { user } = useAuth();
 
   // Auto-decompose silently when idea is set
@@ -125,7 +136,12 @@ export default function Research() {
               onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
               onClick={async () => {
                 setSaveStatus('saving');
-                await saveIdea(idea, currentStep);
+                await saveIdea(idea, currentStep, {
+                  discover: discoverResult || undefined,
+                  analyze: Object.keys(analyzeData).length > 0 ? { sections: analyzeData } : undefined,
+                  setup: Object.keys(setupData).length > 0 ? setupData : undefined,
+                  validate: validateData || undefined,
+                });
                 setSaveStatus('saved');
                 setTimeout(() => setSaveStatus('idle'), 2000);
               }}

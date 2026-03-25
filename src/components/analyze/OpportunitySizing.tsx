@@ -70,6 +70,59 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
 
   return (
     <div>
+      <div className="card-base p-6 mb-10" style={{
+        border: '1px solid rgba(0,212,230,0.22)',
+        background: 'linear-gradient(180deg, rgba(0,212,230,0.08), rgba(8,8,16,0.92))',
+        boxShadow: '0 0 24px rgba(0,212,230,0.08)',
+      }}>
+        <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
+          <div>
+            <p className="section-label mb-2" style={{ color: 'var(--accent-primary)' }}>Customer Funnel</p>
+            <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+              Conversion path from broad reach to repeat customers
+            </p>
+          </div>
+          <div className="rounded-xl px-4 py-3" style={{ backgroundColor: 'rgba(0,212,230,0.1)', border: '1px solid rgba(0,212,230,0.18)' }}>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--accent-primary)', textTransform: 'uppercase', marginBottom: 4 }}>
+              Repeat customer base
+            </p>
+            <p className="font-heading" style={{ fontSize: 24, letterSpacing: '-0.03em' }}>{fmtNum(data.funnel.repeat_customers)}</p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2.5">
+          {funnelData.map((step, i) => {
+            const colors = ['var(--text-primary)', 'var(--text-secondary)', 'var(--accent-blue)', 'var(--accent-amber)', 'var(--accent-primary)'];
+            const widthPct = Math.max((step.value / Math.max(funnelData[0].value, 1)) * 100, 18);
+            const priorValue = i === 0 ? funnelData[0].value : funnelData[i - 1].value;
+            const conversion = priorValue > 0 ? Math.round((step.value / priorValue) * 100) : 100;
+            return (
+              <div key={step.name}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{step.name}</span>
+                  <div className="flex items-center gap-3">
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)' }}>{fmtNum(step.value)}</span>
+                    {i > 0 && (
+                      <span style={{ fontSize: 10, fontWeight: 700, color: colors[i], letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                        {conversion}% retained
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="rounded-full overflow-hidden" style={{ height: 14, backgroundColor: 'rgba(255,255,255,0.04)' }}>
+                  <div style={{
+                    width: `${widthPct}%`,
+                    height: '100%',
+                    borderRadius: 999,
+                    background: `linear-gradient(90deg, ${colors[i]}, rgba(255,255,255,0.18))`,
+                    boxShadow: i === funnelData.length - 1 ? '0 0 18px rgba(0,212,230,0.35)' : 'none',
+                  }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Tier cards */}
       <div className="flex flex-col gap-4 mb-10">
         {tiers.map((t) => {
@@ -107,28 +160,6 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
       </div>
 
       {/* Customer funnel — visual pyramid */}
-      <div className="mb-10">
-        <p className="section-label mb-4">Customer Funnel</p>
-        <div className="card-base p-6">
-          <div className="flex flex-col items-center gap-1.5">
-            {funnelData.map((step, i) => {
-              const widthPct = Math.max(((funnelData.length - i) / funnelData.length) * 100, 20);
-              const colors = ['var(--text-primary)', 'var(--text-secondary)', 'var(--accent-blue)', 'var(--accent-amber)', 'var(--accent-primary)'];
-              return (
-                <div key={step.name} className="flex items-center gap-3" style={{ width: '100%' }}>
-                  <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, color: 'var(--text-muted)', width: 80, textAlign: 'right', flexShrink: 0, letterSpacing: '0.02em' }}>{step.name}</span>
-                  <div style={{ flex: 1 }}>
-                    <div className="rounded-[4px]" style={{ width: `${widthPct}%`, height: 28, backgroundColor: colors[i], opacity: 0.15, display: 'flex', alignItems: 'center', paddingLeft: 10, transition: 'width 600ms ease-out', position: 'relative' }}>
-                      <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-primary)', whiteSpace: 'nowrap', position: 'absolute', left: 10 }}>{fmtNum(step.value)}</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
       {/* Methodology toggle */}
       <button onClick={() => setMethodOpen(!methodOpen)} style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
         {methodOpen ? 'Hide methodology' : 'How we estimated this'}
