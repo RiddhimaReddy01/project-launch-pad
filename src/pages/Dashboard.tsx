@@ -133,7 +133,7 @@ export default function Dashboard() {
   const latestProject = ideas[0] || null;
 
   const stepColors: Record<string, string> = {
-    understand: 'var(--text-primary)', discover: 'var(--accent-blue)',
+    discover: 'var(--accent-blue)',
     analyze: 'var(--accent-amber)', setup: 'var(--accent-primary)', validate: 'var(--accent-primary)',
   };
 

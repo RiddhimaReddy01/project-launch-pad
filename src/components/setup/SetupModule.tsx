@@ -187,8 +187,8 @@ export default function SetupModule() {
     <div className="flex items-center justify-center" style={{ height: '60vh' }}>
       <div className="text-center" style={{ maxWidth: 400 }}>
         <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Start with your idea first</p>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-          Head to the Understand tab to enter your business idea so we can build your launch plan.
+        <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+          Enter your business idea on the home page so we can build your launch plan.
         </p>
       </div>
     </div>
