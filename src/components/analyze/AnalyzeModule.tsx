@@ -364,21 +364,21 @@ export default function AnalyzeModule() {
       {/* Center: Output Panel */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
         {/* Top bar */}
-        <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-3" style={{ backgroundColor: 'rgba(250,250,248,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid var(--divider)' }}>
+        <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-3" style={{ backgroundColor: 'rgba(8,8,16,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid var(--divider)' }}>
           <div className="flex items-center gap-3">
             <span style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              width: 28, height: 28, borderRadius: 8,
-              fontSize: 12, fontWeight: 500, fontFamily: "'Outfit', sans-serif",
-              backgroundColor: 'var(--text-primary)', color: '#fff',
+              width: 30, height: 30, borderRadius: 8,
+              fontSize: 12, fontWeight: 700,
+              backgroundColor: 'var(--accent-primary)', color: '#080810',
             }}>
               {MODULE_DEFS.find(m => m.key === activeModule)?.mono}
             </span>
             <div>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)' }}>
+              <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
                 {MODULE_DEFS.find(m => m.key === activeModule)?.label}
               </p>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>
+              <p style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-muted)' }}>
                 {MODULE_DEFS.find(m => m.key === activeModule)?.subtitle}
               </p>
             </div>
@@ -416,32 +416,23 @@ export default function AnalyzeModule() {
                   });
                   toast.success('All sections researched');
                 }}
-                className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
-                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--accent-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
+                className="btn-primary rounded-lg px-4 py-1.5"
+                style={{ fontSize: 12, fontWeight: 600 }}
               >
                 Run all sections
               </button>
             )}
             {completedCount > 0 && (
               <>
-                <button
-                  onClick={handleSave}
-                  className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
-                  style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
-                >
+                <button onClick={handleSave} className="btn-primary rounded-lg px-4 py-1.5" style={{ fontSize: 12, fontWeight: 600 }}>
                   Save
                 </button>
-                <button
-                  onClick={handleExportPDF}
-                  disabled={exporting}
-                  className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
-                  style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', border: '1px solid var(--divider)', cursor: 'pointer', backgroundColor: 'transparent' }}
-                >
+                <button onClick={handleExportPDF} disabled={exporting} className="btn-secondary rounded-lg px-4 py-1.5" style={{ fontSize: 12, fontWeight: 600 }}>
                   {exporting ? 'Exporting…' : 'Export PDF'}
                 </button>
               </>
             )}
-            <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>
               {completedCount}/{MODULE_DEFS.length}
             </span>
           </div>

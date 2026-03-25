@@ -16,7 +16,7 @@ function Pulse({ w, h = 14, r = 6, delay = 0, className = '' }: { w: number | st
         width: typeof w === 'number' ? w : w,
         maxWidth: '100%',
         borderRadius: r,
-        backgroundColor: 'hsl(var(--muted))',
+        backgroundColor: 'var(--divider)',
         animationDelay: `${delay}ms`,
       }}
     />
@@ -25,7 +25,7 @@ function Pulse({ w, h = 14, r = 6, delay = 0, className = '' }: { w: number | st
 
 function CardShell({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`rounded-xl border border-border bg-card p-5 ${className}`}>
+    <div className={`rounded-xl p-5 ${className}`} style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
       {children}
     </div>
   );
@@ -38,7 +38,7 @@ function OpportunitySkeleton() {
         <CardShell key={tier}>
           <div className="flex items-center gap-2 mb-3">
             <Pulse w={32} h={10} delay={i * 100} />
-            <div style={{ width: 1, height: 10 }} className="bg-border" />
+            <div style={{ width: 1, height: 10, backgroundColor: 'var(--divider)' }} />
             <Pulse w={80} h={10} delay={i * 100 + 50} />
           </div>
           <Pulse w={140} h={28} r={4} delay={i * 100 + 100} />
@@ -157,10 +157,10 @@ function RootCauseSkeleton() {
     <div>
       <div className="flex gap-3 mb-8">
         {[1, 2, 3].map(i => (
-          <div key={i} className="flex-1 rounded-xl border border-border bg-card p-3 text-center">
+          <CardShell key={i} className="flex-1 text-center">
             <Pulse w={30} h={20} r={4} delay={i * 80} className="mx-auto" />
             <Pulse w={40} h={10} r={4} delay={i * 80 + 50} className="mx-auto mt-2" />
-          </div>
+          </CardShell>
         ))}
       </div>
       {[0, 1, 2, 3].map(i => (
@@ -205,7 +205,7 @@ function CostsSkeleton() {
         </div>
       </CardShell>
       {[0, 1, 2, 3].map(i => (
-        <div key={i} className="flex items-center justify-between py-3 px-1 border-b border-border">
+        <div key={i} className="flex items-center justify-between py-3 px-1" style={{ borderBottom: '1px solid var(--divider)' }}>
           <Pulse w={120} h={12} delay={700 + i * 60} />
           <Pulse w={100} h={12} delay={730 + i * 60} />
         </div>
@@ -225,11 +225,13 @@ function RiskSkeleton() {
         <Pulse w="60%" h={14} delay={150} className="mt-1" />
       </CardShell>
       <Pulse w={160} h={10} delay={200} />
-      <div className="mt-3 mb-8 rounded-xl border border-border bg-card p-4" style={{ display: 'grid', gridTemplateColumns: '40px 1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr', gap: 2, height: 240 }}>
-        {Array.from({ length: 9 }).map((_, i) => (
-          <Pulse key={i} w="100%" h={60} r={8} delay={300 + i * 40} className="col-start-auto" />
-        ))}
-      </div>
+      <CardShell className="mt-3 mb-8">
+        <div style={{ display: 'grid', gridTemplateColumns: '40px 1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr', gap: 2, height: 240 }}>
+          {Array.from({ length: 9 }).map((_, i) => (
+            <Pulse key={i} w="100%" h={60} r={8} delay={300 + i * 40} className="col-start-auto" />
+          ))}
+        </div>
+      </CardShell>
       {[0, 1, 2].map(i => (
         <CardShell key={i} className="mb-2">
           <div className="flex items-center gap-2 mb-2">
@@ -361,10 +363,9 @@ const SectionSkeleton = forwardRef<HTMLDivElement, Props>(({ label, section = 'd
     <div ref={ref} style={{ padding: '24px 0' }}>
       {label && (
         <p className="text-center mb-6" style={{
-          fontFamily: "'Outfit', sans-serif",
-          fontSize: 13,
-          fontWeight: 300,
-          color: 'hsl(var(--muted-foreground))',
+          fontSize: 14,
+          fontWeight: 500,
+          color: 'var(--text-secondary)',
         }}>
           {label}
         </p>

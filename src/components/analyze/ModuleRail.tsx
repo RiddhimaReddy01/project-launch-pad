@@ -39,11 +39,11 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
               className="transition-all duration-150"
               title={m.label}
               style={{
-                width: 32, height: 32, borderRadius: 8,
+                width: 34, height: 34, borderRadius: 8,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 11, fontWeight: 500, fontFamily: "'Outfit', sans-serif",
-                backgroundColor: isActive ? 'var(--text-primary)' : m.status === 'completed' ? 'rgba(91,140,126,0.08)' : 'transparent',
-                color: isActive ? '#fff' : m.status === 'completed' ? 'var(--accent-teal)' : 'var(--text-muted)',
+                fontSize: 12, fontWeight: 700,
+                backgroundColor: isActive ? 'var(--accent-primary)' : m.status === 'completed' ? 'rgba(0,212,230,0.1)' : 'transparent',
+                color: isActive ? '#080810' : m.status === 'completed' ? 'var(--accent-primary)' : 'var(--text-muted)',
                 border: 'none', cursor: 'pointer',
               }}
             >
@@ -52,7 +52,7 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
           );
         })}
         <div className="mt-auto pt-3" style={{ borderTop: '1px solid var(--divider)' }}>
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)' }}>
             {completedCount}/{modules.length}
           </span>
         </div>
@@ -71,8 +71,8 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
       }}
     >
       <div className="flex items-center justify-between px-4 mb-4">
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
-          Modules
+        <p className="section-label" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>
+          MODULES
         </p>
         <button
           onClick={onToggle}
@@ -86,56 +86,53 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
       <div className="flex flex-col gap-0.5 px-2 flex-1">
         {modules.map(m => {
           const isActive = m.key === activeModule;
-          const statusColor = m.status === 'completed' ? 'var(--accent-teal)' : m.status === 'loading' ? 'var(--accent-amber)' : m.status === 'error' ? 'hsl(0 84% 60%)' : m.status === 'stale' ? 'var(--accent-amber)' : 'var(--divider-section)';
+          const statusColor = m.status === 'completed' ? 'var(--accent-primary)' : m.status === 'loading' ? 'var(--accent-amber)' : m.status === 'error' ? 'var(--error)' : m.status === 'stale' ? 'var(--accent-amber)' : 'var(--divider-section)';
 
           return (
             <button
               key={m.key}
               onClick={() => onSelect(m.key)}
-              className="text-left rounded-[10px] p-3 transition-all duration-200"
+              className="text-left rounded-xl p-3 transition-all duration-200"
               style={{
                 backgroundColor: isActive ? 'var(--surface-card)' : 'transparent',
-                boxShadow: isActive ? '0 1px 4px rgba(0,0,0,0.04)' : 'none',
-                border: 'none',
+                boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.2)' : 'none',
+                border: isActive ? '1px solid var(--divider)' : '1px solid transparent',
                 cursor: 'pointer',
               }}
             >
               <div className="flex items-center gap-2.5">
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  width: 26, height: 26, borderRadius: 7,
-                  fontSize: 11, fontWeight: 500, fontFamily: "'Outfit', sans-serif",
-                  letterSpacing: '0.02em',
-                  backgroundColor: isActive ? 'var(--text-primary)' : m.status === 'completed' ? 'rgba(91,140,126,0.08)' : 'var(--surface-input)',
-                  color: isActive ? '#fff' : m.status === 'completed' ? 'var(--accent-teal)' : 'var(--text-muted)',
+                  width: 28, height: 28, borderRadius: 8,
+                  fontSize: 12, fontWeight: 700,
+                  backgroundColor: isActive ? 'var(--accent-primary)' : m.status === 'completed' ? 'rgba(0,212,230,0.1)' : 'var(--surface-elevated)',
+                  color: isActive ? '#080810' : m.status === 'completed' ? 'var(--accent-primary)' : 'var(--text-muted)',
                   transition: 'all 200ms ease-out',
                 }}>
                   {m.mono}
                 </span>
                 <div className="flex-1 min-w-0">
                   <p style={{
-                    fontFamily: "'Outfit', sans-serif",
                     fontSize: 13,
-                    fontWeight: isActive ? 400 : 300,
+                    fontWeight: isActive ? 600 : 500,
                     color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
                     marginBottom: 1,
                   }}>
                     {m.label}
                   </p>
-                  <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, color: 'var(--text-muted)', lineHeight: 1.3 }}>
+                  <p style={{ fontSize: 10, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.3 }}>
                     {m.subtitle}
                   </p>
                 </div>
               </div>
 
-              {/* Status indicator */}
               <div className="flex items-center gap-1.5 mt-2 ml-9">
-                <div style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: statusColor }} className={m.status === 'loading' ? 'animate-pulse' : ''} />
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, color: 'var(--text-muted)' }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: statusColor, boxShadow: m.status === 'completed' ? `0 0 6px ${statusColor}` : 'none' }} className={m.status === 'loading' ? 'animate-pulse' : ''} />
+                <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)' }}>
                   {m.status === 'idle' ? 'Not run' : m.status === 'loading' ? 'Running...' : m.status === 'completed' ? 'Complete' : m.status === 'error' ? 'Failed' : 'Stale'}
                 </span>
                 {m.lastRun && m.status === 'completed' && (
-                  <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, color: 'var(--text-muted)', marginLeft: 'auto' }}>
+                  <span style={{ fontSize: 9, fontWeight: 500, color: 'var(--text-muted)', marginLeft: 'auto' }}>
                     {m.lastRun}
                   </span>
                 )}
@@ -146,7 +143,7 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
       </div>
 
       <div className="px-4 pt-3 mt-auto" style={{ borderTop: '1px solid var(--divider)' }}>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>
+        <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>
           {completedCount} of {modules.length} complete
         </p>
       </div>

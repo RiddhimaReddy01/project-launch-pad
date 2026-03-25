@@ -223,74 +223,68 @@ export default function SetupModule() {
       {/* Header */}
       <div className="flex items-center justify-between mb-10">
         <div>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>SETUP</p>
-          <p className="font-heading" style={{ fontSize: 24, marginBottom: 4 }}>Launch Plan</p>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+          <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>SETUP</p>
+          <p className="font-heading" style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>Launch Plan</p>
+          <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
             Your costs, vendors, team plan, and roadmap — tailored to the {selectedTier} launch strategy.
           </p>
         </div>
         <div className="flex items-center gap-2">
           {completedCount > 0 && (
             <>
-              <button onClick={handleSave} className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
-                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}>
-                Save
-              </button>
-              <button onClick={handleExportPDF} disabled={exporting} className="rounded-[8px] px-3 py-1.5 transition-all duration-200"
-                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', border: '1px solid var(--divider)', cursor: 'pointer', backgroundColor: 'transparent' }}>
+              <button onClick={handleSave} className="btn-primary rounded-lg px-4 py-2" style={{ fontSize: 13, fontWeight: 600 }}>Save</button>
+              <button onClick={handleExportPDF} disabled={exporting} className="btn-secondary rounded-lg px-4 py-2" style={{ fontSize: 13, fontWeight: 600 }}>
                 {exporting ? 'Exporting...' : 'Export PDF'}
               </button>
             </>
           )}
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>{completedCount}/4</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>{completedCount}/4</span>
         </div>
       </div>
 
       {/* Tier selector */}
       <div className="mb-10">
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 12 }}>
-          Select launch strategy
-        </p>
-        <div className="grid grid-cols-3 gap-3">
+        <p className="section-label mb-3" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>SELECT LAUNCH STRATEGY</p>
+        <div className="grid grid-cols-3 gap-4">
           {(['lean', 'mid', 'premium'] as const).map((tier) => {
             const isSelected = selectedTier === tier;
             const tierData = costsState.data?.tiers?.find(t => t.id === tier);
             const labels = {
-              lean: { title: 'Lean', sub: 'Speed + DIY', cost: tierData ? `$${(tierData.cost_min/1000).toFixed(0)}K–$${(tierData.cost_max/1000).toFixed(0)}K` : '$30–50K', weeks: tierData?.timeline_weeks || 16, team: tierData?.team_size || '1', best: tierData?.best_for || 'MVPs, services' },
-              mid: { title: 'Balanced', sub: 'Quality + team', cost: tierData ? `$${(tierData.cost_min/1000).toFixed(0)}K–$${(tierData.cost_max/1000).toFixed(0)}K` : '$75–100K', weeks: tierData?.timeline_weeks || 24, team: tierData?.team_size || '1–2', best: tierData?.best_for || 'Most startups' },
-              premium: { title: 'Premium', sub: 'Full buildout', cost: tierData ? `$${(tierData.cost_min/1000).toFixed(0)}K–$${(tierData.cost_max/1000).toFixed(0)}K` : '$150–200K', weeks: tierData?.timeline_weeks || 32, team: tierData?.team_size || '2–3+', best: tierData?.best_for || 'Complex products' },
+              lean: { title: 'Lean', cost: tierData ? `$${(tierData.cost_min/1000).toFixed(0)}K–$${(tierData.cost_max/1000).toFixed(0)}K` : '$30–50K', weeks: tierData?.timeline_weeks || 16, team: tierData?.team_size || '1', best: tierData?.best_for || 'MVPs, services' },
+              mid: { title: 'Balanced', cost: tierData ? `$${(tierData.cost_min/1000).toFixed(0)}K–$${(tierData.cost_max/1000).toFixed(0)}K` : '$75–100K', weeks: tierData?.timeline_weeks || 24, team: tierData?.team_size || '1–2', best: tierData?.best_for || 'Most startups' },
+              premium: { title: 'Premium', cost: tierData ? `$${(tierData.cost_min/1000).toFixed(0)}K–$${(tierData.cost_max/1000).toFixed(0)}K` : '$150–200K', weeks: tierData?.timeline_weeks || 32, team: tierData?.team_size || '2–3+', best: tierData?.best_for || 'Complex products' },
             }[tier];
 
             return (
               <button
                 key={tier}
                 onClick={() => setSelectedTier(tier)}
-                className="text-left rounded-[12px] p-5 transition-all duration-200 active:scale-[0.97]"
+                className="text-left rounded-xl p-5 transition-all duration-200 active:scale-[0.97]"
                 style={{
-                  backgroundColor: isSelected ? 'rgba(26,26,26,0.03)' : 'var(--surface-card)',
-                  border: isSelected ? '1.5px solid var(--text-primary)' : '1.5px solid var(--divider)',
+                  backgroundColor: isSelected ? 'rgba(0,212,230,0.04)' : 'var(--surface-card)',
+                  border: isSelected ? '1.5px solid var(--accent-primary)' : '1px solid var(--divider)',
                   cursor: 'pointer',
+                  boxShadow: isSelected ? '0 0 20px rgba(0,212,230,0.08)' : 'none',
                 }}
               >
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2.5 mb-3">
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    width: 24, height: 24, borderRadius: 6, fontSize: 11, fontWeight: 500,
-                    fontFamily: "'Outfit', sans-serif",
-                    backgroundColor: isSelected ? 'var(--text-primary)' : 'var(--divider-light)',
-                    color: isSelected ? '#fff' : 'var(--text-muted)',
+                    width: 26, height: 26, borderRadius: 7, fontSize: 11, fontWeight: 700,
+                    backgroundColor: isSelected ? 'var(--accent-primary)' : 'var(--surface-elevated)',
+                    color: isSelected ? '#080810' : 'var(--text-muted)',
                   }}>
                     {TIER_MONOS[tier]}
                   </span>
-                  <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: isSelected ? 500 : 400, color: 'var(--text-primary)' }}>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
                     {labels.title}
                   </span>
                 </div>
-                <p className="font-heading" style={{ fontSize: 20, marginBottom: 4 }}>{labels.cost}</p>
-                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                <p className="font-heading" style={{ fontSize: 22, fontWeight: 700, marginBottom: 6 }}>{labels.cost}</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', lineHeight: 1.5 }}>
                   {labels.team} people · {labels.weeks} weeks
                 </p>
-                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginTop: 6 }}>
+                <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', marginTop: 6 }}>
                   {labels.best}
                 </p>
               </button>
@@ -300,23 +294,22 @@ export default function SetupModule() {
       </div>
 
       {/* Tab navigation */}
-      <div className="flex gap-1 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider)' }}>
+      <div className="flex gap-1 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider-section)' }}>
         {TABS.map(tab => {
           const isActive = activeTab === tab.key;
           const state = { costs: costsState, suppliers: suppliersState, team: teamState, timeline: timelineState }[tab.key];
           return (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-              className="relative flex items-center gap-2 px-4 py-3 transition-all duration-200 whitespace-nowrap"
-              style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: isActive ? 400 : 300, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
+              className="relative flex items-center gap-2.5 px-5 py-3.5 transition-all duration-200 whitespace-nowrap"
+              style={{ fontSize: 14, fontWeight: isActive ? 600 : 500, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
               <span style={{
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                width: 20, height: 20, borderRadius: 5, fontSize: 9, fontWeight: 500,
-                fontFamily: "'Outfit', sans-serif",
-                backgroundColor: state.status === 'completed' ? 'var(--text-primary)' : isActive ? 'rgba(26,26,26,0.08)' : 'var(--divider-light)',
-                color: state.status === 'completed' ? '#fff' : 'var(--text-muted)',
+                width: 22, height: 22, borderRadius: 6, fontSize: 10, fontWeight: 700,
+                backgroundColor: state.status === 'completed' ? 'var(--accent-primary)' : isActive ? 'rgba(0,212,230,0.15)' : 'var(--surface-elevated)',
+                color: state.status === 'completed' ? '#080810' : isActive ? 'var(--accent-primary)' : 'var(--text-muted)',
               }}>{tab.mono}</span>
               {tab.label}
-              {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 1.5, backgroundColor: 'var(--text-primary)', borderRadius: 1 }} />}
+              {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 2, background: 'linear-gradient(90deg, var(--accent-primary), var(--accent-purple))', borderRadius: 1 }} />}
             </button>
           );
         })}
