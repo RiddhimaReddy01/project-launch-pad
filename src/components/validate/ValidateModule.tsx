@@ -195,14 +195,17 @@ export default function ValidateModule() {
   }, [decomposeResult, discoverResult, selectedInsight, analyzeData, setupData]);
 
 
-  const visibleTabs = useMemo(() => {
-    const selectedOutputs = new Set<string>();
+  // Always show all tabs, but track which are "relevant" to selected methods
+  const relevantOutputs = useMemo(() => {
+    const outputs = new Set<string>();
     selectedMethods.forEach(mId => {
       const method = ALL_METHODS.find(m => m.id === mId);
-      method?.outputs.forEach(o => selectedOutputs.add(o));
+      method?.outputs.forEach(o => outputs.add(o));
     });
-    return ALL_TABS.filter(tab => selectedOutputs.has(tab.outputKey));
+    return outputs;
   }, [selectedMethods]);
+
+  const visibleTabs = ALL_TABS; // Always show all 4 tabs
 
   useEffect(() => {
     if (phase === 'toolkit' && visibleTabs.length > 0 && (!activeTab || !visibleTabs.find(t => t.key === activeTab))) {
@@ -215,16 +218,13 @@ export default function ValidateModule() {
     setPhase('generating');
     setErrorMsg('');
     try {
-      const requiredOutputs = new Set<string>();
-      selectedMethods.forEach(mId => {
-        const method = ALL_METHODS.find(m => m.id === mId);
-        method?.outputs.forEach(o => requiredOutputs.add(o));
-      });
+      // Always generate all 4 asset types
+      const allOutputs = ['landing_page', 'survey', 'whatsapp', 'communities', 'scorecard'];
 
       // Use rich context when available, fall back to simple idea string
       const data = context
-        ? await generateValidation(context, Array.from(requiredOutputs))
-        : await generateValidation(idea, Array.from(requiredOutputs));
+        ? await generateValidation(context, allOutputs)
+        : await generateValidation(idea, allOutputs);
       setResult(data);
       setPhase('toolkit');
     } catch (err: any) {
@@ -343,8 +343,8 @@ export default function ValidateModule() {
     <div className="flex items-center justify-center" style={{ height: '60vh' }}>
       <div className="text-center" style={{ maxWidth: 400 }}>
         <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Start with your idea first</p>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-          Head to the Understand tab to enter your business idea. We need that context before building your validation toolkit.
+        <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+          Enter your business idea on the home page. We need that context before building your validation toolkit.
         </p>
       </div>
     </div>
