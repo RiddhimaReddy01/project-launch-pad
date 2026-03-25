@@ -149,7 +149,7 @@ export default function DiscoverModule() {
             )}
           </div>
           <div className="flex items-center gap-3">
-            {cached && ready && <span className="badge badge-green">Cached</span>}
+            
             {status === 'done' && ready && (
               <button onClick={() => { hasRun.current = false; runDiscover(); }} className="btn-secondary" style={{ fontSize: 12 }}>
                 Re-run
