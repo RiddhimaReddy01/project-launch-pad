@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,65 +6,74 @@
 
 @layer base {
   :root {
-    --background: 210 24% 97%;
-    --foreground: 218 21% 15%;
-    --card: 0 0% 100%;
-    --card-foreground: 24 18% 18%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 24 18% 18%;
-    --primary: 8 72% 55%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 20% 94%;
-    --secondary-foreground: 218 21% 15%;
-    --muted: 210 20% 94%;
-    --muted-foreground: 220 12% 40%;
-    --accent: 8 72% 55%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 2 74% 52%;
+    --background: 240 33% 5%;
+    --foreground: 240 10% 95%;
+    --card: 240 20% 9%;
+    --card-foreground: 240 10% 95%;
+    --popover: 240 20% 9%;
+    --popover-foreground: 240 10% 95%;
+    --primary: 184 100% 45%;
+    --primary-foreground: 240 33% 5%;
+    --secondary: 240 15% 14%;
+    --secondary-foreground: 240 10% 85%;
+    --muted: 240 15% 14%;
+    --muted-foreground: 240 10% 55%;
+    --accent: 184 100% 45%;
+    --accent-foreground: 240 33% 5%;
+    --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 18% 87%;
-    --input: 214 18% 87%;
-    --ring: 8 72% 55%;
+    --border: 240 10% 15%;
+    --input: 240 10% 15%;
+    --ring: 184 100% 45%;
     --radius: 1rem;
 
-    --color-bg: #f6f8fb;
-    --color-bg-muted: #eef2f6;
-    --color-surface: #ffffff;
-    --color-surface-strong: #f2f5f8;
-    --color-text: #1f2937;
-    --color-text-soft: #4b5563;
-    --color-text-muted: #6b7280;
-    --color-accent: #e05a47;
-    --color-accent-soft: #fbe3df;
-    --color-success: #3d7a63;
-    --color-warning: #c38a2e;
-    --color-danger: #c1483d;
-    --color-border: #dde4ec;
+    /* ── Core palette ── */
+    --color-bg: #080810;
+    --color-bg-muted: #0D0D1A;
+    --color-surface: #12121E;
+    --color-surface-strong: #1A1A2A;
+    --color-text: #F0F0F5;
+    --color-text-soft: #9999A8;
+    --color-text-muted: #666678;
+    --color-accent: #00D4E6;
+    --color-accent-soft: rgba(0, 212, 230, 0.1);
+    --color-success: #34D399;
+    --color-warning: #FBBF24;
+    --color-danger: #EF4444;
+    --color-border: rgba(255, 255, 255, 0.08);
 
+    /* ── Semantic surfaces ── */
     --surface-bg: var(--color-bg);
     --surface-card: var(--color-surface);
-    --surface-card-hover: #faf4ec;
-    --surface-input: #fbfcfe;
+    --surface-card-hover: rgba(255, 255, 255, 0.04);
+    --surface-input: rgba(255, 255, 255, 0.03);
     --surface-elevated: var(--color-bg-muted);
     --divider: var(--color-border);
-    --divider-light: #e7edf3;
-    --divider-section: #cad6e2;
+    --divider-light: rgba(255, 255, 255, 0.05);
+    --divider-section: rgba(255, 255, 255, 0.12);
+
+    /* ── Text tokens ── */
     --text-primary: var(--color-text);
     --text-secondary: var(--color-text-soft);
     --text-muted: var(--color-text-muted);
     --text-link: var(--color-accent);
+
+    /* ── Accent tokens ── */
     --accent-primary: var(--color-accent);
-    --accent-primary-light: rgba(198, 95, 50, 0.1);
-    --accent-glow: transparent;
-    --accent-teal: #4f8b76;
-    --accent-blue: #5e7ea6;
-    --accent-amber: #c38a2e;
-    --accent-purple: #7d6ba8;
+    --accent-primary-light: rgba(0, 212, 230, 0.1);
+    --accent-glow: 0 0 20px rgba(0, 212, 230, 0.15);
+    --accent-teal: #34D399;
+    --accent-blue: #60A5FA;
+    --accent-amber: #FBBF24;
+    --accent-purple: #A87CFF;
+
+    /* ── Signal tokens ── */
     --signal-high: var(--color-success);
     --signal-medium: var(--color-warning);
     --signal-low: var(--color-text-muted);
     --error: var(--color-danger);
 
+    /* ── Spacing ── */
     --space-1: 0.25rem;
     --space-2: 0.5rem;
     --space-3: 0.75rem;
@@ -78,13 +87,15 @@
     --space-20: 5rem;
     --space-24: 6rem;
 
+    /* ── Radius ── */
     --radius-sm: 0.75rem;
     --radius-md: 1rem;
     --radius-lg: 1.5rem;
     --radius-xl: 2rem;
 
+    /* ── Typography ── */
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-display: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-size-xs: 0.8125rem;
     --font-size-sm: 0.9375rem;
     --font-size-md: 0.9375rem;
@@ -93,9 +104,10 @@
     --font-size-2xl: 1.625rem;
     --font-size-3xl: 1.625rem;
 
-    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
-    --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.06);
-    --shadow-lg: 0 16px 40px rgba(15, 23, 42, 0.08);
+    /* ── Shadows ── */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
   }
 }
 
@@ -108,7 +120,7 @@ html {
 }
 
 ::selection {
-  background: rgba(198, 95, 50, 0.16);
+  background: rgba(0, 212, 230, 0.2);
 }
 
 @layer base {
@@ -142,6 +154,10 @@ html {
   min-height: 100vh;
 }
 
+/* ═══════════════════════════════════
+   APP SHELL
+   ═══════════════════════════════════ */
+
 .app-shell {
   min-height: 100vh;
   background: var(--color-bg);
@@ -157,13 +173,17 @@ html {
   max-width: 760px;
 }
 
+/* ═══════════════════════════════════
+   TOP NAV
+   ═══════════════════════════════════ */
+
 .top-nav {
   position: sticky;
   top: 0;
   z-index: 40;
-  background: rgba(246, 248, 251, 0.94);
-  border-bottom: 1px solid var(--color-border);
-  backdrop-filter: blur(8px);
+  background: rgba(8, 8, 16, 0.85);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
 }
 
 .top-nav__inner {
@@ -188,6 +208,10 @@ html {
   flex-wrap: wrap;
 }
 
+/* ═══════════════════════════════════
+   BRAND
+   ═══════════════════════════════════ */
+
 .brand-button {
   background: transparent;
   border: 0;
@@ -196,20 +220,24 @@ html {
 }
 
 .brand-mark {
+  font-family: var(--font-display);
   font-size: 1.5rem;
   letter-spacing: -0.03em;
   color: var(--color-text);
 }
 
 .brand-mark__strong {
-  font-family: var(--font-sans);
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .brand-mark__light {
-  font-family: var(--font-sans);
   font-weight: 500;
+  color: var(--color-accent);
 }
+
+/* ═══════════════════════════════════
+   TYPOGRAPHY
+   ═══════════════════════════════════ */
 
 .eyebrow,
 .section-label,
@@ -235,7 +263,7 @@ html {
 
 .section-title {
   margin: 0;
-  font-family: var(--font-sans);
+  font-family: var(--font-display);
   font-size: 1.625rem;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -261,6 +289,10 @@ html {
   font-weight: 600;
 }
 
+/* ═══════════════════════════════════
+   HERO SECTION
+   ═══════════════════════════════════ */
+
 .hero-section {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -275,6 +307,10 @@ html {
 .hero-section__aside {
   max-width: 420px;
 }
+
+/* ═══════════════════════════════════
+   CARDS
+   ═══════════════════════════════════ */
 
 .idea-input-card,
 .section-card,
@@ -329,6 +365,10 @@ html {
   color: var(--color-text-soft);
 }
 
+/* ═══════════════════════════════════
+   EVIDENCE LIST
+   ═══════════════════════════════════ */
+
 .evidence-list {
   display: grid;
   gap: var(--space-4);
@@ -338,6 +378,7 @@ html {
   padding: var(--space-5);
   border-radius: var(--radius-md);
   background: var(--color-bg-muted);
+  border: 1px solid var(--color-border);
 }
 
 .evidence-list__title {
@@ -356,6 +397,10 @@ html {
   font-size: var(--font-size-md);
   color: var(--color-text-muted);
 }
+
+/* ═══════════════════════════════════
+   METRIC ROW
+   ═══════════════════════════════════ */
 
 .metric-row {
   display: flex;
@@ -389,6 +434,10 @@ html {
   text-align: right;
 }
 
+/* ═══════════════════════════════════
+   BUTTONS
+   ═══════════════════════════════════ */
+
 .pill-button,
 .secondary-button,
 .btn-secondary,
@@ -403,16 +452,17 @@ html {
 
 .pill-button,
 .btn-primary {
-  background: var(--color-text);
-  color: #fff;
-  border-color: var(--color-text);
-  box-shadow: var(--shadow-sm);
+  background: linear-gradient(135deg, #00D4E6, #00B8C8);
+  color: #080810;
+  border-color: transparent;
+  box-shadow: 0 0 20px rgba(0, 212, 230, 0.15);
+  font-weight: 600;
 }
 
 .pill-button:hover,
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 0 30px rgba(0, 212, 230, 0.25);
 }
 
 .pill-button--active {
@@ -422,24 +472,31 @@ html {
 
 .secondary-button,
 .btn-secondary {
-  background: var(--color-surface);
-  color: var(--color-text);
-  border-color: var(--color-border);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-text-soft);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .secondary-button:hover,
 .btn-secondary:hover {
-  background: var(--color-bg-muted);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
 }
+
+/* ═══════════════════════════════════
+   CALLOUTS
+   ═══════════════════════════════════ */
 
 .insight-callout {
   padding: var(--space-6);
   background: var(--color-bg-muted);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
 }
 
 .insight-callout--warm {
-  background: #f6ebe2;
+  background: rgba(251, 191, 36, 0.06);
+  border-color: rgba(251, 191, 36, 0.12);
 }
 
 .insight-callout__title {
@@ -453,6 +510,10 @@ html {
   color: var(--color-text-soft);
 }
 
+/* ═══════════════════════════════════
+   BADGES & CHIPS
+   ═══════════════════════════════════ */
+
 .badge,
 .mono-badge,
 .source-chip {
@@ -464,7 +525,7 @@ html {
   font-size: var(--font-size-sm);
   font-weight: 700;
   border: 1px solid transparent;
-  background: var(--color-bg-muted);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--color-text-soft);
   text-decoration: none;
 }
@@ -475,14 +536,18 @@ html {
   padding: 0.45rem 0.7rem;
 }
 
-.badge-green { background: #e7f1ea; color: var(--color-success); }
-.badge-amber { background: #f5eddc; color: var(--color-warning); }
-.badge-blue { background: #e8eef4; color: #47627d; }
-.badge-purple { background: #efe8f4; color: #70568f; }
-.badge-muted { background: var(--color-bg-muted); color: var(--color-text-muted); }
-.source-chip-reddit { background: #f6e6df; color: #a84f2c; }
-.source-chip-google { background: #e8eef4; color: #47627d; }
-.source-chip-yelp { background: #f8e0dc; color: #a14335; }
+.badge-green { background: rgba(52, 211, 153, 0.1); color: var(--color-success); border-color: rgba(52, 211, 153, 0.15); }
+.badge-amber { background: rgba(251, 191, 36, 0.1); color: var(--color-warning); border-color: rgba(251, 191, 36, 0.15); }
+.badge-blue { background: rgba(96, 165, 250, 0.1); color: var(--accent-blue); border-color: rgba(96, 165, 250, 0.15); }
+.badge-purple { background: rgba(168, 124, 255, 0.1); color: var(--accent-purple); border-color: rgba(168, 124, 255, 0.15); }
+.badge-muted { background: rgba(255, 255, 255, 0.04); color: var(--color-text-muted); }
+.source-chip-reddit { background: rgba(255, 107, 53, 0.1); color: #FF6B35; border-color: rgba(255, 107, 53, 0.15); }
+.source-chip-google { background: rgba(96, 165, 250, 0.1); color: #60A5FA; border-color: rgba(96, 165, 250, 0.15); }
+.source-chip-yelp { background: rgba(239, 68, 68, 0.1); color: #EF4444; border-color: rgba(239, 68, 68, 0.15); }
+
+/* ═══════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════ */
 
 .hide-scrollbar {
   -ms-overflow-style: none;
@@ -493,6 +558,10 @@ html {
   display: none;
 }
 
+/* ═══════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════ */
+
 .scroll-reveal {
   opacity: 0;
   transform: translateY(14px);
@@ -500,6 +569,17 @@ html {
 }
 
 .scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-target {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 600ms ease, transform 600ms ease;
+}
+
+.reveal-target.revealed {
   opacity: 1;
   transform: translateY(0);
 }
@@ -542,6 +622,15 @@ html {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════ */
 
 @media (max-width: 900px) {
   .app-shell__content,
