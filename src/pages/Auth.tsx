@@ -96,7 +96,7 @@ export default function Auth() {
           {forgotMode ? 'Reset your password' : isSignUp ? 'Start your founder workspace' : 'Continue your research'}
         </h1>
         <p className="section-copy" style={{ marginTop: 0 }}>
-          Access saved ideas, validation assets, and the full research flow from a calmer light workspace.
+          Access saved ideas, validation assets, and the full research flow.
         </p>
 
         <div style={{ display: 'grid', gap: 'var(--space-4)', marginTop: 'var(--space-6)' }}>
