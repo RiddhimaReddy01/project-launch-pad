@@ -633,7 +633,7 @@ export default function ValidateModule() {
         </div>
       </div>
 
-      {(result?.strategy || result?.recommended_sequence?.length) && (
+      {(result?.strategy || (result?.recommended_sequence && result.recommended_sequence.length > 0)) ? (
         <div className="grid gap-4 mb-8" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
           {result?.strategy && (
             <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
