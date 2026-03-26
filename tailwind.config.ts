@@ -47,14 +47,13 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Dark Futuristic palette
-        neon: {
-          cyan: "#00D4E6",
-          teal: "#00BFA6",
-          blue: "#5B8DEF",
-          purple: "#A87CFF",
-          amber: "#F5A623",
-          red: "#EF4444",
+        airbnb: {
+          rausch: "#FF385C",
+          babu: "#428BCA",
+          arches: "#E07912",
+          hof: "#484848",
+          foggy: "#767676",
+          hackberry: "#008A05",
         },
       },
       borderRadius: {
@@ -63,13 +62,12 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        heading: ["'Space Grotesk'", "sans-serif"],
-        body: ["'Inter'", "-apple-system", "sans-serif"],
+        heading: ["'Plus Jakarta Sans'", "sans-serif"],
+        body: ["'DM Sans'", "-apple-system", "sans-serif"],
       },
       boxShadow: {
-        glow: "0 0 20px rgba(0,212,230,0.15)",
-        "glow-lg": "0 0 40px rgba(0,212,230,0.2)",
-        "glow-purple": "0 0 20px rgba(168,124,255,0.15)",
+        card: "0 1px 2px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.06)",
+        "card-hover": "0 2px 4px rgba(0,0,0,0.06), 0 12px 28px rgba(0,0,0,0.1)",
       },
     },
   },
