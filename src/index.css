@@ -32,9 +32,9 @@
     --color-bg-muted: #F7F7F7;
     --color-surface: #FFFFFF;
     --color-surface-strong: #F0F0F0;
-    --color-text: #222222;
-    --color-text-soft: #717171;
-    --color-text-muted: #B0B0B0;
+    --color-text: #111111;
+    --color-text-soft: #555555;
+    --color-text-muted: #888888;
     --color-accent: #FF385C;
     --color-accent-soft: rgba(255, 56, 92, 0.06);
     --color-success: #008A05;
@@ -98,8 +98,8 @@
     --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-size-xs: 0.875rem;
     --font-size-sm: 0.875rem;
-    --font-size-md: 0.9375rem;
-    --font-size-lg: 1rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.0625rem;
     --font-size-xl: 1.5rem;
     --font-size-2xl: 1.75rem;
     --font-size-3xl: 2rem;
@@ -134,7 +134,7 @@ html {
     background: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-sans);
-    font-size: 0.9375rem;
+    font-size: 1rem;
     font-weight: 400;
     line-height: 1.72;
     -webkit-font-smoothing: antialiased;
@@ -275,7 +275,7 @@ html {
 .lead-copy,
 .font-body {
   color: var(--color-text-soft);
-  font-size: 0.9375rem;
+  font-size: 1rem;
   line-height: 1.75;
 }
 

@@ -111,47 +111,6 @@ function hasInteractiveSources(result: DiscoverResult): boolean {
   return result.insights.length > 0;
 }
 
-function buildEvidenceExplorer(
-  insights: DiscoverResult['insights'],
-  activePlatform: 'reddit' | 'google' | 'yelp' | null,
-) {
-  const seen = new Set<string>();
-  const items: Array<{
-    platform: 'reddit' | 'google' | 'yelp';
-    text: string;
-    url: string;
-    author: string;
-    date: string;
-    insightTitle: string;
-  }> = [];
-
-  insights.forEach((insight) => {
-    insight.sources.forEach((source) => {
-      if (!source.url || source.url === '#') return;
-      if (activePlatform && source.platform !== activePlatform) return;
-      const key = `${source.platform}:${source.url}:${source.text}`;
-      if (seen.has(key)) return;
-      seen.add(key);
-      items.push({
-        platform: source.platform,
-        text: source.text,
-        url: source.url,
-        author: source.author,
-        date: source.date,
-        insightTitle: insight.title,
-      });
-    });
-  });
-
-  return items.slice(0, 8);
-}
-
-function platformLabel(platform: 'reddit' | 'google' | 'yelp') {
-  if (platform === 'reddit') return 'Reddit';
-  if (platform === 'yelp') return 'Yelp';
-  return 'Google';
-}
-
 export default function DiscoverModule() {
   const { idea, decomposeResult, discoverResult: contextDiscover, setDiscoverResult: setContextDiscover } = useIdea();
   const [status, setStatus] = useState<Status>(contextDiscover ? 'done' : 'idle');
@@ -230,11 +189,6 @@ export default function DiscoverModule() {
     const matchesPlatform = !activePlatform || i.sources.some(source => source.platform === activePlatform);
     return matchesType && matchesPlatform;
   }) ?? [];
-  const evidenceExplorer = useMemo(
-    () => (result ? buildEvidenceExplorer(filtered, activePlatform) : []),
-    [result, filtered, activePlatform]
-  );
-
   return (
     <div ref={containerRef} className="scroll-reveal">
       {/* Header */}
@@ -318,50 +272,6 @@ export default function DiscoverModule() {
             )}
 
             <SourceSummaryBar summary={result.source_summary} activePlatform={activePlatform} onSelectPlatform={setActivePlatform} />
-
-            {evidenceExplorer.length > 0 && (
-              <div className="rounded-xl p-5 mb-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-                <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
-                  <div>
-                    <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>EVIDENCE EXPLORER</p>
-                    <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
-                      Open the underlying sources first, then read the related insight for interpretation.
-                    </p>
-                  </div>
-                  <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', margin: 0 }}>
-                    {activePlatform ? `Filtered to ${platformLabel(activePlatform)}` : 'All linked sources'}
-                  </p>
-                </div>
-
-                <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
-                  {evidenceExplorer.map((item) => (
-                    <a
-                      key={`${item.platform}-${item.url}-${item.text.slice(0, 20)}`}
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="rounded-xl p-4 transition-all duration-200"
-                      style={{ backgroundColor: 'var(--surface-elevated)', border: '1px solid var(--divider)', textDecoration: 'none' }}
-                    >
-                      <div className="flex items-center justify-between gap-2 mb-3">
-                        <span className={`source-chip ${item.platform === 'reddit' ? 'source-chip-reddit' : item.platform === 'yelp' ? 'source-chip-yelp' : 'source-chip-google'}`} style={{ fontWeight: 600 }}>
-                          {platformLabel(item.platform)}
-                        </span>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>Open source ↗</span>
-                      </div>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.6, marginBottom: 8 }}>
-                        {item.text.length > 145 ? `${item.text.slice(0, 145)}…` : item.text}
-                      </p>
-                      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.55, margin: 0 }}>
-                        Related insight: {item.insightTitle}
-                        {item.author ? ` · ${item.author}` : ''}
-                        {item.date ? ` · ${item.date}` : ''}
-                      </p>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {visibleTabs.length > 1 && (
               <div className="flex gap-2 mb-6 overflow-x-auto pb-1 hide-scrollbar" role="tablist" aria-label="Filter insights by type">
