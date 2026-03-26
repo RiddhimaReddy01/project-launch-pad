@@ -68,6 +68,9 @@ function normalizeScore(value: unknown): number {
 }
 
 function normalizeSource(source: any): DiscoverSource {
+  const nestedUrl = source?.metadata?.url || source?.metadata?.link || source?.source_url || source?.sourceUrl;
+  const nestedText = source?.metadata?.text || source?.metadata?.quote || source?.summary;
+  const nestedAuthor = source?.metadata?.author || source?.metadata?.username;
   return {
     platform: normalizePlatform(
       source?.platform ||
@@ -76,9 +79,9 @@ function normalizeSource(source: any): DiscoverSource {
       source?.domain ||
       source?.channel
     ),
-    text: source?.text || source?.quote || source?.snippet || source?.content || "",
-    url: source?.url || source?.link || source?.permalink || source?.href || "",
-    author: source?.author || source?.username || source?.user || source?.title || "",
+    text: source?.text || source?.quote || source?.snippet || source?.content || nestedText || "",
+    url: source?.url || source?.link || source?.source_url || source?.permalink || source?.href || nestedUrl || "",
+    author: source?.author || source?.username || source?.user || source?.title || nestedAuthor || "",
     date: source?.date || source?.created_at || source?.posted_at || "",
     upvotes: source?.upvotes || source?.score || null,
   };

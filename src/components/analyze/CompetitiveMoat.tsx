@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { analyzeSection, type AnalyzeContext, type MoatData } from '@/lib/analyze';
-import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
 import SectionSkeleton from './SectionSkeleton';
 
 export default function CompetitiveMoat({ context, onData, onError, shouldRun = true, initialData }: { context: AnalyzeContext; onData?: (data: MoatData) => void; onError?: (error: string) => void; shouldRun?: boolean; initialData?: MoatData | null }) {
@@ -31,7 +30,7 @@ export default function CompetitiveMoat({ context, onData, onError, shouldRun = 
   );
   if (!data) return null;
 
-  const radarData = data.dimensions.map(d => ({ dimension: d.dimension, score: d.score }));
+  const sortedDimensions = [...data.dimensions].sort((a, b) => b.score - a.score);
   const scoreColor = data.overall_score >= 7 ? 'var(--accent-teal)' : data.overall_score >= 4 ? 'var(--accent-amber)' : 'hsl(0 84% 60%)';
 
   return (
@@ -47,18 +46,27 @@ export default function CompetitiveMoat({ context, onData, onError, shouldRun = 
         </div>
       </div>
 
-      {/* Radar chart */}
+      {/* Ranked dimensions */}
       <div className="mb-8">
-        <p className="font-caption" style={{ fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Defensibility Dimensions</p>
-        <div className="rounded-[12px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-          <div style={{ height: 280 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={radarData}>
-                <PolarGrid stroke="var(--divider-light)" />
-                <PolarAngleAxis dataKey="dimension" style={{ fontSize: 10, fill: 'var(--text-muted)' }} />
-                <Radar dataKey="score" stroke="var(--text-primary)" fill="var(--text-primary)" fillOpacity={0.08} strokeWidth={1.5} dot={{ r: 3, fill: 'var(--text-primary)' }} />
-              </RadarChart>
-            </ResponsiveContainer>
+        <p className="font-caption" style={{ fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Defensibility Dimensions</p>
+        <div className="rounded-[12px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+          <div className="flex flex-col gap-4">
+            {sortedDimensions.map((dim, i) => {
+              const barPct = (dim.score / 10) * 100;
+              const dimColor = dim.score >= 7 ? 'var(--accent-teal)' : dim.score >= 4 ? 'var(--accent-amber)' : 'hsl(0 84% 60%)';
+              return (
+                <div key={i} title={dim.rationale}>
+                  <div className="flex items-center justify-between gap-4 mb-2">
+                    <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>{dim.dimension}</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: dimColor }}>{dim.score}/10</span>
+                  </div>
+                  <div style={{ height: 10, borderRadius: 999, backgroundColor: 'var(--surface-elevated)', overflow: 'hidden', marginBottom: 8 }}>
+                    <div style={{ height: '100%', width: `${barPct}%`, backgroundColor: dimColor, borderRadius: 999, transition: 'width 600ms ease-out' }} />
+                  </div>
+                  <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.65, margin: 0 }}>{dim.rationale}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -66,33 +74,13 @@ export default function CompetitiveMoat({ context, onData, onError, shouldRun = 
       {/* Strongest & weakest */}
       <div className="grid grid-cols-2 gap-3 mb-8">
         <div className="rounded-[12px] p-4" style={{ backgroundColor: 'rgba(45,139,117,0.03)', border: '1px solid rgba(45,139,117,0.1)' }}>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--accent-teal)', marginBottom: 4 }}>Strongest</p>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{data.strongest}</p>
+          <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--accent-teal)', marginBottom: 6 }}>Strongest</p>
+          <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>{data.strongest}</p>
         </div>
         <div className="rounded-[12px] p-4" style={{ backgroundColor: 'rgba(239,68,68,0.03)', border: '1px solid rgba(239,68,68,0.1)' }}>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'hsl(0 84% 60%)', marginBottom: 4 }}>Weakest</p>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{data.weakest}</p>
+          <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'hsl(0 84% 60%)', marginBottom: 6 }}>Weakest</p>
+          <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>{data.weakest}</p>
         </div>
-      </div>
-
-      {/* Dimension cards */}
-      <div className="flex flex-col gap-2">
-        {data.dimensions.map((dim, i) => {
-          const barPct = (dim.score / 10) * 100;
-          const dimColor = dim.score >= 7 ? 'var(--accent-teal)' : dim.score >= 4 ? 'var(--accent-amber)' : 'hsl(0 84% 60%)';
-          return (
-            <div key={i} className="rounded-[10px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-              <div className="flex items-center justify-between mb-2">
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>{dim.dimension}</span>
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: dimColor }}>{dim.score}/10</span>
-              </div>
-              <div style={{ height: 3, borderRadius: 2, backgroundColor: 'var(--divider-light)', overflow: 'hidden', marginBottom: 8 }}>
-                <div style={{ height: '100%', width: `${barPct}%`, backgroundColor: dimColor, borderRadius: 2, transition: 'width 600ms ease-out' }} />
-              </div>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.5 }}>{dim.rationale}</p>
-            </div>
-          );
-        })}
       </div>
     </div>
   );

@@ -51,7 +51,7 @@ export default function LocationIntel({ context, onData, onError, shouldRun = tr
       {/* Map panel */}
       {data.city_center && data.focus_areas && data.focus_areas.length > 0 && (
         <div className="mb-8">
-          <p className="font-caption" style={{ fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Location Map</p>
+          <p className="font-caption" style={{ fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Location Map</p>
           <LocationMap data={data} scoreColor={scoreColor} />
         </div>
       )}
@@ -167,8 +167,8 @@ function LocationMap({ data, scoreColor }: { data: LocationData; scoreColor: str
     <div className="rounded-[16px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', boxShadow: 'var(--shadow-sm)' }}>
       <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
         <div>
-          <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>{center.label}</p>
-          <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+          <p style={{ fontSize: 17, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>{center.label}</p>
+          <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
             Focus areas are positioned relative to the city center so you can compare where the strongest launch opportunities cluster.
           </p>
         </div>
@@ -183,7 +183,7 @@ function LocationMap({ data, scoreColor }: { data: LocationData; scoreColor: str
 
       <div className="rounded-[14px] overflow-hidden" style={{ border: '1px solid var(--divider)', backgroundColor: 'var(--surface-subtle)' }}>
         <svg viewBox="0 0 600 300" style={{ display: 'block', width: '100%', height: 'auto' }} role="img" aria-label={`Map of ${center.label}`}>
-          <rect x="0" y="0" width="600" height="300" fill="var(--surface-subtle)" />
+          <rect x="0" y="0" width="600" height="300" fill="#f8fafc" />
           <path d="M40 220 C120 130, 220 130, 280 195 S440 245, 560 120" stroke="rgba(60,64,67,0.14)" strokeWidth="18" fill="none" strokeLinecap="round" />
           <path d="M70 70 C190 30, 330 60, 540 50" stroke="rgba(60,64,67,0.08)" strokeWidth="10" fill="none" strokeLinecap="round" />
           <circle cx={centerPoint.x} cy={centerPoint.y} r="10" fill="var(--text-primary)" />
@@ -197,6 +197,7 @@ function LocationMap({ data, scoreColor }: { data: LocationData; scoreColor: str
             const style = emphasisStyle(area.emphasis);
             return (
               <g key={area.name}>
+                <title>{area.reason}</title>
                 <circle cx={point.x} cy={point.y} r={style.r + 10} fill={style.fill} opacity="0.10" />
                 <circle cx={point.x} cy={point.y} r={style.r} fill={style.fill} opacity={style.opacity} />
                 <line x1={point.x} y1={point.y} x2={point.x + 16} y2={point.y - 16} stroke={style.fill} strokeWidth="1.5" opacity="0.7" />

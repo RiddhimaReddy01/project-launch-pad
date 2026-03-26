@@ -25,7 +25,7 @@ function OpportunityGauge({ score }: { score: number }) {
           d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
           fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round"
           strokeDasharray={circumference} strokeDashoffset={offset}
-          style={{ transition: 'stroke-dashoffset 1s ease-out', filter: `drop-shadow(0 0 6px ${color})` }}
+          style={{ transition: 'stroke-dashoffset 1s ease-out' }}
         />
       </svg>
       <span style={{ fontSize: 28, fontWeight: 700, color, marginTop: -20 }}>
@@ -55,13 +55,13 @@ function ClickableSection({
               key={i}
               className="rounded-lg px-3 py-2.5 transition-all duration-150 cursor-pointer"
               style={{
-                backgroundColor: isActive ? 'rgba(0,212,230,0.06)' : 'transparent',
-                border: isActive ? '1px solid rgba(0,212,230,0.2)' : '1px solid transparent',
+                backgroundColor: isActive ? 'var(--color-accent-soft)' : 'transparent',
+                border: isActive ? '1px solid rgba(224,90,71,0.2)' : '1px solid transparent',
               }}
               onClick={() => onItemClick?.(item)}
             >
               <p style={{
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: 500,
                 color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
               }}>
@@ -91,9 +91,9 @@ export default function SynthesisPanel({
   return (
     <div
       className="rounded-xl p-6 lg:sticky"
-      style={{ top: 120, backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}
+      style={{ top: 120, backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', boxShadow: 'var(--shadow-md)' }}
     >
-      <p className="font-heading" style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20 }}>
+      <p className="font-heading" style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20 }}>
         Founder Synthesis
       </p>
 

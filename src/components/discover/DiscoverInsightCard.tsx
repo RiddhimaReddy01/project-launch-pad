@@ -40,9 +40,9 @@ function ScoreBar({ label, value, color, explanation }: { label: string; value: 
           onClick={(e) => { e.stopPropagation(); setShowTip(!showTip); }}
           style={{ background: 'none', border: 'none', padding: 0 }}
         >
-          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.04em' }}>{label}</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.04em' }}>{label}</span>
         </button>
-        <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-secondary)' }}>{pct}%</span>
+        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{pct}%</span>
       </div>
       <div className="rounded-full overflow-hidden" style={{ height: 4, backgroundColor: 'var(--divider)' }}>
         <div className="rounded-full h-full animate-progress" style={{ width: `${pct}%`, backgroundColor: color, transition: 'width 600ms ease-out' }} />
@@ -201,13 +201,13 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
 
             <div className="flex flex-wrap gap-1.5 mt-3">
               {insight.tags.map((tag, i) => (
-                <span key={i} className="badge badge-muted" style={{ fontWeight: 600 }}>{tag}</span>
+                <span key={i} className="badge badge-muted" style={{ fontWeight: 600, fontSize: 12 }}>{tag}</span>
               ))}
             </div>
 
             <div className="mt-3">
               <span
-                style={{ fontSize: 12, fontWeight: 600, color: 'var(--accent-primary)' }}
+                style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-primary)' }}
                 title="Click this insight card to open the supporting evidence and source links"
               >
                 {expanded ? 'Hide evidence' : `${insight.sources.length} sources - click to expand`}
@@ -225,7 +225,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
             <p className="section-label" style={{ fontWeight: 700 }}>EVIDENCE ({insight.sources.length} sources)</p>
             <button
               onClick={(e) => { e.stopPropagation(); setShowMethodology(!showMethodology); }}
-              className="btn-secondary rounded-lg" style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px' }}
+              className="btn-secondary rounded-lg" style={{ fontSize: 12, fontWeight: 600, padding: '6px 12px' }}
             >
               {showMethodology ? 'Hide methodology' : 'How we scored this'}
             </button>
@@ -239,7 +239,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
               const hasUrl = source.url && source.url !== '#';
               return (
                 <div key={i} className="rounded-xl p-4" style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid var(--divider)' }}>
-                  <p style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--text-primary)', fontWeight: 500 }}>
+                  <p style={{ fontSize: 15, lineHeight: 1.75, color: 'var(--text-primary)', fontWeight: 500 }}>
                     "{source.text}"
                   </p>
                   <div className="flex items-center gap-3 mt-3 flex-wrap">

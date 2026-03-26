@@ -16,6 +16,7 @@ export default function RiskMatrix({ context, onData, onError, shouldRun = true,
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hoveredRisk, setHoveredRisk] = useState<number | null>(null);
+  const [selectedRisk, setSelectedRisk] = useState<number | null>(null);
 
   useEffect(() => {
     if (!shouldRun || data) return;
@@ -84,11 +85,11 @@ export default function RiskMatrix({ context, onData, onError, shouldRun = true,
           {matrixCells.map((cell) => {
             const risksInCell = data.risks.filter(r => r.likelihood === cell.row && r.impact === cell.col);
             return (
-              <div key={`${cell.row}-${cell.col}`} className="rounded-[16px] p-3 relative" style={{ gridRow: cell.gridRow, gridColumn: cell.gridCol + 1, backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+              <div key={`${cell.row}-${cell.col}`} className="rounded-[16px] p-3 relative" style={{ gridRow: cell.gridRow, gridColumn: cell.gridCol + 1, backgroundColor: cell.bg, border: '1px solid var(--divider)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                 {risksInCell.map((r, i) => (
-                  <div key={i} className="rounded-full px-3 py-1" title={r.risk} style={{ fontSize: 11, fontWeight: 600, backgroundColor: 'var(--color-bg-muted)', color: 'var(--text-primary)', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {r.risk.slice(0, 20)}
-                  </div>
+                  <button key={i} className="rounded-full px-3 py-1" title={r.risk} onClick={() => setSelectedRisk(data.risks.indexOf(r))} style={{ fontSize: 12, fontWeight: 600, backgroundColor: 'rgba(255,255,255,0.85)', color: 'var(--text-primary)', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', border: '1px solid rgba(0,0,0,0.06)', cursor: 'pointer' }}>
+                    {r.risk.slice(0, 24)}
+                  </button>
                 ))}
                 {risksInCell.length === 0 && (
                   <span style={{ fontSize: 10, color: 'var(--text-muted)', opacity: 0.7 }}>{cell.label}</span>
@@ -110,6 +111,18 @@ export default function RiskMatrix({ context, onData, onError, shouldRun = true,
         </div>
         <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, color: 'var(--text-muted)', textAlign: 'center', marginTop: 4, letterSpacing: '0.04em' }}>IMPACT →</p>
       </div>
+      {selectedRisk !== null && data.risks[selectedRisk] && (
+        <div className="rounded-[16px] p-5 mb-8" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', boxShadow: 'var(--shadow-sm)' }}>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="section-label mb-2" style={{ fontWeight: 700 }}>Selected Risk</p>
+              <p style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>{data.risks[selectedRisk].risk}</p>
+              <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>{data.risks[selectedRisk].mitigation}</p>
+            </div>
+            <button onClick={() => setSelectedRisk(null)} className="btn-secondary rounded-lg px-3 py-1.5" style={{ fontSize: 12, fontWeight: 600 }}>Close</button>
+          </div>
+        </div>
+      )}
 
       {/* Risk cards */}
       <div className="flex flex-col gap-3">

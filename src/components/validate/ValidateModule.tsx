@@ -71,6 +71,49 @@ const PLATFORM_COLORS: Record<string, string> = {
   Instagram: 'hsl(var(--destructive))', TikTok: 'var(--text-secondary)',
 };
 
+const METHOD_GUIDES: Record<string, { target: string; instruction: string; tools: { name: string; url: string }[] }> = {
+  landing: {
+    target: '50+ email signups in 7 days',
+    instruction: 'Use the landing page copy below as a simple waitlist test. Measure visits, signups, and message resonance before you commit to build.',
+    tools: [{ name: 'Carrd', url: 'https://carrd.co' }, { name: 'Framer', url: 'https://framer.com' }],
+  },
+  survey: {
+    target: '30+ responses with 60%+ completion',
+    instruction: 'Run this as a short demand survey. Focus on pain frequency, urgency, and what would make someone switch.',
+    tools: [{ name: 'Google Forms', url: 'https://forms.google.com' }, { name: 'Tally', url: 'https://tally.so' }],
+  },
+  community: {
+    target: '10+ replies from 50 targeted posts or messages',
+    instruction: 'Pair the outreach message with the community list. Start with the most relevant groups and note where response quality is strongest.',
+    tools: [{ name: 'Reddit', url: 'https://reddit.com' }, { name: 'Discord', url: 'https://discord.com' }],
+  },
+  smoke_ad: {
+    target: 'CTR above 1.5% with early signup intent',
+    instruction: 'This is a measurement-first test. Use the scorecard and expected outcomes as the brief for your ad creative and landing destination.',
+    tools: [{ name: 'Meta Ads', url: 'https://www.facebook.com/business/tools/ads-manager' }, { name: 'Google Ads', url: 'https://ads.google.com' }],
+  },
+  presale: {
+    target: '10+ qualified pricing responses or payment-intent signals',
+    instruction: 'Treat the survey below as a pricing test. Focus on willingness to pay, objections, and what would make someone commit now.',
+    tools: [{ name: 'Stripe Payment Links', url: 'https://stripe.com/payments/payment-links' }, { name: 'Typeform', url: 'https://typeform.com' }],
+  },
+  concierge: {
+    target: '3+ manual pilot customers',
+    instruction: 'Use the questions and community list to recruit a small pilot group, then validate delivery manually before productizing.',
+    tools: [{ name: 'Calendly', url: 'https://calendly.com' }, { name: 'WhatsApp', url: 'https://web.whatsapp.com' }],
+  },
+  interviews: {
+    target: '10 interviews with clear recurring patterns',
+    instruction: 'Use the survey as an interview guide. Capture exact language and compare patterns instead of averaging impressions.',
+    tools: [{ name: 'Zoom', url: 'https://zoom.us' }, { name: 'Google Meet', url: 'https://meet.google.com' }],
+  },
+  teardown: {
+    target: '3 clear differentiators and one positioning angle',
+    instruction: 'Use the scorecard as a comparison frame. Score competing offers, positioning, and gaps to sharpen your entry angle.',
+    tools: [{ name: 'Airtable', url: 'https://airtable.com' }, { name: 'Notion', url: 'https://notion.so' }],
+  },
+};
+
 function filterValidateResult(result: ValidateResult, outputs: Set<string>): ValidateResult {
   return {
     landing_page: outputs.has('landing_page') ? result.landing_page : null,
@@ -146,7 +189,7 @@ export default function ValidateModule() {
 
   const [phase, setPhase] = useState<'select' | 'generating' | 'toolkit'>('select');
   const [selectedMethods, setSelectedMethods] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState<TabKey | null>(null);
+  const [activeMethod, setActiveMethod] = useState<string | null>(null);
   const [result, setResult] = useState<ValidateResult | null>(validateData);
   const [errorMsg, setErrorMsg] = useState('');
   const [saving, setSaving] = useState(false);
@@ -231,17 +274,18 @@ export default function ValidateModule() {
   }, [selectedMethods]);
 
   const visibleTabs = ALL_TABS.filter((tab) => relevantOutputs.has(tab.outputKey));
+  const visibleMethods = ALL_METHODS.filter((method) => selectedMethods.has(method.id));
 
   useEffect(() => {
     if (phase !== 'toolkit') return;
-    if (visibleTabs.length === 0) {
-      setActiveTab(null);
+    if (visibleMethods.length === 0) {
+      setActiveMethod(null);
       return;
     }
-    if (!activeTab || !visibleTabs.find(t => t.key === activeTab)) {
-      setActiveTab(visibleTabs[0].key);
+    if (!activeMethod || !visibleMethods.find((method) => method.id === activeMethod)) {
+      setActiveMethod(visibleMethods[0].id);
     }
-  }, [phase, visibleTabs, activeTab]);
+  }, [phase, visibleMethods, activeMethod]);
 
   const generate = useCallback(async () => {
     if (!idea) return;
@@ -530,22 +574,21 @@ export default function ValidateModule() {
         </div>
       )}
 
-      {/* Tab navigation */}
+      {/* Method navigation */}
       <div className="flex gap-1 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider-section)' }}>
-        {visibleTabs.map(tab => {
-          const isActive = activeTab === tab.key;
-          const isRelevant = relevantOutputs.has(tab.outputKey);
+        {visibleMethods.map(method => {
+          const isActive = activeMethod === method.id;
           return (
-            <button key={tab.key} onClick={() => setActiveTab(tab.key)}
+            <button key={method.id} onClick={() => setActiveMethod(method.id)}
               className="relative flex items-center gap-2.5 px-5 py-3.5 transition-all duration-200 whitespace-nowrap"
               style={{ fontSize: 14, fontWeight: isActive ? 600 : 500, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
               <span className="mono-badge" style={{
                 width: 22, height: 22, fontSize: 10, fontWeight: 700,
-                backgroundColor: isActive ? 'var(--accent-primary)' : isRelevant ? 'var(--color-accent-soft)' : 'var(--surface-elevated)',
-                color: isActive ? '#fff' : isRelevant ? 'var(--accent-primary)' : 'var(--text-muted)',
-              }}>{tab.mono}</span>
-              {tab.label}
-              {isRelevant && !isActive && (
+                backgroundColor: isActive ? 'var(--accent-primary)' : 'var(--color-accent-soft)',
+                color: isActive ? '#fff' : 'var(--accent-primary)',
+              }}>{method.name[0]}</span>
+              {method.name}
+              {!isActive && (
                 <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--accent-primary)' }} />
               )}
               {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 2, backgroundColor: 'var(--accent-primary)', borderRadius: 1 }} />}
@@ -555,38 +598,41 @@ export default function ValidateModule() {
       </div>
 
       {/* Deploy guide for active tab */}
-      {activeTab && (() => {
-        const currentTab = ALL_TABS.find(t => t.key === activeTab);
-        const currentOutcomes = result?.expected_outcomes?.[currentTab?.outputKey || ''];
-        if (!currentTab) return null;
+      {activeMethod && (() => {
+        const currentMethod = ALL_METHODS.find((method) => method.id === activeMethod);
+        const guide = currentMethod ? METHOD_GUIDES[currentMethod.id] : null;
+        const currentOutcomes = currentMethod
+          ? currentMethod.outputs.filter((output) => output !== 'scorecard').flatMap((output) => Object.entries(result?.expected_outcomes?.[output] || {}))
+          : [];
+        if (!currentMethod || !guide) return null;
         return (
           <div className="rounded-xl mb-8 overflow-hidden" style={{ border: '1px solid var(--divider)' }}>
             <div className="flex items-center gap-3 px-5 py-3" style={{ backgroundColor: 'var(--color-accent-soft)', borderBottom: '1px solid var(--divider)' }}>
               <span className="section-label" style={{ flexShrink: 0, marginBottom: 0, fontWeight: 700 }}>TARGET</span>
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{currentTab.target}</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{guide.target}</span>
             </div>
             <div className="flex items-center gap-4 px-5 py-3" style={{ backgroundColor: 'var(--surface-card)' }}>
               <span className="section-label" style={{ flexShrink: 0, marginBottom: 0, fontWeight: 700 }}>DEPLOY</span>
-              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.6, flex: 1 }}>
-                {currentTab.deployGuide.instruction}
+              <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, flex: 1 }}>
+                {guide.instruction}
               </span>
-              {currentTab.deployGuide.urls.length > 0 && (
+              {guide.tools.length > 0 && (
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  {currentTab.deployGuide.urls.map(u => (
+                  {guide.tools.map(u => (
                     <a key={u.name} href={u.url} target="_blank" rel="noopener noreferrer"
                       className="btn-secondary rounded-lg px-3 py-1.5 whitespace-nowrap"
-                      style={{ fontSize: 11, fontWeight: 600, textDecoration: 'none' }}>
+                      style={{ fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
                       {u.name} ↗
                     </a>
                   ))}
                 </div>
               )}
             </div>
-            {currentOutcomes && (
+            {currentOutcomes.length > 0 && (
               <div className="px-5 py-4" style={{ backgroundColor: 'var(--surface-bg)', borderTop: '1px solid var(--divider)' }}>
                 <p className="section-label mb-3" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>EXPECTED OUTCOMES</p>
                 <div className="flex flex-wrap gap-2">
-                  {Object.entries(currentOutcomes).map(([key, value]) => (
+                  {currentOutcomes.map(([key, value]) => (
                     <span key={key} className="badge badge-muted" title={`${key.replace(/_/g, ' ')} benchmark`}>
                       {key.replace(/_/g, ' ')}: {value}
                     </span>
@@ -602,11 +648,27 @@ export default function ValidateModule() {
       <div style={{ minHeight: 300, maxWidth: 820 }}>
         {result && (
           <>
-            {activeTab === 'landing' && result.landing_page && <LandingSection data={result.landing_page} onChange={(lp) => updateResult({ landing_page: lp })} />}
-            {activeTab === 'survey' && result.survey && <SurveySection data={result.survey} onChange={(s) => updateResult({ survey: s })} />}
-            {activeTab === 'whatsapp' && result.whatsapp && <WhatsAppSection data={result.whatsapp} onChange={(w) => updateResult({ whatsapp: w })} />}
-            {activeTab === 'communities' && result.communities && <CommunitiesSection data={result.communities} />}
-            {!activeTab && (
+            {activeMethod && (() => {
+              const method = ALL_METHODS.find((entry) => entry.id === activeMethod);
+              if (!method) return null;
+              return (
+                <div className="flex flex-col gap-6">
+                  <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+                    <p className="section-label mb-2" style={{ fontWeight: 700 }}>{method.name}</p>
+                    <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>{method.description}</p>
+                    <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
+                      Outputs included: {method.outputs.filter((output) => output !== 'scorecard').map((output) => output.replace('_', ' ')).join(', ') || 'measurement scorecard'}
+                    </p>
+                  </div>
+                  {method.outputs.includes('landing_page') && result.landing_page && <LandingSection data={result.landing_page} onChange={(lp) => updateResult({ landing_page: lp })} />}
+                  {method.outputs.includes('survey') && result.survey && <SurveySection data={result.survey} onChange={(s) => updateResult({ survey: s })} />}
+                  {method.outputs.includes('whatsapp') && result.whatsapp && <WhatsAppSection data={result.whatsapp} onChange={(w) => updateResult({ whatsapp: w })} />}
+                  {method.outputs.includes('communities') && result.communities && <CommunitiesSection data={result.communities} />}
+                  <ScorecardSection scorecard={result.scorecard} simulation={result.simulation} />
+                </div>
+              );
+            })()}
+            {!activeMethod && (
               <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', boxShadow: 'var(--shadow-sm)' }}>
                 <p className="section-label" style={{ fontWeight: 700, marginBottom: 10 }}>MEASUREMENT PLAN</p>
                 <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>
@@ -632,6 +694,42 @@ export default function ValidateModule() {
 }
 
 // ═══ METHOD CARD ═══
+
+function ScorecardSection({
+  scorecard,
+  simulation,
+}: {
+  scorecard: ValidateResult['scorecard'];
+  simulation?: ValidateResult['simulation'];
+}) {
+  return (
+    <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+      <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
+        <div>
+          <p className="section-label mb-2" style={{ fontWeight: 700 }}>Measurement Scorecard</p>
+          <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', margin: 0 }}>
+            Track the thresholds that tell you whether this experiment is worth continuing.
+          </p>
+        </div>
+        {simulation?.expected_signups ? (
+          <div className="rounded-lg px-4 py-3" style={{ backgroundColor: 'var(--surface-elevated)', border: '1px solid var(--divider)' }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent-primary)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Simulation</p>
+            <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>{simulation.expected_signups} expected signups</p>
+          </div>
+        ) : null}
+      </div>
+      <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
+        {scorecard.map((metric) => (
+          <div key={metric.id} className="rounded-lg p-4" style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid var(--divider)' }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>{metric.label}</p>
+            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>{metric.target_label}</p>
+            <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', margin: 0 }}>Current actual: {metric.actual} {metric.unit}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function MethodCard({ method, isSelected, isSuggested, onToggle }: { method: ValidationMethod; isSelected: boolean; isSuggested: boolean; onToggle: () => void }) {
   const [hovered, setHovered] = useState(false);
