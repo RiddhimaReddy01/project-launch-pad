@@ -33,6 +33,7 @@ interface Experiment {
   method_name: string;
   status: string;
   metrics: Record<string, ExperimentMetric> | null;
+  assets_data?: any;
   created_at: string;
   updated_at: string;
   idea_text?: string;
@@ -157,8 +158,10 @@ export default function Dashboard() {
     >
       <div style={{ maxWidth: 1000, paddingTop: 'var(--space-10)' }}>
         <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>DASHBOARD</p>
-        <h1 className="font-heading" style={{ fontSize: 36, fontWeight: 700, marginBottom: 8, color: 'var(--text-primary)' }}>Welcome back</h1>
-        <p style={{ fontSize: 16, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 40 }}>{user.email}</p>
+        <h1 className="font-heading" style={{ marginBottom: 8, color: 'var(--text-primary)' }}>Founder workspace</h1>
+        <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 40 }}>
+          Revisit saved decisions, active experiments, and the next research step without dropping back into dashboard clutter.
+        </p>
 
         {/* Tabs */}
         <div className="flex overflow-x-auto hide-scrollbar" style={{ gap: 0, marginBottom: 36, borderBottom: '1px solid var(--divider-section)' }}>
@@ -239,7 +242,7 @@ function OverviewTab({ stats, latestProject, recentExperiments, onResume, onNewI
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {statCards.map(s => (
           <div key={s.label} className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-            <p className="font-heading" style={{ fontSize: 36, fontWeight: 700, marginBottom: 6, color: 'var(--text-primary)' }}>{s.value}</p>
+            <p className="font-heading" style={{ marginBottom: 6, color: 'var(--text-primary)' }}>{s.value}</p>
             <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>{s.label}</p>
             <div style={{ height: 3, width: 36, backgroundColor: s.color, borderRadius: 999, marginTop: 12 }} />
           </div>
@@ -247,19 +250,22 @@ function OverviewTab({ stats, latestProject, recentExperiments, onResume, onNewI
       </div>
 
       {latestProject ? (
-        <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', borderLeft: '3px solid var(--accent-primary)' }}>
-          <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>PICK UP WHERE YOU LEFT OFF</p>
+        <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+          <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>CONTINUE THE STORY</p>
           <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>{latestProject.idea_text}</p>
           <div className="flex items-center gap-3 mt-3">
             <span className="badge badge-green" style={{ textTransform: 'capitalize', fontWeight: 600 }}>{latestProject.current_step}</span>
             <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)' }}>Updated {new Date(latestProject.updated_at).toLocaleDateString()}</span>
           </div>
+          <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.65, marginTop: 12, marginBottom: 0 }}>
+            Open the saved flow exactly where the decision paused.
+          </p>
           <button onClick={() => onResume(latestProject)} className="btn-primary mt-5 rounded-xl px-6 py-3" style={{ fontSize: 15, fontWeight: 600 }}>Resume research →</button>
         </div>
       ) : (
         <div className="rounded-xl p-8 text-center" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-          <p className="font-heading" style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}>Start your first project</p>
-          <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 22 }}>Enter a business idea and we'll help you research it end-to-end.</p>
+          <p className="font-heading" style={{ marginBottom: 10 }}>Start your first project</p>
+          <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 22 }}>Enter a business idea and move from market evidence to validation without switching tools.</p>
           <button onClick={onNewIdea} className="btn-primary rounded-xl px-6 py-3" style={{ fontSize: 15, fontWeight: 600 }}>New idea →</button>
         </div>
       )}
@@ -417,6 +423,31 @@ function ValidationTab({ experiments, onStatusChange, onDelete, onUpdateMetric }
     return acc;
   }, {});
 
+  const getSimulationSummary = (exp: Experiment) => {
+    const simulation = exp.assets_data?.simulation;
+    if (!simulation) return null;
+    const startingAudience = simulation.starting_audience || simulation.outreach_messages || 0;
+    const primaryOutcome =
+      simulation.expected_signups ??
+      simulation.expected_paid_conversions ??
+      simulation.expected_survey_responses ??
+      simulation.expected_replies;
+    const label =
+      typeof simulation.expected_signups === 'number' ? 'expected signups'
+      : typeof simulation.expected_paid_conversions === 'number' ? 'expected paid conversions'
+      : typeof simulation.expected_survey_responses === 'number' ? 'expected survey responses'
+      : typeof simulation.expected_replies === 'number' ? 'expected replies'
+      : 'expected outcomes';
+
+    if (typeof primaryOutcome !== 'number') return null;
+    return {
+      startingAudience,
+      primaryOutcome,
+      label,
+      notes: Array.isArray(simulation.notes) ? simulation.notes : [],
+    };
+  };
+
   const handleStartEdit = (expId: string, key: string, current: number) => {
     setEditingMetric({ expId, key });
     setEditValue(String(current));
@@ -489,6 +520,7 @@ function ValidationTab({ experiments, onStatusChange, onDelete, onUpdateMetric }
               const metMet = metricEntries.filter(([, v]) => v.target > 0 && v.actual >= v.target).length;
               const isExpanded = expandedExp === exp.id;
               const pct = metCount > 0 ? Math.round((metMet / metCount) * 100) : 0;
+              const simulation = getSimulationSummary(exp);
 
               return (
                 <div key={exp.id} className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
@@ -524,8 +556,31 @@ function ValidationTab({ experiments, onStatusChange, onDelete, onUpdateMetric }
                     )}
                   </div>
 
-                  {isExpanded && metricEntries.length > 0 && (
+                  {isExpanded && (
                     <div className="px-5 pb-5" style={{ borderTop: '1px solid var(--divider)' }}>
+                      {simulation && (
+                        <div className="mt-5 mb-4 rounded-xl p-4" style={{ backgroundColor: 'var(--surface-elevated)', border: '1px solid var(--divider)' }}>
+                          <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>SIMULATION</p>
+                          <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
+                            {simulation.primaryOutcome.toLocaleString()} {simulation.label}
+                          </p>
+                          <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.7 }}>
+                            From {simulation.startingAudience.toLocaleString()} starting visitors or contacts.
+                          </p>
+                          {simulation.notes.length > 0 && (
+                            <div className="flex flex-col gap-1 mt-3">
+                              {simulation.notes.slice(0, 2).map((note, index) => (
+                                <p key={index} style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', margin: 0, lineHeight: 1.6 }}>
+                                  {note}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {metricEntries.length > 0 && (
+                        <>
                       <p className="section-label mt-4 mb-4" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>METRICS</p>
                       <div className="flex flex-col gap-3">
                         {metricEntries.map(([key, val]) => {
@@ -562,6 +617,8 @@ function ValidationTab({ experiments, onStatusChange, onDelete, onUpdateMetric }
                           );
                         })}
                       </div>
+                        </>
+                      )}
 
                       <p style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-muted)', marginTop: 12 }}>
                         Created {new Date(exp.created_at).toLocaleDateString()}

@@ -3,7 +3,7 @@ import { useIdea, type AnalyzeFinding } from '@/context/IdeaContext';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import type { AnalyzeContext, SectionKey, OpportunityData, CustomersData, CompetitorsData, RootCauseData, CostsData, RiskData, LocationData, MoatData, SectionData } from '@/lib/analyze';
+import type { AnalyzeContext, AnalysisSynthesis, SectionKey, OpportunityData, CustomersData, CompetitorsData, RootCauseData, CostsData, RiskData, LocationData, MoatData, SectionData } from '@/lib/analyze';
 import { analyzeSectionsParallel } from '@/lib/analyze';
 import SectionSkeleton from './SectionSkeleton';
 
@@ -26,6 +26,17 @@ const MODULE_DEFS: { key: SectionKey; label: string; mono: string; subtitle: str
   { key: 'location', label: 'Location', mono: 'L', subtitle: 'Location intelligence' },
   { key: 'moat', label: 'Moat', mono: 'M', subtitle: 'Competitive defensibility' },
 ];
+
+const MODULE_QUESTIONS: Record<SectionKey, string> = {
+  opportunity: 'How large is the reachable opportunity, and where does the funnel tighten?',
+  customers: 'Which customer segment feels the pain most strongly and is most likely to act?',
+  competitors: 'Where are incumbents strong, and where is the opening still underserved?',
+  rootcause: 'Why does this gap still exist, and what would a founder need to overcome first?',
+  costs: 'What will it really cost to launch without drifting into guesswork?',
+  risk: 'What could derail this business early, and which risks matter most?',
+  location: 'Where should this launch happen, and what geographic factors help or hurt it?',
+  moat: 'If this works, what could make it defensible instead of easy to copy?',
+};
 
 interface InputSelection {
   business_type: boolean;
@@ -291,9 +302,7 @@ export default function AnalyzeModule() {
   };
 
   const activeFindings = getSectionFindings(activeModule);
-  const activeSynthesis = activeModule === 'opportunity'
-    ? (activeSec.data as OpportunityData | null)?.synthesis
-    : null;
+  const activeSynthesis = (activeSec.data as (SectionData & { synthesis?: AnalysisSynthesis }) | null)?.synthesis ?? null;
 
   const handleSaveFinding = async (finding: { id: string; text: string; section: string }) => {
     if (!user) { toast.error('Sign in to save findings'); return; }
@@ -328,8 +337,8 @@ export default function AnalyzeModule() {
   if (!decomposeResult) return (
     <div className="flex items-center justify-center" style={{ height: '60vh' }}>
       <div className="text-center" style={{ maxWidth: 400 }}>
-        <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Pick a module and run your analysis</p>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+        <p className="font-heading" style={{ marginBottom: 8 }}>Pick a module and run your analysis</p>
+        <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.7 }}>
           Choose which signals and insights to include, then run only the analyses you need.
         </p>
       </div>
@@ -341,8 +350,8 @@ export default function AnalyzeModule() {
       <div className="flex items-start justify-between gap-4 mb-8 flex-wrap">
         <div>
           <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>ANALYZE</p>
-          <p className="font-heading" style={{ fontSize: 34, fontWeight: 700, marginBottom: 8 }}>Business case</p>
-          <p style={{ fontSize: 17, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, maxWidth: 720 }}>
+          <p className="font-heading" style={{ marginBottom: 8 }}>Business case</p>
+          <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, maxWidth: 720 }}>
             Shape the evidence into a commercial point of view: where demand exists, what blocks adoption, what it costs, and whether the opportunity is strong enough to pursue.
           </p>
         </div>
@@ -436,6 +445,16 @@ export default function AnalyzeModule() {
       </div>
 
       <div style={{ maxWidth: 820 }}>
+          <div className="rounded-[14px] p-5 mb-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+            <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>QUESTION THIS SECTION ANSWERS</p>
+            <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
+              {MODULE_QUESTIONS[activeModule]}
+            </p>
+            <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.65, margin: 0 }}>
+              Read the cards below as evidence for the answer, not as separate dashboards.
+            </p>
+          </div>
+
           {activeSynthesis && activeSec.status === 'completed' && (
             <div className="grid gap-4 mb-8" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
               <div className="rounded-[14px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
@@ -468,6 +487,31 @@ export default function AnalyzeModule() {
                   ))}
                 </div>
               </div>
+
+              <div className="rounded-[14px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+                <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>KEY INSIGHT</p>
+                <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0 }}>
+                  {activeSynthesis.tradeoff_reasoning}
+                </p>
+              </div>
+
+              {!!activeSynthesis.sensitivity_analysis?.length && (
+                <div className="rounded-[14px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', gridColumn: '1 / -1' }}>
+                  <p className="section-label mb-3" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>SENSITIVITY ANALYSIS</p>
+                  <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+                    {activeSynthesis.sensitivity_analysis.slice(0, 3).map((item, index) => (
+                      <div key={index} className="rounded-[12px] p-4" style={{ backgroundColor: 'var(--surface-elevated)', border: '1px solid var(--divider-subtle)' }}>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
+                          {item.scenario}
+                        </p>
+                        <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.65, margin: 0 }}>
+                          {item.impact}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

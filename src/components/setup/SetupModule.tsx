@@ -23,6 +23,13 @@ const TABS = [
 
 type TabKey = typeof TABS[number]['key'];
 
+const TAB_QUESTIONS: Record<TabKey, string> = {
+  costs: 'What is the most realistic launch scope for this idea right now?',
+  suppliers: 'Which vendors deserve trust and budget early on?',
+  team: 'Who actually needs to be involved in year one, and when?',
+  timeline: 'What is the right sequence from validation to launch?',
+};
+
 function formatCurrency(value?: number | null) {
   if (typeof value !== 'number' || !Number.isFinite(value)) return 'Not available';
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
@@ -191,8 +198,8 @@ export default function SetupModule() {
   if (!decomposeResult) return (
     <div className="flex items-center justify-center" style={{ height: '60vh' }}>
       <div className="text-center" style={{ maxWidth: 400 }}>
-        <p className="font-heading" style={{ fontSize: 22, marginBottom: 8 }}>Start with your idea first</p>
-        <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+        <p className="font-heading" style={{ marginBottom: 8 }}>Start with your idea first</p>
+        <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.7 }}>
           Enter your business idea on the home page so we can build your launch plan.
         </p>
       </div>
@@ -205,10 +212,10 @@ export default function SetupModule() {
     if (state.status === 'loading') return <SectionSkeleton label={`Researching ${activeTab === 'costs' ? 'launch costs' : activeTab === 'suppliers' ? 'vendors' : activeTab === 'team' ? 'hiring options' : 'your roadmap'} for the ${selectedTier} strategy...`} />;
     if (state.status === 'error') return (
       <div className="flex flex-col items-center justify-center" style={{ minHeight: 200 }}>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>We couldn't load this section right now.</p>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>{state.error || 'Give it another shot'}</p>
+        <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>We couldn't load this section right now.</p>
+        <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', marginBottom: 16 }}>{state.error || 'Give it another shot'}</p>
         <button onClick={() => loadSection(activeTab)} className="rounded-[10px] px-5 py-2.5"
-          style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}>
+          style={{ fontSize: 13, fontWeight: 600, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}>
           Retry
         </button>
       </div>
@@ -229,8 +236,8 @@ export default function SetupModule() {
       <div className="flex items-center justify-between mb-10">
         <div>
           <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>SETUP</p>
-          <p className="font-heading" style={{ fontSize: 34, fontWeight: 700, marginBottom: 8 }}>Launch Plan</p>
-          <p style={{ fontSize: 17, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, maxWidth: 700 }}>
+          <p className="font-heading" style={{ marginBottom: 8 }}>Launch Plan</p>
+          <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, maxWidth: 700 }}>
             Your costs, vendors, team plan, and roadmap — tailored to the {selectedTier} launch strategy.
           </p>
         </div>
@@ -308,6 +315,11 @@ export default function SetupModule() {
             <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0 }}>
               {costsState.data.recommendation.rationale}
             </p>
+            {!!costsState.data.recommendation.not_recommended?.length && (
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-muted)', lineHeight: 1.6, marginTop: 12, marginBottom: 0 }}>
+                Not recommended right now: {costsState.data.recommendation.not_recommended.join(', ')}
+              </p>
+            )}
           </div>
 
           {costsState.data.revenue_projection && (
@@ -319,6 +331,15 @@ export default function SetupModule() {
               <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
                 Break-even: {costsState.data.revenue_projection.breakeven_label}
               </p>
+              {!!costsState.data.revenue_projection.assumptions?.length && (
+                <div className="flex flex-col gap-2" style={{ marginTop: 14 }}>
+                  {costsState.data.revenue_projection.assumptions.slice(0, 3).map((assumption, index) => (
+                    <p key={index} style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.65, margin: 0 }}>
+                      {assumption}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -327,16 +348,55 @@ export default function SetupModule() {
               <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>FOUNDER TIME</p>
               <div className="flex flex-col gap-2">
                 {costsState.data.founder_time_allocation.slice(0, 3).map((item) => (
-                  <div key={item.area} className="flex items-center justify-between" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-                    <span>{item.area}</span>
-                    <span style={{ color: 'var(--text-secondary)' }}>{item.percent}%</span>
+                  <div key={item.area}>
+                    <div className="flex items-center justify-between" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
+                      <span>{item.area}</span>
+                      <span style={{ color: 'var(--text-secondary)' }}>{item.percent}%</span>
+                    </div>
+                    {item.why_now && (
+                      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.6, marginTop: 6, marginBottom: 0 }}>
+                        {item.why_now}
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>
             </div>
           ) : null}
+
+          {!!costsState.data.vendor_benchmarks?.length && (
+            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', gridColumn: '1 / -1' }}>
+              <p className="section-label mb-3" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>VENDOR BENCHMARKS</p>
+              <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+                {costsState.data.vendor_benchmarks.slice(0, 4).map((vendor) => (
+                  <div key={`${vendor.vendor}-${vendor.category}`} className="rounded-[12px] p-4" style={{ backgroundColor: 'var(--surface-elevated)', border: '1px solid var(--divider-subtle)' }}>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>{vendor.vendor}</p>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 8 }}>{vendor.category}</p>
+                    {vendor.benchmark_cost_range && (
+                      <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>
+                        {formatCurrency(vendor.benchmark_cost_range.min)} - {formatCurrency(vendor.benchmark_cost_range.max)}
+                      </p>
+                    )}
+                    <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.65, margin: 0 }}>
+                      {vendor.why_recommended}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
+
+      <div className="rounded-xl p-5 mb-8" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+        <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>QUESTION THIS SECTION ANSWERS</p>
+        <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
+          {TAB_QUESTIONS[activeTab]}
+        </p>
+        <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.65, margin: 0 }}>
+          The tabs below should read like one operating recommendation, not separate utilities.
+        </p>
+      </div>
 
       {/* Tab navigation */}
       <div className="flex gap-1 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider-section)' }}>

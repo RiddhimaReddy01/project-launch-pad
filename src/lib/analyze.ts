@@ -12,6 +12,20 @@ export interface AnalyzeContext {
 
 export type SectionKey = "opportunity" | "customers" | "competitors" | "rootcause" | "costs" | "risk" | "location" | "moat";
 
+export interface AnalysisSynthesis {
+  final_verdict: "build" | "modify" | "avoid";
+  opportunity_score: number;
+  confidence: "low" | "medium" | "high";
+  key_insight: string;
+  tradeoff_reasoning: string;
+  top_drivers: string[];
+  sensitivity_analysis: Array<{
+    scenario: string;
+    impact: string;
+  }>;
+  summary: string;
+}
+
 // ── Section result types ──
 
 export interface MarketTier {
@@ -32,19 +46,7 @@ export interface OpportunityData {
     willing_to_try: number;
     repeat_customers: number;
   };
-  synthesis?: {
-    final_verdict: "build" | "modify" | "avoid";
-    opportunity_score: number;
-    confidence: "low" | "medium" | "high";
-    key_insight: string;
-    tradeoff_reasoning: string;
-    top_drivers: string[];
-    sensitivity_analysis: Array<{
-      scenario: string;
-      impact: string;
-    }>;
-    summary: string;
-  };
+  synthesis?: AnalysisSynthesis;
 }
 
 export interface CustomerSegment {
@@ -162,7 +164,9 @@ export interface MoatData {
   recommendation: string;
 }
 
-export type SectionData = OpportunityData | CustomersData | CompetitorsData | RootCauseData | CostsData | RiskData | LocationData | MoatData;
+export type SectionData = (OpportunityData | CustomersData | CompetitorsData | RootCauseData | CostsData | RiskData | LocationData | MoatData) & {
+  synthesis?: AnalysisSynthesis;
+};
 
 /**
  * Analyze a section. Supports two modes:
@@ -177,8 +181,12 @@ export async function analyzeSection(
     ? { idea: ideaOrContext, section }
     : { section, context: ideaOrContext };
 
-  const result = await invokeApi<{ data: SectionData }>("analyze-section", body);
-  return result.data ?? (result as unknown as SectionData);
+  const result = await invokeApi<{ data: SectionData; synthesis?: AnalysisSynthesis }>("analyze-section", body);
+  const data = result.data ?? (result as unknown as SectionData);
+  if (result.synthesis && data && typeof data === "object" && !("synthesis" in data)) {
+    return { ...data, synthesis: result.synthesis } as SectionData;
+  }
+  return data;
 }
 
 /**

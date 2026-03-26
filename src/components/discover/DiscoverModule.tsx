@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useIdea } from '@/context/IdeaContext';
 import { discoverInsights, type DiscoverResult } from '@/lib/discover';
 import DiscoverInsightCard from './DiscoverInsightCard';
@@ -17,7 +17,7 @@ function SummaryStat({
   return (
     <article className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
       <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.12em' }}>{label}</p>
-      <p className="font-heading" style={{ fontSize: 28, fontWeight: 700, marginBottom: detail ? 6 : 0 }}>{value}</p>
+      <p className="font-heading" style={{ marginBottom: detail ? 6 : 0 }}>{value}</p>
       {detail ? (
         <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>{detail}</p>
       ) : null}
@@ -112,6 +112,47 @@ function hasInteractiveSources(result: DiscoverResult): boolean {
   );
 }
 
+function buildEvidenceExplorer(
+  insights: DiscoverResult['insights'],
+  activePlatform: 'reddit' | 'google' | 'yelp' | null,
+) {
+  const seen = new Set<string>();
+  const items: Array<{
+    platform: 'reddit' | 'google' | 'yelp';
+    text: string;
+    url: string;
+    author: string;
+    date: string;
+    insightTitle: string;
+  }> = [];
+
+  insights.forEach((insight) => {
+    insight.sources.forEach((source) => {
+      if (!source.url || source.url === '#') return;
+      if (activePlatform && source.platform !== activePlatform) return;
+      const key = `${source.platform}:${source.url}:${source.text}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      items.push({
+        platform: source.platform,
+        text: source.text,
+        url: source.url,
+        author: source.author,
+        date: source.date,
+        insightTitle: insight.title,
+      });
+    });
+  });
+
+  return items.slice(0, 8);
+}
+
+function platformLabel(platform: 'reddit' | 'google' | 'yelp') {
+  if (platform === 'reddit') return 'Reddit';
+  if (platform === 'yelp') return 'Yelp';
+  return 'Google';
+}
+
 export default function DiscoverModule() {
   const { idea, decomposeResult, discoverResult: contextDiscover, setDiscoverResult: setContextDiscover } = useIdea();
   const [status, setStatus] = useState<Status>(contextDiscover ? 'done' : 'idle');
@@ -178,6 +219,10 @@ export default function DiscoverModule() {
     const matchesPlatform = !activePlatform || i.sources.some(source => source.platform === activePlatform);
     return matchesType && matchesPlatform;
   }) ?? [];
+  const evidenceExplorer = useMemo(
+    () => (result ? buildEvidenceExplorer(filtered, activePlatform) : []),
+    [result, filtered, activePlatform]
+  );
 
   return (
     <div ref={containerRef} className="scroll-reveal">
@@ -186,9 +231,9 @@ export default function DiscoverModule() {
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>DISCOVER</p>
-            <p className="font-heading" style={{ fontSize: 36, fontWeight: 700, marginBottom: 8 }}>Market Intelligence</p>
+            <p className="font-heading" style={{ marginBottom: 8 }}>Market Intelligence</p>
             {result && ready && (
-              <p style={{ fontSize: 17, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 4 }}>
+              <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 4 }}>
                 {result.source_summary.total_signals} signals across multiple platforms
               </p>
             )}
@@ -220,6 +265,16 @@ export default function DiscoverModule() {
       {status === 'done' && result && ready && (
         <div className="flex gap-6 animate-fade-in" style={{ alignItems: 'flex-start' }}>
           <div className="flex-1 min-w-0">
+            <div className="rounded-xl p-5 mb-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+              <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>QUESTION THIS SECTION ANSWERS</p>
+              <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
+                Is there enough real demand evidence here to justify testing this idea?
+              </p>
+              <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.65, margin: 0 }}>
+                Use the source bar to inspect where the evidence comes from, then open an insight card to read the proof.
+              </p>
+            </div>
+
             <div className="grid gap-4 mb-6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))' }}>
               <SummaryStat
                 label="Demand Strength"
@@ -253,6 +308,50 @@ export default function DiscoverModule() {
 
             <SourceSummaryBar summary={result.source_summary} activePlatform={activePlatform} onSelectPlatform={setActivePlatform} />
 
+            {evidenceExplorer.length > 0 && (
+              <div className="rounded-xl p-5 mb-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+                <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
+                  <div>
+                    <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>EVIDENCE EXPLORER</p>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                      Open the underlying sources first, then read the related insight for interpretation.
+                    </p>
+                  </div>
+                  <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', margin: 0 }}>
+                    {activePlatform ? `Filtered to ${platformLabel(activePlatform)}` : 'All linked sources'}
+                  </p>
+                </div>
+
+                <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
+                  {evidenceExplorer.map((item) => (
+                    <a
+                      key={`${item.platform}-${item.url}-${item.text.slice(0, 20)}`}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-xl p-4 transition-all duration-200"
+                      style={{ backgroundColor: 'var(--surface-elevated)', border: '1px solid var(--divider)', textDecoration: 'none' }}
+                    >
+                      <div className="flex items-center justify-between gap-2 mb-3">
+                        <span className={`source-chip ${item.platform === 'reddit' ? 'source-chip-reddit' : item.platform === 'yelp' ? 'source-chip-yelp' : 'source-chip-google'}`} style={{ fontWeight: 600 }}>
+                          {platformLabel(item.platform)}
+                        </span>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>Open source ↗</span>
+                      </div>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.6, marginBottom: 8 }}>
+                        {item.text.length > 145 ? `${item.text.slice(0, 145)}…` : item.text}
+                      </p>
+                      <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.55, margin: 0 }}>
+                        Related insight: {item.insightTitle}
+                        {item.author ? ` · ${item.author}` : ''}
+                        {item.date ? ` · ${item.date}` : ''}
+                      </p>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {visibleTabs.length > 1 && (
               <div className="flex gap-2 mb-6 overflow-x-auto pb-1 hide-scrollbar">
                 {visibleTabs.map((tab) => {
@@ -282,12 +381,6 @@ export default function DiscoverModule() {
             )}
 
             <div className="flex flex-col gap-3">
-              <p
-                style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-muted)', margin: 0, lineHeight: 1.7 }}
-                title="Click any insight card to open its evidence, quotes, and source links"
-              >
-                Tip: click an insight to open the full evidence and source list. Click a source color above to filter by platform.
-              </p>
               {filtered.map((insight, i) => (
                 <div key={i} className="scroll-reveal" style={{ animationDelay: `${i * 50}ms` }}
                   ref={(el) => { if (el) setTimeout(() => el.classList.add('visible'), 80 + i * 50); }}>

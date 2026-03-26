@@ -515,7 +515,7 @@ export default function ValidateModule() {
   if (!decomposeResult) return (
     <div className="flex items-center justify-center" style={{ height: '60vh' }}>
       <div className="text-center" style={{ maxWidth: 420 }}>
-        <p className="font-heading" style={{ fontSize: 24, fontWeight: 700, marginBottom: 10 }}>Start with your idea first</p>
+        <p className="font-heading" style={{ marginBottom: 10 }}>Start with your idea first</p>
         <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
           Enter your business idea on the home page. We need that context before building your validation toolkit.
         </p>
@@ -528,7 +528,7 @@ export default function ValidateModule() {
     <div ref={containerRef} className="scroll-reveal">
       <div className="mb-10">
         <p className="section-label mb-2" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em' }}>VALIDATE</p>
-        <p className="font-heading" style={{ fontSize: 28, fontWeight: 700, marginBottom: 8, color: 'var(--text-primary)' }}>
+        <p className="font-heading" style={{ marginBottom: 8, color: 'var(--text-primary)' }}>
           How do you want to test demand?
         </p>
         <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, maxWidth: 600 }}>
@@ -597,7 +597,7 @@ export default function ValidateModule() {
     <div ref={containerRef} className="scroll-reveal">
       <div className="mb-10">
         <p className="section-label mb-2" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em' }}>VALIDATE</p>
-        <p className="font-heading" style={{ fontSize: 28, fontWeight: 700 }}>Crafting your toolkit</p>
+        <p className="font-heading">Crafting your toolkit</p>
         <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 6 }}>This takes about 15-30 seconds</p>
       </div>
       <SectionSkeleton label="Preparing your selected validation materials and benchmarks..." />
@@ -611,7 +611,7 @@ export default function ValidateModule() {
       <div className="flex items-center justify-between mb-10">
         <div>
           <p className="section-label mb-2" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em' }}>VALIDATE</p>
-          <p className="font-heading" style={{ fontSize: 34, fontWeight: 700, marginBottom: 8 }}>Your Starter Toolkit</p>
+          <p className="font-heading" style={{ marginBottom: 8 }}>Your Starter Toolkit</p>
           <p style={{ fontSize: 16, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
             {selectedMethods.size} methods - {Array.from(selectedMethods).map(m => ALL_METHODS.find(am => am.id === m)?.name).filter(Boolean).join(', ')}
           </p>
@@ -632,26 +632,14 @@ export default function ValidateModule() {
         </div>
       </div>
 
-      {(result?.strategy || result?.simulation || result?.recommended_sequence?.length) && (
+      {(result?.strategy || result?.recommended_sequence?.length) && (
         <div className="grid gap-4 mb-8" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
           {result?.strategy && (
             <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
               <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>VALIDATION STRATEGY</p>
-              <p className="font-heading" style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>{result.strategy.business_model}</p>
+              <p className="font-heading" style={{ marginBottom: 8 }}>{result.strategy.business_model}</p>
             <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0 }}>
                 {result.strategy.description}
-              </p>
-            </div>
-          )}
-
-          {result?.simulation && (
-            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-              <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>SIMULATION</p>
-              <p className="font-heading" style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
-                {(result.simulation.expected_signups || 0).toLocaleString()} expected signups
-              </p>
-            <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0 }}>
-                From {(result.simulation.starting_audience || 0).toLocaleString()} starting visitors or contacts.
               </p>
             </div>
           )}
@@ -670,6 +658,16 @@ export default function ValidateModule() {
           ) : null}
         </div>
       )}
+
+      <div className="rounded-xl p-5 mb-8" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+        <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>QUESTION THIS SECTION ANSWERS</p>
+        <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
+          What is the fastest credible way to test this idea with real people next?
+        </p>
+        <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.65, margin: 0 }}>
+          Start with the method, review the asset, then hand the experiment off to the dashboard for tracking.
+        </p>
+      </div>
 
       {/* Method navigation */}
       <div className="flex gap-1 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider-section)' }}>
@@ -698,8 +696,9 @@ export default function ValidateModule() {
       {activeMethod && (() => {
         const currentMethod = ALL_METHODS.find((method) => method.id === activeMethod);
         const guide = currentMethod ? METHOD_GUIDES[currentMethod.id] : null;
+        const contentOutputs = currentMethod?.outputs.filter((output) => output !== 'scorecard') || [];
         const currentOutcomes = currentMethod
-          ? currentMethod.outputs.filter((output) => output !== 'scorecard').flatMap((output) => Object.entries(result?.expected_outcomes?.[output] || {}))
+          ? contentOutputs.flatMap((output) => Object.entries(result?.expected_outcomes?.[output] || {}))
           : [];
         if (!currentMethod || !guide) return null;
         return (
@@ -752,16 +751,28 @@ export default function ValidateModule() {
                 <div className="flex flex-col gap-6">
                   <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
                     <p className="section-label mb-2" style={{ fontWeight: 700 }}>{method.name}</p>
-                    <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>{method.description}</p>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>{method.description}</p>
                     <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0 }}>
-                      Outputs included: {method.outputs.filter((output) => output !== 'scorecard').map((output) => output.replace('_', ' ')).join(', ') || 'measurement scorecard'}
+                      {contentOutputs.length > 0
+                        ? `Outputs included: ${contentOutputs.map((output) => output.replace('_', ' ')).join(', ')}`
+                        : 'This method creates an experiment plan. Track targets and live results from the Dashboard after you save it.'}
                     </p>
                   </div>
                   {method.outputs.includes('landing_page') && result.landing_page && <LandingSection data={result.landing_page} onChange={(lp) => updateResult({ landing_page: lp })} />}
                   {method.outputs.includes('survey') && result.survey && <SurveySection data={result.survey} onChange={(s) => updateResult({ survey: s })} />}
                   {method.outputs.includes('whatsapp') && result.whatsapp && <WhatsAppSection data={result.whatsapp} onChange={(w) => updateResult({ whatsapp: w })} />}
                   {method.outputs.includes('communities') && result.communities && <CommunitiesSection data={result.communities} />}
-                  <ScorecardSection scorecard={result.scorecard} simulation={result.simulation} />
+                  {contentOutputs.length === 0 && (
+                    <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+                      <p className="section-label" style={{ fontWeight: 700, marginBottom: 10 }}>EXPERIMENT TRACKING</p>
+                      <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>
+                        This method is measured from the Dashboard.
+                      </p>
+                      <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0 }}>
+                        Save this toolkit to create the experiment, then update results and review simulated outcomes from the Validation area in your dashboard.
+                      </p>
+                    </div>
+                  )}
                 </div>
               );
             })()}
@@ -774,13 +785,9 @@ export default function ValidateModule() {
               <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: 18 }}>
                   You selected methods like smoke tests or competitive teardowns. We are keeping the output focused on measurement instead of showing an unrelated landing page.
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  {result.scorecard.map((metric) => (
-                    <span key={metric.id} className="badge badge-muted" title={`Target: ${metric.target_label}`}>
-                      {metric.label}: {metric.target_label}
-                    </span>
-                  ))}
-                </div>
+                <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0 }}>
+                  Save the toolkit to create the experiment and monitor the targets, simulation, and live results from the Dashboard.
+                </p>
               </div>
             )}
           </>
@@ -791,43 +798,6 @@ export default function ValidateModule() {
 }
 
 // ═══ METHOD CARD ═══
-
-function ScorecardSection({
-  scorecard,
-  simulation,
-}: {
-  scorecard: ValidateResult['scorecard'];
-  simulation?: ValidateResult['simulation'];
-}) {
-  return (
-    <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-      <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
-        <div>
-          <p className="section-label mb-2" style={{ fontWeight: 700 }}>Measurement Scorecard</p>
-          <p style={{ fontSize: 16, fontWeight: 500, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.75 }}>
-            Track the thresholds that tell you whether this experiment is worth continuing.
-          </p>
-        </div>
-        {simulation?.expected_signups ? (
-          <div className="rounded-lg px-4 py-3" style={{ backgroundColor: 'var(--surface-elevated)', border: '1px solid var(--divider)' }}>
-            <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent-primary)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Simulation</p>
-            <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>{simulation.expected_signups} expected signups</p>
-          </div>
-        ) : null}
-      </div>
-      <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
-        {scorecard.map((metric) => (
-          <div key={metric.id} className="rounded-lg p-4" style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid var(--divider)' }}>
-            <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>{metric.label}</p>
-            <p style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>{metric.target_label}</p>
-            <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', margin: 0 }}>Current actual: {metric.actual} {metric.unit}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function MethodCard({ method, isSelected, isSuggested, onToggle }: { method: ValidationMethod; isSelected: boolean; isSuggested: boolean; onToggle: () => void }) {
   const [hovered, setHovered] = useState(false);
   return (
@@ -899,7 +869,7 @@ function LandingSection({ data, onChange }: { data: NonNullable<ValidateResult['
         <div style={{ padding: '56px 40px', textAlign: 'center', backgroundColor: 'var(--surface-card)' }}>
           <div style={{ marginBottom: 20 }}>
             <EditableText value={data.headline} onChange={(v) => onChange({ ...data, headline: v })}
-              style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 30, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', lineHeight: 1.2, display: 'inline' }} />
+              style={{ fontSize: 26, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', lineHeight: 1.2, display: 'inline' }} />
           </div>
           <div style={{ marginBottom: 36 }}>
             <EditableText value={data.subheadline} onChange={(v) => onChange({ ...data, subheadline: v })}

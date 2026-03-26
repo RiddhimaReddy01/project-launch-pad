@@ -20,48 +20,41 @@ const examples = [
   'An authentic Thai street food restaurant in Dallas',
 ];
 
-const scoreStats = [
-  { label: 'Step 1', value: 'Evidence', note: 'Start with direct customer language and source-backed demand signals.' },
-  { label: 'Step 2', value: 'Decision', note: 'Compress the market into opportunity, risk, costs, and competitive tradeoffs.' },
-  { label: 'Step 3', value: 'Validation', note: 'Leave with a sequence of tests you can run in the real world this week.' },
+const buildMeasureLearn = [
+  {
+    title: 'Build',
+    body: 'Founders know they should validate before they build. The problem is that validation usually begins with slow, scattered research.',
+  },
+  {
+    title: 'Measure',
+    body: 'LaunchLean compresses the evidence-gathering step from weeks into minutes by structuring customer signals, market logic, operating assumptions, and test methods in one flow.',
+  },
+  {
+    title: 'Learn',
+    body: 'You leave with a clearer go, refine, or stop decision and a practical validation sequence you can run with real people right away.',
+  },
 ];
 
 const sections = [
   {
     eyebrow: 'Discover',
-    title: 'Customer signals',
-    body: "Real complaints, wishes, and gaps from Reddit, Yelp, and local forums. Not guesses, direct quotes from people who want what you're building.",
-    evidence: [
-      { title: 'Pain points', body: 'Repeated complaints, unmet needs, and patterns of frustration grouped into actionable themes.' },
-      { title: 'Proof', body: 'Direct customer language, source links, and platform context so you can judge the evidence yourself.' },
-    ],
+    title: 'What are people already telling you?',
+    body: 'Customer language, source-backed demand signals, and patterns from the market so you can stop reading scattered threads and start with evidence.',
   },
   {
     eyebrow: 'Analyze',
-    title: 'Market reality',
-    body: 'Competitors, market size, customer segments, and why this gap still exists. The goal is to turn scattered evidence into a clear business case.',
-    evidence: [
-      { title: 'Opportunity sizing', body: 'TAM, SAM, SOM, and a customer funnel that makes the market feel operational instead of abstract.' },
-      { title: 'Competitive gaps', body: 'A clearer read on where incumbent offers are weak and where a realistic opening may exist.' },
-    ],
+    title: 'Is this opportunity strong enough to pursue?',
+    body: 'A business case built from market size, customer segments, risk, competition, and strategic tradeoffs, so you can judge the idea like an operator.',
   },
   {
     eyebrow: 'Setup',
-    title: 'Launch costs',
-    body: 'Specific startup ranges, suppliers, staffing assumptions, and timeline guidance grounded in the business you described and the market you chose.',
-    evidence: [
-      { title: 'Budget reality', body: 'Cost ranges and category breakdowns that help you understand the likely minimum and practical starting budget.' },
-      { title: 'Execution plan', body: 'A clearer sequence for launch readiness, suppliers, hiring, and operational setup.' },
-    ],
+    title: 'What would it take to launch well?',
+    body: 'A grounded operating recommendation covering costs, suppliers, founder focus, and rollout logic, so the idea feels executable instead of abstract.',
   },
   {
     eyebrow: 'Validate',
-    title: 'Validation toolkit',
-    body: 'A set of practical demand tests like landing pages, surveys, outreach, communities, and scorecards so you can decide whether to proceed, refine, or walk away.',
-    evidence: [
-      { title: 'Demand testing', body: 'Validation methods tailored to the offer, customer pain, and buying behavior.' },
-      { title: 'Decision support', body: 'Artifacts that help you interpret signal strength without guessing from scattered responses.' },
-    ],
+    title: 'What should you test next?',
+    body: 'A shorter path from evidence to action with concrete validation methods, assets, and handoff into the dashboard for experiment tracking.',
   },
 ];
 
@@ -97,14 +90,19 @@ export default function Index() {
         eyebrow="Founder Research Workspace"
         title={<>Don&apos;t build something nobody wants.</>}
         body={
-          <p>
-            Describe the business in plain language. We turn it into customer evidence, market structure, operating assumptions, and a practical validation sequence.
-          </p>
+          <div style={{ display: 'grid', gap: 'var(--space-4)' }}>
+            <p style={{ margin: 0, fontSize: '0.9375rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              Stop researching. Start validating.
+            </p>
+            <p style={{ margin: 0 }}>
+              Research is passive. Validation is active. LaunchLean handles the evidence gathering so you can move into demand testing faster and decide with less drift.
+            </p>
+          </div>
         }
         aside={
           <div style={{ display: 'grid', gap: 'var(--space-4)' }}>
-            {scoreStats.map((stat) => (
-              <ScoreSummaryCard key={stat.label} label={stat.label} value={stat.value} note={stat.note} />
+            {buildMeasureLearn.map((item) => (
+              <ScoreSummaryCard key={item.title} label={item.title} value={item.title} note={item.body} />
             ))}
           </div>
         }
@@ -153,35 +151,34 @@ export default function Index() {
         </div>
       </IdeaInputCard>
 
-      <SectionCard eyebrow="What you get" title="A clear founder workflow from signal to next step" readingWidth>
+      <SectionCard eyebrow="Workflow" title="A tighter path from signal to decision" readingWidth>
         <div style={{ display: 'grid', gap: 'var(--space-12)' }}>
           {sections.map((section) => (
             <div key={section.eyebrow} style={{ display: 'grid', gap: 'var(--space-4)' }}>
               <div>
                 <p className="eyebrow">{section.eyebrow}</p>
-                <h3 className="section-title" style={{ fontSize: '1.5rem' }}>{section.title}</h3>
-                <p className="section-copy" style={{ marginTop: 'var(--space-3)' }}>{section.body}</p>
+                <h3 className="section-title">{section.title}</h3>
+                <p className="section-copy" style={{ marginTop: 'var(--space-3)', fontSize: '0.9375rem', lineHeight: 1.75 }}>{section.body}</p>
               </div>
-              <EvidenceList items={section.evidence.map((item) => ({ title: item.title, body: <p style={{ margin: 0 }}>{item.body}</p> }))} />
             </div>
           ))}
         </div>
       </SectionCard>
 
-      <SectionCard eyebrow="Decision lens" title="Built for founders making real go-or-no-go decisions" readingWidth>
+      <SectionCard eyebrow="Why this exists" title="Momentum dies when validation takes too long" readingWidth>
         <EvidenceList
           items={[
             {
-              title: 'Use the right terminology',
-              body: <p style={{ margin: 0 }}>The product should speak in terms like demand validation, customer segments, serviceable market, competitive gaps, launch costs, and go-to-market testing.</p>,
+              title: 'The problem',
+              body: <p style={{ margin: 0 }}>Founders do not need another reminder to validate. They need a faster way to get from idea to evidence without losing momentum.</p>,
             },
             {
-              title: 'Keep the narrative linear',
-              body: <p style={{ margin: 0 }}>You should be able to move from customer evidence to market structure to operating feasibility to validation methods without context switching.</p>,
+              title: 'The role of LaunchLean',
+              body: <p style={{ margin: 0 }}>LaunchLean compresses the measure step, so you can learn faster and decide whether to build, change direction, or stop.</p>,
             },
             {
-              title: 'Preserve warmth and restraint',
-              body: <p style={{ margin: 0 }}>The interface should feel premium and calm, with rounded surfaces, generous spacing, and minimal decoration.</p>,
+              title: 'The outcome',
+              body: <p style={{ margin: 0 }}>The output is not just research. It is a tighter validation sequence grounded in customer language, market logic, and launch reality.</p>,
             },
           ]}
         />

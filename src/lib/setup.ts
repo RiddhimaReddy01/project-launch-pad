@@ -50,10 +50,12 @@ export interface CostsResult {
     expected_monthly_profit: number;
     breakeven_months: number | null;
     breakeven_label: string;
+    assumptions?: string[];
   };
   founder_time_allocation?: Array<{
     area: string;
     percent: number;
+    why_now?: string;
   }>;
   vendor_benchmarks?: Array<{
     vendor: string;
