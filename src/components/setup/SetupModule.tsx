@@ -15,10 +15,10 @@ type TierId = 'lean' | 'mid' | 'premium';
 const TIER_MONOS: Record<string, string> = { lean: 'L', mid: 'M', premium: 'P' };
 
 const TABS = [
-  { key: 'costs' as const, label: 'Costs', mono: '$', subtitle: 'Launch budget by tier' },
-  { key: 'suppliers' as const, label: 'Suppliers', mono: 'S', subtitle: 'Tier-appropriate vendors' },
-  { key: 'team' as const, label: 'Team', mono: 'T', subtitle: 'Year 1 hiring plan' },
-  { key: 'timeline' as const, label: 'Timeline', mono: 'R', subtitle: '4-phase roadmap' },
+  { key: 'costs' as const, label: 'Costs', mono: '$', subtitle: 'Launch budget by tier', icon: '💰' },
+  { key: 'suppliers' as const, label: 'Suppliers', mono: 'S', subtitle: 'Tier-appropriate vendors', icon: '🏪' },
+  { key: 'team' as const, label: 'Team', mono: 'T', subtitle: 'Year 1 hiring plan', icon: '👥' },
+  { key: 'timeline' as const, label: 'Timeline', mono: 'R', subtitle: '4-phase roadmap', icon: '📅' },
 ];
 
 type TabKey = typeof TABS[number]['key'];
@@ -241,7 +241,20 @@ export default function SetupModule() {
             Your costs, vendors, team plan, and roadmap — tailored to the {selectedTier} launch strategy.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {/* Completion ring */}
+          <div style={{ position: 'relative', width: 48, height: 48 }}>
+            <svg width="48" height="48" viewBox="0 0 48 48">
+              <circle cx="24" cy="24" r="20" fill="none" stroke="var(--divider)" strokeWidth="3" />
+              <circle cx="24" cy="24" r="20" fill="none" stroke="var(--color-accent)" strokeWidth="3"
+                strokeDasharray={`${(completedCount / 4) * 125.6} 125.6`}
+                strokeLinecap="round" transform="rotate(-90 24 24)"
+                style={{ transition: 'stroke-dasharray 600ms ease-out' }} />
+            </svg>
+            <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
+              {completedCount}/4
+            </span>
+          </div>
           {completedCount > 0 && (
             <>
               <button onClick={handleSave} className="btn-primary rounded-lg px-5 py-2.5" style={{ fontSize: 14, fontWeight: 600 }}>Save</button>
@@ -250,7 +263,6 @@ export default function SetupModule() {
               </button>
             </>
           )}
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>{completedCount}/4</span>
         </div>
       </div>
 
