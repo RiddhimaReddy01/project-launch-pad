@@ -658,7 +658,7 @@ export default function ValidateModule() {
             </div>
           ) : null}
         </div>
-      )}
+      ) : null}
 
       <div className="rounded-xl p-5 mb-8" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
         <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>QUESTION THIS SECTION ANSWERS</p>
