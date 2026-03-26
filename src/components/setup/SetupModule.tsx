@@ -215,7 +215,7 @@ export default function SetupModule() {
         <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>We couldn't load this section right now.</p>
         <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', marginBottom: 16 }}>{state.error || 'Give it another shot'}</p>
         <button onClick={() => loadSection(activeTab)} className="rounded-[10px] px-5 py-2.5"
-          style={{ fontSize: 13, fontWeight: 600, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}>
+          style={{ fontSize: 13, fontWeight: 600, backgroundColor: 'var(--accent-primary)', color: '#080810', border: 'none', cursor: 'pointer' }}>
           Retry
         </button>
       </div>
