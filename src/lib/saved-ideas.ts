@@ -1,6 +1,28 @@
 import { supabase } from '@/integrations/supabase/client';
 
+function mergeAnalysisData(existingAnalysis: any, data?: {
+  decompose?: any;
+  analyze?: any;
+}) {
+  const merged = { ...(existingAnalysis || {}) };
+
+  if (data?.decompose) {
+    merged.decompose = data.decompose;
+  }
+
+  if (data?.analyze) {
+    if (data.analyze.sections || data.analyze.decompose) {
+      Object.assign(merged, data.analyze);
+    } else {
+      merged.sections = data.analyze;
+    }
+  }
+
+  return Object.keys(merged).length > 0 ? merged : undefined;
+}
+
 export async function saveIdea(ideaText: string, step: string, data?: {
+  decompose?: any;
   discover?: any;
   analyze?: any;
   setup?: any;
@@ -9,25 +31,29 @@ export async function saveIdea(ideaText: string, step: string, data?: {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: 'Not authenticated' };
 
-  // Check if idea already saved
   const { data: existing } = await supabase
     .from('saved_ideas')
-    .select('id')
+    .select('id, analysis_data')
     .eq('user_id', user.id)
     .eq('idea_text', ideaText)
     .maybeSingle();
 
+  const analysisData = mergeAnalysisData(existing?.analysis_data, data);
+
+  const payload = {
+    current_step: step,
+    ...(data?.discover && { discover_data: data.discover }),
+    ...(analysisData && { analysis_data: analysisData }),
+    ...(data?.setup && { setup_data: data.setup }),
+    ...(data?.validate && { validate_data: data.validate }),
+  };
+
   if (existing) {
     const { error } = await supabase
       .from('saved_ideas')
-      .update({
-        current_step: step,
-        ...(data?.discover && { discover_data: data.discover }),
-        ...(data?.analyze && { analysis_data: data.analyze }),
-        ...(data?.setup && { setup_data: data.setup }),
-        ...(data?.validate && { validate_data: data.validate }),
-      })
-      .eq('id', existing.id);
+      .update(payload)
+      .eq('id', existing.id)
+      .eq('user_id', user.id);
     return { error, id: existing.id };
   }
 
@@ -36,11 +62,7 @@ export async function saveIdea(ideaText: string, step: string, data?: {
     .insert({
       user_id: user.id,
       idea_text: ideaText,
-      current_step: step,
-      ...(data?.discover && { discover_data: data.discover }),
-      ...(data?.analyze && { analysis_data: data.analyze }),
-      ...(data?.setup && { setup_data: data.setup }),
-      ...(data?.validate && { validate_data: data.validate }),
+      ...payload,
     })
     .select('id')
     .single();

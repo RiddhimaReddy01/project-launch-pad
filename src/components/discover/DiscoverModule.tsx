@@ -19,7 +19,7 @@ function SummaryStat({
       <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.12em' }}>{label}</p>
       <p className="font-heading" style={{ fontSize: 28, fontWeight: 700, marginBottom: detail ? 6 : 0 }}>{value}</p>
       {detail ? (
-        <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>{detail}</p>
+        <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>{detail}</p>
       ) : null}
     </article>
   );
@@ -88,17 +88,17 @@ function SourceSummaryBar({
             }}
           >
             <div style={{ width: 8, height: 8, borderRadius: 3, backgroundColor: seg.color }} />
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)' }}>
               {seg.label} <span style={{ fontWeight: 500, color: 'var(--text-muted)' }}>{seg.count}</span>
             </span>
           </button>
         ))}
-        <button onClick={() => onSelectPlatform(null)} style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer' }} title="Clear source filter">
+        <button onClick={() => onSelectPlatform(null)} style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-muted)', marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer' }} title="Clear source filter">
           {total} total signals
         </button>
       </div>
       {segments.length === 0 && (
-        <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', marginTop: 12, marginBottom: 0 }}>
+        <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-muted)', marginTop: 12, marginBottom: 0, lineHeight: 1.7 }}>
           Source links are still loading or were not included in this saved result yet. Open an insight card to inspect the evidence list.
         </p>
       )}
@@ -186,16 +186,16 @@ export default function DiscoverModule() {
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>DISCOVER</p>
-            <p className="font-heading" style={{ fontSize: 32, fontWeight: 700, marginBottom: 6 }}>Market Intelligence</p>
+            <p className="font-heading" style={{ fontSize: 36, fontWeight: 700, marginBottom: 8 }}>Market Intelligence</p>
             {result && ready && (
-              <p style={{ fontSize: 16, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 4 }}>
+              <p style={{ fontSize: 17, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 4 }}>
                 {result.source_summary.total_signals} signals across multiple platforms
               </p>
             )}
           </div>
           <div className="flex items-center gap-3">
             {status === 'done' && ready && (
-              <button onClick={() => { hasRun.current = false; runDiscover(); }} className="btn-secondary rounded-lg px-4 py-2" style={{ fontSize: 13, fontWeight: 600 }}>
+                <button onClick={() => { hasRun.current = false; runDiscover(); }} className="btn-secondary rounded-lg px-5 py-2.5" style={{ fontSize: 14, fontWeight: 600 }}>
                 Re-run
               </button>
             )}
@@ -262,7 +262,7 @@ export default function DiscoverModule() {
                     <button key={tab.key} onClick={() => setFilter(tab.key)}
                       className="flex items-center gap-2 rounded-lg px-4 py-2.5 transition-all duration-200 whitespace-nowrap"
                       style={{
-                        fontSize: 13,
+                        fontSize: 14,
                         fontWeight: isActive ? 600 : 500,
                         backgroundColor: isActive ? 'var(--accent-primary)' : 'var(--surface-card)',
                         color: isActive ? '#fff' : 'var(--text-secondary)',
@@ -283,7 +283,7 @@ export default function DiscoverModule() {
 
             <div className="flex flex-col gap-3">
               <p
-                style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-muted)', margin: 0 }}
+                style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-muted)', margin: 0, lineHeight: 1.7 }}
                 title="Click any insight card to open its evidence, quotes, and source links"
               >
                 Tip: click an insight to open the full evidence and source list. Click a source color above to filter by platform.

@@ -85,10 +85,10 @@
 
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-display: 'Cormorant Garamond', Georgia, serif;
-    --font-size-xs: 0.8125rem;
-    --font-size-sm: 0.9375rem;
-    --font-size-md: 1.0625rem;
-    --font-size-lg: 1.1875rem;
+    --font-size-xs: 0.875rem;
+    --font-size-sm: 1rem;
+    --font-size-md: 1.125rem;
+    --font-size-lg: 1.25rem;
     --font-size-xl: 1.5rem;
     --font-size-2xl: 2rem;
     --font-size-3xl: 3.5rem;
@@ -252,8 +252,8 @@ html {
 .section-copy,
 .font-caption {
   color: var(--color-text-soft);
-  font-size: var(--font-size-sm);
-  line-height: 1.7;
+  font-size: var(--font-size-md);
+  line-height: 1.75;
 }
 
 .font-body-strong {
@@ -310,7 +310,7 @@ html {
 
 .score-summary-card__label {
   margin: 0 0 var(--space-2);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-md);
   font-weight: 600;
   color: var(--color-text-muted);
 }
@@ -325,7 +325,7 @@ html {
 
 .score-summary-card__note {
   margin: var(--space-2) 0 0;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-md);
   color: var(--color-text-soft);
 }
 
@@ -342,7 +342,7 @@ html {
 
 .evidence-list__title {
   margin: 0 0 var(--space-2);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-md);
   font-weight: 700;
   color: var(--color-text);
 }
@@ -353,7 +353,7 @@ html {
 
 .evidence-list__meta {
   margin-top: var(--space-3);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-md);
   color: var(--color-text-muted);
 }
 
@@ -372,7 +372,7 @@ html {
 
 .metric-row__label {
   margin: 0;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-md);
   font-weight: 700;
   color: var(--color-text);
 }
@@ -380,7 +380,7 @@ html {
 .metric-row__detail {
   margin-top: var(--space-1);
   color: var(--color-text-soft);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-md);
 }
 
 .metric-row__value {
@@ -461,7 +461,7 @@ html {
   gap: var(--space-1);
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
   font-weight: 700;
   border: 1px solid transparent;
   background: var(--color-bg-muted);

@@ -229,28 +229,28 @@ export default function SetupModule() {
       <div className="flex items-center justify-between mb-10">
         <div>
           <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>SETUP</p>
-          <p className="font-heading" style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>Launch Plan</p>
-          <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+          <p className="font-heading" style={{ fontSize: 34, fontWeight: 700, marginBottom: 8 }}>Launch Plan</p>
+          <p style={{ fontSize: 17, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, maxWidth: 700 }}>
             Your costs, vendors, team plan, and roadmap — tailored to the {selectedTier} launch strategy.
           </p>
         </div>
         <div className="flex items-center gap-2">
           {completedCount > 0 && (
             <>
-              <button onClick={handleSave} className="btn-primary rounded-lg px-4 py-2" style={{ fontSize: 13, fontWeight: 600 }}>Save</button>
-              <button onClick={handleExportPDF} disabled={exporting} className="btn-secondary rounded-lg px-4 py-2" style={{ fontSize: 13, fontWeight: 600 }}>
+              <button onClick={handleSave} className="btn-primary rounded-lg px-5 py-2.5" style={{ fontSize: 14, fontWeight: 600 }}>Save</button>
+              <button onClick={handleExportPDF} disabled={exporting} className="btn-secondary rounded-lg px-5 py-2.5" style={{ fontSize: 14, fontWeight: 600 }}>
                 {exporting ? 'Exporting...' : 'Export PDF'}
               </button>
             </>
           )}
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>{completedCount}/4</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>{completedCount}/4</span>
         </div>
       </div>
 
       {/* Tier selector */}
       <div className="mb-10">
         <p className="section-label mb-3" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>SELECT LAUNCH STRATEGY</p>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
           {(['lean', 'mid', 'premium'] as const).map((tier) => {
             const isSelected = selectedTier === tier;
             const tierData = costsState.data?.tiers?.find(t => t.id === tier);
@@ -269,27 +269,27 @@ export default function SetupModule() {
                   backgroundColor: isSelected ? 'var(--color-accent-soft)' : 'var(--surface-card)',
                   border: isSelected ? '1.5px solid var(--accent-primary)' : '1px solid var(--divider)',
                   cursor: 'pointer',
-                  boxShadow: isSelected ? 'var(--shadow-sm)' : 'none',
+                  boxShadow: isSelected ? 'var(--shadow-md)' : 'none',
                 }}
               >
                 <div className="flex items-center gap-2.5 mb-3">
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    width: 26, height: 26, borderRadius: 7, fontSize: 11, fontWeight: 700,
+                    width: 28, height: 28, borderRadius: 8, fontSize: 12, fontWeight: 700,
                     backgroundColor: isSelected ? 'var(--accent-primary)' : 'var(--surface-elevated)',
                     color: isSelected ? '#080810' : 'var(--text-muted)',
                   }}>
                     {TIER_MONOS[tier]}
                   </span>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
+                  <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>
                     {labels.title}
                   </span>
                 </div>
-                <p className="font-heading" style={{ fontSize: 22, fontWeight: 700, marginBottom: 6 }}>{labels.cost}</p>
-                <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                <p className="font-heading" style={{ fontSize: 26, fontWeight: 700, marginBottom: 8 }}>{labels.cost}</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-muted)', lineHeight: 1.55 }}>
                   {labels.team} people · {labels.weeks} weeks
                 </p>
-                <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', marginTop: 6 }}>
+                <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 8, lineHeight: 1.6 }}>
                   {labels.best}
                 </p>
               </button>
@@ -299,13 +299,13 @@ export default function SetupModule() {
       </div>
 
       {costsState.data?.recommendation && (
-        <div className="grid gap-4 mb-10" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
-          <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+        <div className="grid gap-4 mb-10" style={{ gridTemplateColumns: '1.15fr repeat(2, minmax(220px, 1fr))' }}>
+          <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', boxShadow: 'var(--shadow-sm)' }}>
             <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>RECOMMENDED TIER</p>
-            <p className="font-heading" style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
+            <p className="font-heading" style={{ fontSize: 28, fontWeight: 700, marginBottom: 10 }}>
               {costsState.data.recommendation.recommended_tier}
             </p>
-            <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
+            <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0 }}>
               {costsState.data.recommendation.rationale}
             </p>
           </div>
@@ -313,10 +313,10 @@ export default function SetupModule() {
           {costsState.data.revenue_projection && (
             <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
               <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>REVENUE OUTLOOK</p>
-              <p className="font-heading" style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
+              <p className="font-heading" style={{ fontSize: 26, fontWeight: 700, marginBottom: 8 }}>
                 {formatCurrency(costsState.data.revenue_projection.expected_monthly_revenue)}/mo
               </p>
-              <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
+              <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
                 Break-even: {costsState.data.revenue_projection.breakeven_label}
               </p>
             </div>
@@ -327,7 +327,7 @@ export default function SetupModule() {
               <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>FOUNDER TIME</p>
               <div className="flex flex-col gap-2">
                 {costsState.data.founder_time_allocation.slice(0, 3).map((item) => (
-                  <div key={item.area} className="flex items-center justify-between" style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
+                  <div key={item.area} className="flex items-center justify-between" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
                     <span>{item.area}</span>
                     <span style={{ color: 'var(--text-secondary)' }}>{item.percent}%</span>
                   </div>
@@ -346,7 +346,7 @@ export default function SetupModule() {
           return (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               className="relative flex items-center gap-2.5 px-5 py-3.5 transition-all duration-200 whitespace-nowrap"
-              style={{ fontSize: 14, fontWeight: isActive ? 600 : 500, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
+              style={{ fontSize: 15, fontWeight: isActive ? 600 : 500, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
               <span style={{
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 width: 22, height: 22, borderRadius: 6, fontSize: 10, fontWeight: 700,

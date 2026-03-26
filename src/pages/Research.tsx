@@ -187,8 +187,9 @@ export default function Research() {
                   onClick={async () => {
                     setSaveStatus('saving');
                     await saveIdea(idea, currentStep, {
+                      decompose: decomposeResult || undefined,
                       discover: discoverResult || undefined,
-                      analyze: Object.keys(analyzeData).length > 0 ? { sections: analyzeData } : undefined,
+                      analyze: Object.keys(analyzeData).length > 0 ? { decompose: decomposeResult, sections: analyzeData } : undefined,
                       setup: Object.keys(setupData).length > 0 ? setupData : undefined,
                       validate: validateData || undefined,
                     });
@@ -260,3 +261,4 @@ export default function Research() {
     </AppShell>
   );
 }
+

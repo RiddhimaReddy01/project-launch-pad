@@ -128,6 +128,17 @@ function filterValidateResult(result: ValidateResult, outputs: Set<string>): Val
   };
 }
 
+function buildExperimentMetrics(scorecard: ValidateResult['scorecard']) {
+  return Object.fromEntries(
+    (scorecard || []).map((metric) => [metric.id, {
+      target: metric.target,
+      actual: metric.actual || 0,
+      unit: metric.unit,
+      target_label: metric.target_label,
+    }])
+  );
+}
+
 // ═══ UTILITIES ═══
 
 function CopyButton({ text }: { text: string }) {
@@ -137,7 +148,7 @@ function CopyButton({ text }: { text: string }) {
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
       className="rounded-lg px-3 py-1.5 transition-all duration-200"
       style={{
-        fontSize: 12, fontWeight: 500,
+        fontSize: 13, fontWeight: 600,
         color: copied ? 'var(--accent-teal)' : 'var(--text-secondary)',
         backgroundColor: copied ? 'rgba(0,191,166,0.1)' : 'var(--surface-elevated)',
         border: `1px solid ${copied ? 'var(--accent-teal)' : 'var(--divider)'}`,
@@ -332,18 +343,50 @@ export default function ValidateModule() {
         selected_methods: Array.from(selectedMethods),
         saved_at: new Date().toISOString(),
       };
-      const { data: existing } = await supabase.from('saved_ideas').select('id').eq('user_id', user.id).eq('idea_text', idea).maybeSingle();
+      const decomposePayload = decomposeResult
+        ? { stage1: decomposeResult.stage1, stage2: decomposeResult.stage2 }
+        : null;
+      const { data: existing } = await supabase
+        .from('saved_ideas')
+        .select('id, analysis_data')
+        .eq('user_id', user.id)
+        .eq('idea_text', idea)
+        .maybeSingle();
       let ideaId: string;
+      const nextAnalysisData = {
+        ...(existing?.analysis_data || {}),
+        ...(decomposePayload ? { decompose: decomposePayload } : {}),
+      };
       if (existing) {
-        await supabase.from('saved_ideas').update({ validate_data: payload as any, current_step: 'validate' }).eq('id', existing.id);
+        await supabase
+          .from('saved_ideas')
+          .update({
+            validate_data: payload as any,
+            analysis_data: nextAnalysisData as any,
+            current_step: 'validate',
+          })
+          .eq('id', existing.id)
+          .eq('user_id', user.id);
         ideaId = existing.id;
       } else {
-        const { data: newIdea } = await supabase.from('saved_ideas').insert({ user_id: user.id, idea_text: idea, validate_data: payload as any, current_step: 'validate' }).select('id').single();
+        const { data: newIdea } = await supabase
+          .from('saved_ideas')
+          .insert({
+            user_id: user.id,
+            idea_text: idea,
+            analysis_data: nextAnalysisData as any,
+            validate_data: payload as any,
+            current_step: 'validate',
+          })
+          .select('id')
+          .single();
         ideaId = newIdea?.id || '';
       }
 
       if (ideaId) {
+        const scorecardMetrics = buildExperimentMetrics(result.scorecard);
         await supabase.from('experiments').delete().eq('idea_id', ideaId).eq('user_id', user.id);
+        await supabase.from('validation_assets').delete().eq('project_id', ideaId).eq('user_id', user.id);
         const methodEntries = Array.from(selectedMethods).map(mId => {
           const method = ALL_METHODS.find(am => am.id === mId);
           return {
@@ -352,16 +395,70 @@ export default function ValidateModule() {
             method_id: mId,
             method_name: method?.name || mId,
             status: 'planned',
-            metrics: {} as any,
+            metrics: scorecardMetrics as any,
             assets_data: {
               landing_page: method?.outputs.includes('landing_page') ? result.landing_page : null,
               survey: method?.outputs.includes('survey') ? result.survey : null,
               whatsapp: method?.outputs.includes('whatsapp') ? result.whatsapp : null,
               communities: method?.outputs.includes('communities') ? result.communities : null,
+              scorecard: result.scorecard,
+              expected_outcomes: result.expected_outcomes || {},
+              simulation: result.simulation || {},
+              recommended_sequence: result.recommended_sequence || [],
             } as any,
           };
         });
         await supabase.from('experiments').insert(methodEntries);
+
+        const assetEntries = Array.from(selectedMethods).flatMap((mId) => {
+          const method = ALL_METHODS.find(am => am.id === mId);
+          if (!method) return [];
+
+          const entries = method.outputs
+            .map((outputKey) => {
+              const assetData = outputKey === 'landing_page'
+                ? result.landing_page
+                : outputKey === 'survey'
+                  ? result.survey
+                  : outputKey === 'whatsapp'
+                    ? result.whatsapp
+                    : outputKey === 'communities'
+                      ? result.communities
+                      : null;
+
+              if (!assetData) return null;
+
+              return {
+                project_id: ideaId,
+                user_id: user.id,
+                method_id: mId,
+                asset_type: outputKey,
+                asset_data: assetData as any,
+                status: 'ready',
+              };
+            })
+            .filter(Boolean);
+
+          entries.push({
+            project_id: ideaId,
+            user_id: user.id,
+            method_id: mId,
+            asset_type: 'scorecard',
+            asset_data: {
+              scorecard: result.scorecard,
+              expected_outcomes: result.expected_outcomes || {},
+              simulation: result.simulation || {},
+              recommended_sequence: result.recommended_sequence || [],
+            } as any,
+            status: 'ready',
+          });
+
+          return entries;
+        });
+
+        if (assetEntries.length > 0) {
+          await supabase.from('validation_assets').insert(assetEntries as any);
+        }
       }
 
       toast.success('Validation saved to dashboard');
@@ -514,22 +611,22 @@ export default function ValidateModule() {
       <div className="flex items-center justify-between mb-10">
         <div>
           <p className="section-label mb-2" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em' }}>VALIDATE</p>
-          <p className="font-heading" style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>Your Starter Toolkit</p>
-          <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+          <p className="font-heading" style={{ fontSize: 34, fontWeight: 700, marginBottom: 8 }}>Your Starter Toolkit</p>
+          <p style={{ fontSize: 16, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
             {selectedMethods.size} methods - {Array.from(selectedMethods).map(m => ALL_METHODS.find(am => am.id === m)?.name).filter(Boolean).join(', ')}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={handleSave} disabled={saving} className="btn-primary rounded-lg px-4 py-2" style={{ fontSize: 13, fontWeight: 600 }}>
+        <button onClick={handleSave} disabled={saving} className="btn-primary rounded-lg px-5 py-2.5" style={{ fontSize: 14, fontWeight: 600 }}>
             {saving ? 'Saving...' : 'Save to Dashboard'}
           </button>
-          <button onClick={handleExportPDF} disabled={exporting} className="btn-secondary rounded-lg px-4 py-2" style={{ fontSize: 13, fontWeight: 500 }}>
+        <button onClick={handleExportPDF} disabled={exporting} className="btn-secondary rounded-lg px-5 py-2.5" style={{ fontSize: 14, fontWeight: 500 }}>
             {exporting ? 'Exporting...' : 'Export PDF'}
           </button>
-          <button onClick={() => setPhase('select')} className="btn-secondary rounded-lg px-4 py-2" style={{ fontSize: 13, fontWeight: 500 }}>
+        <button onClick={() => setPhase('select')} className="btn-secondary rounded-lg px-5 py-2.5" style={{ fontSize: 14, fontWeight: 500 }}>
             Change Methods
           </button>
-          <button onClick={generate} className="btn-secondary rounded-lg px-4 py-2" style={{ fontSize: 13, fontWeight: 500 }}>
+        <button onClick={generate} className="btn-secondary rounded-lg px-5 py-2.5" style={{ fontSize: 14, fontWeight: 500 }}>
             Regenerate
           </button>
         </div>
@@ -541,7 +638,7 @@ export default function ValidateModule() {
             <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
               <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>VALIDATION STRATEGY</p>
               <p className="font-heading" style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>{result.strategy.business_model}</p>
-              <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
+            <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0 }}>
                 {result.strategy.description}
               </p>
             </div>
@@ -553,7 +650,7 @@ export default function ValidateModule() {
               <p className="font-heading" style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
                 {(result.simulation.expected_signups || 0).toLocaleString()} expected signups
               </p>
-              <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
+            <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0 }}>
                 From {(result.simulation.starting_audience || 0).toLocaleString()} starting visitors or contacts.
               </p>
             </div>
@@ -564,7 +661,7 @@ export default function ValidateModule() {
               <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>RECOMMENDED ORDER</p>
               <div className="flex flex-col gap-2">
                 {result.recommended_sequence.slice(0, 3).map((step, index) => (
-                  <p key={index} style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                <p key={index} style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
                     {step}
                   </p>
                 ))}
@@ -581,7 +678,7 @@ export default function ValidateModule() {
           return (
             <button key={method.id} onClick={() => setActiveMethod(method.id)}
               className="relative flex items-center gap-2.5 px-5 py-3.5 transition-all duration-200 whitespace-nowrap"
-              style={{ fontSize: 14, fontWeight: isActive ? 600 : 500, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
+            style={{ fontSize: 15, fontWeight: isActive ? 600 : 500, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
               <span className="mono-badge" style={{
                 width: 22, height: 22, fontSize: 10, fontWeight: 700,
                 backgroundColor: isActive ? 'var(--accent-primary)' : 'var(--color-accent-soft)',
@@ -609,11 +706,11 @@ export default function ValidateModule() {
           <div className="rounded-xl mb-8 overflow-hidden" style={{ border: '1px solid var(--divider)' }}>
             <div className="flex items-center gap-3 px-5 py-3" style={{ backgroundColor: 'var(--color-accent-soft)', borderBottom: '1px solid var(--divider)' }}>
               <span className="section-label" style={{ flexShrink: 0, marginBottom: 0, fontWeight: 700 }}>TARGET</span>
-              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{guide.target}</span>
+            <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>{guide.target}</span>
             </div>
             <div className="flex items-center gap-4 px-5 py-3" style={{ backgroundColor: 'var(--surface-card)' }}>
               <span className="section-label" style={{ flexShrink: 0, marginBottom: 0, fontWeight: 700 }}>DEPLOY</span>
-              <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, flex: 1 }}>
+            <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, flex: 1 }}>
                 {guide.instruction}
               </span>
               {guide.tools.length > 0 && (
@@ -621,7 +718,7 @@ export default function ValidateModule() {
                   {guide.tools.map(u => (
                     <a key={u.name} href={u.url} target="_blank" rel="noopener noreferrer"
                       className="btn-secondary rounded-lg px-3 py-1.5 whitespace-nowrap"
-                      style={{ fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
+                    style={{ fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
                       {u.name} ↗
                     </a>
                   ))}
@@ -656,7 +753,7 @@ export default function ValidateModule() {
                   <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
                     <p className="section-label mb-2" style={{ fontWeight: 700 }}>{method.name}</p>
                     <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>{method.description}</p>
-                    <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
+                    <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0 }}>
                       Outputs included: {method.outputs.filter((output) => output !== 'scorecard').map((output) => output.replace('_', ' ')).join(', ') || 'measurement scorecard'}
                     </p>
                   </div>
@@ -674,7 +771,7 @@ export default function ValidateModule() {
                 <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>
                   This toolkit is focused on testing and scoring, not content assets.
                 </p>
-                <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 16 }}>
+              <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: 18 }}>
                   You selected methods like smoke tests or competitive teardowns. We are keeping the output focused on measurement instead of showing an unrelated landing page.
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -707,23 +804,23 @@ function ScorecardSection({
       <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
         <div>
           <p className="section-label mb-2" style={{ fontWeight: 700 }}>Measurement Scorecard</p>
-          <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', margin: 0 }}>
+          <p style={{ fontSize: 16, fontWeight: 500, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.75 }}>
             Track the thresholds that tell you whether this experiment is worth continuing.
           </p>
         </div>
         {simulation?.expected_signups ? (
           <div className="rounded-lg px-4 py-3" style={{ backgroundColor: 'var(--surface-elevated)', border: '1px solid var(--divider)' }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent-primary)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Simulation</p>
-            <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>{simulation.expected_signups} expected signups</p>
+            <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent-primary)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Simulation</p>
+            <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>{simulation.expected_signups} expected signups</p>
           </div>
         ) : null}
       </div>
       <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
         {scorecard.map((metric) => (
           <div key={metric.id} className="rounded-lg p-4" style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid var(--divider)' }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>{metric.label}</p>
-            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>{metric.target_label}</p>
-            <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', margin: 0 }}>Current actual: {metric.actual} {metric.unit}</p>
+            <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>{metric.label}</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>{metric.target_label}</p>
+            <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', margin: 0 }}>Current actual: {metric.actual} {metric.unit}</p>
           </div>
         ))}
       </div>
@@ -740,7 +837,7 @@ function MethodCard({ method, isSelected, isSuggested, onToggle }: { method: Val
       onMouseLeave={() => setHovered(false)}
       className="transition-all duration-200"
       style={{
-        padding: '22px 24px', cursor: 'pointer', borderRadius: 14,
+        padding: '24px 24px', cursor: 'pointer', borderRadius: 16,
         backgroundColor: isSelected ? 'var(--color-accent-soft)' : 'var(--surface-card)',
         border: isSelected ? '1.5px solid var(--accent-primary)' : '1px solid var(--divider)',
         transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
@@ -751,7 +848,7 @@ function MethodCard({ method, isSelected, isSuggested, onToggle }: { method: Val
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2.5">
-          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>{method.name}</span>
+        <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>{method.name}</span>
           {isSuggested && (
             <span className="rounded-full px-2.5 py-0.5" style={{ 
               fontSize: 10, fontWeight: 700, 
@@ -775,14 +872,14 @@ function MethodCard({ method, isSelected, isSuggested, onToggle }: { method: Val
           )}
         </div>
       </div>
-      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 16 }}>{method.description}</p>
+    <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: 18 }}>{method.description}</p>
       <div className="flex items-center gap-3">
         <span style={{
-          fontSize: 12, fontWeight: 600,
+        fontSize: 13, fontWeight: 600,
           color: EFFORT_COLORS[method.effort], padding: '3px 10px', borderRadius: 6,
           backgroundColor: `${EFFORT_COLORS[method.effort]}15`,
         }}>{method.effort} effort</span>
-        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)' }}>{SPEED_LABELS[method.speed]}</span>
+      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)' }}>{SPEED_LABELS[method.speed]}</span>
       </div>
     </div>
   );
@@ -941,3 +1038,4 @@ function CommunitiesSection({ data }: { data: NonNullable<ValidateResult['commun
     </div>
   );
 }
+

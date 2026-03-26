@@ -341,8 +341,8 @@ export default function AnalyzeModule() {
       <div className="flex items-start justify-between gap-4 mb-8 flex-wrap">
         <div>
           <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>ANALYZE</p>
-          <p className="font-heading" style={{ fontSize: 30, fontWeight: 700, marginBottom: 6 }}>Business case</p>
-          <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, maxWidth: 700 }}>
+          <p className="font-heading" style={{ fontSize: 34, fontWeight: 700, marginBottom: 8 }}>Business case</p>
+          <p style={{ fontSize: 17, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, maxWidth: 720 }}>
             Shape the evidence into a commercial point of view: where demand exists, what blocks adoption, what it costs, and whether the opportunity is strong enough to pursue.
           </p>
         </div>
@@ -379,23 +379,23 @@ export default function AnalyzeModule() {
                   });
                   toast.success('All sections researched');
                 }}
-                className="btn-primary rounded-lg px-4 py-1.5"
-                style={{ fontSize: 12, fontWeight: 600 }}
+                className="btn-primary rounded-lg px-5 py-2.5"
+                style={{ fontSize: 14, fontWeight: 600 }}
               >
                 Run all sections
               </button>
             )}
             {completedCount > 0 && (
               <>
-                <button onClick={handleSave} className="btn-primary rounded-lg px-4 py-1.5" style={{ fontSize: 12, fontWeight: 600 }}>
+                <button onClick={handleSave} className="btn-primary rounded-lg px-5 py-2.5" style={{ fontSize: 14, fontWeight: 600 }}>
                   Save
                 </button>
-                <button onClick={handleExportPDF} disabled={exporting} className="btn-secondary rounded-lg px-4 py-1.5" style={{ fontSize: 12, fontWeight: 600 }}>
+                <button onClick={handleExportPDF} disabled={exporting} className="btn-secondary rounded-lg px-5 py-2.5" style={{ fontSize: 14, fontWeight: 600 }}>
                   {exporting ? 'Exporting…' : 'Export PDF'}
                 </button>
               </>
             )}
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>
               {completedCount}/{MODULE_DEFS.length}
             </span>
         </div>
@@ -411,7 +411,7 @@ export default function AnalyzeModule() {
               onClick={() => handleSelectModule(module.key)}
               className="relative flex items-center gap-2.5 px-5 py-3.5 transition-all duration-200 whitespace-nowrap"
               style={{
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: isActive ? 600 : 500,
                 color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
                 backgroundColor: 'transparent',
@@ -443,7 +443,7 @@ export default function AnalyzeModule() {
                 <p className="font-heading" style={{ fontSize: 26, fontWeight: 700, marginBottom: 8 }}>
                   {activeSynthesis.final_verdict.toUpperCase()}
                 </p>
-                <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
+                <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0 }}>
                   {activeSynthesis.summary}
                 </p>
               </div>
@@ -453,7 +453,7 @@ export default function AnalyzeModule() {
                 <p className="font-heading" style={{ fontSize: 26, fontWeight: 700, marginBottom: 8 }}>
                   {activeSynthesis.opportunity_score} / 100
                 </p>
-                <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
+                <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0 }}>
                   Confidence: {activeSynthesis.confidence}
                 </p>
               </div>
@@ -462,7 +462,7 @@ export default function AnalyzeModule() {
                 <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>TOP DRIVERS</p>
                 <div className="flex flex-col gap-2">
                   {activeSynthesis.top_drivers.slice(0, 3).map((driver, index) => (
-                    <p key={index} style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                    <p key={index} style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
                       {index + 1}. {driver}
                     </p>
                   ))}
@@ -477,7 +477,7 @@ export default function AnalyzeModule() {
               <p className="font-heading" style={{ fontSize: 20, marginBottom: 8, textAlign: 'center' }}>
                 Ready to research
               </p>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', textAlign: 'center', maxWidth: 360, lineHeight: 1.6, marginBottom: 20 }}>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-muted)', textAlign: 'center', maxWidth: 420, lineHeight: 1.7, marginBottom: 24 }}>
                 Run this section when you want a focused answer for this part of the idea.
               </p>
               <button
@@ -485,7 +485,7 @@ export default function AnalyzeModule() {
                   setSections(prev => ({ ...prev, [activeModule]: { ...prev[activeModule], status: 'loading' } }));
                 }}
                 className="rounded-[10px] px-5 py-2.5 transition-all duration-200 active:scale-[0.97]"
-                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
+                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
               >
                 Run {MODULE_DEFS.find(m => m.key === activeModule)?.label}
               </button>
@@ -497,13 +497,13 @@ export default function AnalyzeModule() {
               <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>
                 This section couldn't load right now.
               </p>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-muted)', marginBottom: 18 }}>
                 {activeSec.error || 'Give it another shot — sometimes a retry does the trick.'}
               </p>
               <button
                 onClick={() => setSections(prev => ({ ...prev, [activeModule]: { ...prev[activeModule], status: 'loading', error: undefined } }))}
                 className="rounded-[10px] px-5 py-2.5 transition-all duration-200"
-                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
+                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
               >
                 Retry
               </button>
@@ -527,14 +527,14 @@ export default function AnalyzeModule() {
           {activeFindings.length > 0 && activeSec.status === 'completed' && (
             <div className="mt-12 rounded-[14px] p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
               <div className="flex items-center justify-between mb-1">
-                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
+                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
                   Key findings — {MODULE_DEFS.find(m => m.key === activeModule)?.label}
                 </p>
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)' }}>
                   {Array.from(selectedFindings).filter(f => activeFindings.some(af => af.text === f)).length} saved
                 </span>
               </div>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 16 }}>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-muted)', marginBottom: 18 }}>
                 Save findings to your dashboard for validation
               </p>
               <div className="flex flex-col gap-1.5">
@@ -543,7 +543,7 @@ export default function AnalyzeModule() {
                   const isSaving = savingFinding === finding.id;
                   return (
                     <div key={finding.id} className="flex items-start gap-3 rounded-[8px] p-3 transition-colors duration-150" style={{ backgroundColor: isSelected ? 'rgba(45,139,117,0.03)' : 'transparent' }}>
-                      <span className="flex-1" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: isSelected ? 400 : 300, color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)', lineHeight: 1.5 }}>
+                      <span className="flex-1" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: isSelected ? 500 : 400, color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)', lineHeight: 1.65 }}>
                         {finding.text}
                       </span>
                       <button
@@ -551,7 +551,7 @@ export default function AnalyzeModule() {
                         disabled={isSaving}
                         className="rounded-[6px] px-3 py-1 transition-all duration-200 flex-shrink-0"
                         style={{
-                          fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400,
+                          fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 500,
                           backgroundColor: isSelected ? 'var(--text-primary)' : 'transparent',
                           color: isSelected ? '#fff' : 'var(--text-muted)',
                           border: isSelected ? 'none' : '1px solid var(--divider)',
