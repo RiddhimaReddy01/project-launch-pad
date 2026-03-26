@@ -206,8 +206,11 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
             </div>
 
             <div className="mt-3">
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--accent-primary)' }}>
-                {expanded ? 'Hide evidence' : `${insight.sources.length} sources — click to expand`}
+              <span
+                style={{ fontSize: 12, fontWeight: 600, color: 'var(--accent-primary)' }}
+                title="Click this insight card to open the supporting evidence and source links"
+              >
+                {expanded ? 'Hide evidence' : `${insight.sources.length} sources - click to expand`}
               </span>
             </div>
           </div>
@@ -236,7 +239,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
               const hasUrl = source.url && source.url !== '#';
               return (
                 <div key={i} className="rounded-xl p-4" style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid var(--divider)' }}>
-                  <p style={{ fontStyle: 'italic', fontSize: 14, lineHeight: 1.7, color: 'var(--text-primary)', fontWeight: 500 }}>
+                  <p style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--text-primary)', fontWeight: 500 }}>
                     "{source.text}"
                   </p>
                   <div className="flex items-center gap-3 mt-3 flex-wrap">

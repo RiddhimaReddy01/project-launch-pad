@@ -71,9 +71,9 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
   return (
     <div>
       <div className="card-base p-6 mb-10" style={{
-        border: '1px solid rgba(0,212,230,0.22)',
-        background: 'linear-gradient(180deg, rgba(0,212,230,0.08), rgba(8,8,16,0.92))',
-        boxShadow: '0 0 24px rgba(0,212,230,0.08)',
+        border: '1px solid var(--divider)',
+        backgroundColor: 'var(--surface-card)',
+        boxShadow: 'var(--shadow-sm)',
       }}>
         <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
           <div>
@@ -82,7 +82,7 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
               Conversion path from broad reach to repeat customers
             </p>
           </div>
-          <div className="rounded-xl px-4 py-3" style={{ backgroundColor: 'rgba(0,212,230,0.1)', border: '1px solid rgba(0,212,230,0.18)' }}>
+          <div className="rounded-xl px-4 py-3" style={{ backgroundColor: 'var(--surface-subtle)', border: '1px solid var(--divider)' }}>
             <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--accent-primary)', textTransform: 'uppercase', marginBottom: 4 }}>
               Repeat customer base
             </p>
@@ -108,13 +108,12 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
                     )}
                   </div>
                 </div>
-                <div className="rounded-full overflow-hidden" style={{ height: 14, backgroundColor: 'rgba(255,255,255,0.04)' }}>
+                <div className="rounded-full overflow-hidden" style={{ height: 14, backgroundColor: 'var(--surface-subtle)' }}>
                   <div style={{
                     width: `${widthPct}%`,
                     height: '100%',
                     borderRadius: 999,
-                    background: `linear-gradient(90deg, ${colors[i]}, rgba(255,255,255,0.18))`,
-                    boxShadow: i === funnelData.length - 1 ? '0 0 18px rgba(0,212,230,0.35)' : 'none',
+                    backgroundColor: colors[i],
                   }} />
                 </div>
               </div>
@@ -135,8 +134,8 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
                 <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, letterSpacing: '0.04em', color: conf.color }}>{conf.label}</span>
               </div>
               <p className="font-heading" style={{ fontSize: 28, letterSpacing: '-0.02em', marginBottom: 4 }}>{t.formatted}</p>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>{t.label}</p>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', marginTop: 8, lineHeight: 1.6 }}>{t.methodology}</p>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.6 }}>{t.label}</p>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 8, lineHeight: 1.6 }}>{t.methodology}</p>
             </div>
           );
         })}
@@ -161,13 +160,13 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
 
       {/* Customer funnel — visual pyramid */}
       {/* Methodology toggle */}
-      <button onClick={() => setMethodOpen(!methodOpen)} style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+      <button onClick={() => setMethodOpen(!methodOpen)} title="See how the market size estimates were calculated" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
         {methodOpen ? 'Hide methodology' : 'How we estimated this'}
       </button>
       {methodOpen && (
         <div className="card-base mt-3 p-4">
           {tiers.map(t => (
-            <p key={t.key} style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 8, lineHeight: 1.5 }}>
+            <p key={t.key} style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', marginBottom: 8, lineHeight: 1.5 }}>
               <span style={{ fontWeight: 400, color: 'var(--text-primary)' }}>{t.key}:</span> {t.methodology}
             </p>
           ))}

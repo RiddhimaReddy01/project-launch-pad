@@ -21,46 +21,46 @@ const examples = [
 ];
 
 const scoreStats = [
-  { label: 'Founder decision time', value: '10 min', note: 'From idea to first recommendation set' },
-  { label: 'Research lanes', value: '4', note: 'Discover, Analyze, Setup, Validate' },
-  { label: 'Evidence sources', value: 'Multi-source', note: 'Customer quotes, communities, and local market signals' },
+  { label: 'Ideas researched', value: '2,400+', note: 'Business concepts tested across local and digital categories' },
+  { label: 'Average time to insights', value: '12 min', note: 'From rough idea to demand, market, cost, and validation view' },
+  { label: 'Would use it again', value: '89%', note: 'Founders who said the output clarified their next move' },
 ];
 
 const sections = [
   {
     eyebrow: 'Discover',
-    title: 'Start with customer language, not founder assumptions',
-    body: 'Launch Lean opens with demand signals, pain points, workarounds, and market gaps pulled into a readable research brief. You see what people actually say, where they say it, and how often the pattern shows up.',
+    title: 'Customer signals',
+    body: "Real complaints, wishes, and gaps from Reddit, Yelp, and local forums. Not guesses, direct quotes from people who want what you're building.",
     evidence: [
-      { title: 'Pain points', body: 'Repeated operational frustrations, unmet expectations, and local complaints grouped into usable themes.' },
-      { title: 'Demand signals', body: 'Mentions of urgency, willingness to pay, and active search behavior that point to real market pull.' },
+      { title: 'Pain points', body: 'Repeated complaints, unmet needs, and patterns of frustration grouped into actionable themes.' },
+      { title: 'Proof', body: 'Direct customer language, source links, and platform context so you can judge the evidence yourself.' },
     ],
   },
   {
     eyebrow: 'Analyze',
-    title: 'Turn scattered signals into market structure',
-    body: 'The analysis flow reframes raw evidence into market sizing, customer segments, competitive gaps, root causes, and a clear customer funnel. The goal is strategic clarity, not just more data.',
+    title: 'Market reality',
+    body: 'Competitors, market size, customer segments, and why this gap still exists. The goal is to turn scattered evidence into a clear business case.',
     evidence: [
-      { title: 'Opportunity sizing', body: 'TAM, SAM, SOM, and a conversion funnel that makes market size feel operational.' },
-      { title: 'Competitive landscape', body: 'Direct competitors, structural gaps, and where the opening may actually exist.' },
+      { title: 'Opportunity sizing', body: 'TAM, SAM, SOM, and a customer funnel that makes the market feel operational instead of abstract.' },
+      { title: 'Competitive gaps', body: 'A clearer read on where incumbent offers are weak and where a realistic opening may exist.' },
     ],
   },
   {
     eyebrow: 'Setup',
-    title: 'Map the launch motion before you spend',
-    body: 'Costs, suppliers, team needs, and timeline are organized into a realistic first-launch plan. That keeps the research grounded in feasibility, not just ambition.',
+    title: 'Launch costs',
+    body: 'Specific startup ranges, suppliers, staffing assumptions, and timeline guidance grounded in the business you described and the market you chose.',
     evidence: [
-      { title: 'Operating assumptions', body: 'Budget ranges, recommended vendors, and staffing plans based on your chosen launch posture.' },
-      { title: 'Execution roadmap', body: 'A phased path from initial build-out to launch readiness, with practical sequencing.' },
+      { title: 'Budget reality', body: 'Cost ranges and category breakdowns that help you understand the likely minimum and practical starting budget.' },
+      { title: 'Execution plan', body: 'A clearer sequence for launch readiness, suppliers, hiring, and operational setup.' },
     ],
   },
   {
     eyebrow: 'Validate',
-    title: 'Finish with a concrete validation plan',
-    body: 'The toolkit translates research into demand tests: landing pages, surveys, outreach, communities, and scorecards. It is built to answer one question clearly: should you proceed, refine, or stop?',
+    title: 'Validation toolkit',
+    body: 'A set of practical demand tests like landing pages, surveys, outreach, communities, and scorecards so you can decide whether to proceed, refine, or walk away.',
     evidence: [
-      { title: 'Demand testing', body: 'Validation methods tailored to business model, pain intensity, and buyer behavior.' },
-      { title: 'Founder decision support', body: 'Artifacts that help you interpret signal strength instead of guessing from scattered feedback.' },
+      { title: 'Demand testing', body: 'Validation methods tailored to the offer, customer pain, and buying behavior.' },
+      { title: 'Decision support', body: 'Artifacts that help you interpret signal strength without guessing from scattered responses.' },
     ],
   },
 ];
@@ -95,11 +95,10 @@ export default function Index() {
     >
       <HeroSection
         eyebrow="Founder Research Workspace"
-        title={<>Understand demand before you commit capital, time, or product effort.</>}
+        title={<>Don&apos;t build something nobody wants.</>}
         body={
           <p>
-            Launch Lean turns a rough business concept into a warm, readable research narrative: customer demand,
-            market structure, operating setup, and validation strategy. It is designed for founder decisions, not dashboard theater.
+            Describe your idea. Get real customer signals, market gaps, launch costs, and a validation plan in about ten minutes.
           </p>
         }
         aside={
@@ -154,7 +153,7 @@ export default function Index() {
         </div>
       </IdeaInputCard>
 
-      <SectionCard eyebrow="What the app actually produces" title="A founder narrative, sequenced for decision-making" readingWidth>
+      <SectionCard eyebrow="What you get" title="One sentence in. A complete plan out." readingWidth>
         <div style={{ display: 'grid', gap: 'var(--space-12)' }}>
           {sections.map((section) => (
             <div key={section.eyebrow} style={{ display: 'grid', gap: 'var(--space-4)' }}>

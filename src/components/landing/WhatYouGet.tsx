@@ -91,8 +91,7 @@ export default function WhatYouGet() {
                     borderRadius: 10,
                     fontSize: 12,
                     fontWeight: 400,
-                    fontStyle: 'italic',
-                    color: 'var(--text-secondary)',
+            color: 'var(--text-secondary)',
                     lineHeight: 1.6,
                   }}
                 >

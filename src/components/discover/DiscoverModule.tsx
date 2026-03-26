@@ -58,6 +58,11 @@ function SourceSummaryBar({ summary }: { summary: { reddit_count: number; google
           {total} total signals
         </span>
       </div>
+      {segments.length === 0 && (
+        <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', marginTop: 12, marginBottom: 0 }}>
+          Source links are still loading or were not included in this saved result yet. Open an insight card to inspect the evidence list.
+        </p>
+      )}
     </div>
   );
 }
@@ -202,6 +207,12 @@ export default function DiscoverModule() {
             )}
 
             <div className="flex flex-col gap-3">
+              <p
+                style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', margin: 0 }}
+                title="Click any insight card to open its evidence, quotes, and source links"
+              >
+                Tip: click an insight to open the full evidence and source list.
+              </p>
               {filtered.map((insight, i) => (
                 <div key={i} className="scroll-reveal" style={{ animationDelay: `${i * 50}ms` }}
                   ref={(el) => { if (el) setTimeout(() => el.classList.add('visible'), 80 + i * 50); }}>

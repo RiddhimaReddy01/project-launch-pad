@@ -98,7 +98,7 @@ export default function ScoreMethodology({ insight }: { insight: DiscoverInsight
               <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 4 }}>
                 {getDesc(value)}
               </p>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.4, fontStyle: 'italic' }}>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.4 }}>
                 Method: {getMethod()}
               </p>
             </div>

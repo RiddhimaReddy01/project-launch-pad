@@ -22,11 +22,11 @@ const ALL_METHODS: ValidationMethod[] = [
   { id: 'landing', name: 'Landing Page + Waitlist', description: 'Test demand with a conversion-focused page and email capture', effort: 'medium', speed: 'fast', outputs: ['landing_page', 'scorecard'] },
   { id: 'survey', name: 'Customer Survey', description: 'Validate assumptions with a structured 7-question discovery flow', effort: 'low', speed: 'fast', outputs: ['survey', 'scorecard'] },
   { id: 'community', name: 'Community Outreach', description: 'Share in targeted groups to gauge organic interest and get feedback', effort: 'low', speed: 'fast', outputs: ['whatsapp', 'communities', 'scorecard'] },
-  { id: 'smoke_ad', name: 'Smoke Test Ad', description: 'Run a low-budget ad to measure click-through and signup intent', effort: 'medium', speed: 'medium', outputs: ['landing_page', 'scorecard'] },
-  { id: 'presale', name: 'Pre-sale / Pricing Test', description: 'Test willingness to pay with a pricing page and payment intent', effort: 'high', speed: 'medium', outputs: ['landing_page', 'survey', 'scorecard'] },
+  { id: 'smoke_ad', name: 'Smoke Test Ad', description: 'Run a low-budget ad to measure click-through and signup intent', effort: 'medium', speed: 'medium', outputs: ['scorecard'] },
+  { id: 'presale', name: 'Pre-sale / Pricing Test', description: 'Test willingness to pay with a pricing page and payment intent', effort: 'high', speed: 'medium', outputs: ['survey', 'scorecard'] },
   { id: 'concierge', name: 'Concierge MVP', description: 'Deliver the service manually to first customers before building', effort: 'high', speed: 'slow', outputs: ['survey', 'communities', 'scorecard'] },
   { id: 'interviews', name: 'Expert Interviews', description: 'Structured conversations with potential customers and domain experts', effort: 'medium', speed: 'medium', outputs: ['survey', 'scorecard'] },
-  { id: 'teardown', name: 'Competitor Teardown', description: 'Side-by-side comparison highlighting your differentiation', effort: 'low', speed: 'fast', outputs: ['landing_page', 'scorecard'] },
+  { id: 'teardown', name: 'Competitor Teardown', description: 'Side-by-side comparison highlighting your differentiation', effort: 'low', speed: 'fast', outputs: ['scorecard'] },
 ];
 
 const EFFORT_COLORS: Record<string, string> = { low: 'var(--accent-teal)', medium: 'var(--accent-amber)', high: 'hsl(var(--destructive))' };
@@ -70,6 +70,16 @@ const PLATFORM_COLORS: Record<string, string> = {
   Nextdoor: 'var(--accent-teal)', WhatsApp: 'var(--accent-teal)', Slack: 'var(--text-secondary)', Twitter: 'var(--accent-blue)',
   Instagram: 'hsl(var(--destructive))', TikTok: 'var(--text-secondary)',
 };
+
+function filterValidateResult(result: ValidateResult, outputs: Set<string>): ValidateResult {
+  return {
+    landing_page: outputs.has('landing_page') ? result.landing_page : null,
+    survey: outputs.has('survey') ? result.survey : null,
+    whatsapp: outputs.has('whatsapp') ? result.whatsapp : null,
+    communities: outputs.has('communities') ? result.communities : null,
+    scorecard: result.scorecard || [],
+  };
+}
 
 // ═══ UTILITIES ═══
 
@@ -219,7 +229,12 @@ export default function ValidateModule() {
   const visibleTabs = ALL_TABS.filter((tab) => relevantOutputs.has(tab.outputKey));
 
   useEffect(() => {
-    if (phase === 'toolkit' && visibleTabs.length > 0 && (!activeTab || !visibleTabs.find(t => t.key === activeTab))) {
+    if (phase !== 'toolkit') return;
+    if (visibleTabs.length === 0) {
+      setActiveTab(null);
+      return;
+    }
+    if (!activeTab || !visibleTabs.find(t => t.key === activeTab)) {
       setActiveTab(visibleTabs[0].key);
     }
   }, [phase, visibleTabs, activeTab]);
@@ -231,9 +246,10 @@ export default function ValidateModule() {
     try {
       const requestedOutputs = Array.from(relevantOutputs);
       if (!requestedOutputs.includes('scorecard')) requestedOutputs.push('scorecard');
-      const data = context
+      const rawData = context
         ? await generateValidation(context, requestedOutputs)
         : await generateValidation(idea, requestedOutputs);
+      const data = filterValidateResult(rawData, new Set(requestedOutputs));
       setResult(data);
       setValidateData(data);
       setPhase('toolkit');
@@ -264,7 +280,7 @@ export default function ValidateModule() {
     setSaving(true);
     try {
       const payload = {
-        ...result,
+        ...filterValidateResult(result, relevantOutputs),
         selected_methods: Array.from(selectedMethods),
         saved_at: new Date().toISOString(),
       };
@@ -317,28 +333,29 @@ export default function ValidateModule() {
       h1{font-size:24px;font-weight:600;margin-bottom:4px}h2{font-size:18px;font-weight:600;margin:28px 0 12px;border-bottom:1px solid #e5e5e5;padding-bottom:8px}
       .meta{font-size:13px;color:#999;margin-bottom:32px}table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
       td,th{text-align:left;padding:6px 10px;border-bottom:1px solid #eee}th{font-weight:600;color:#666}
-      .benefit{margin:4px 0;padding-left:16px}blockquote{border-left:3px solid #ddd;margin:12px 0;padding:8px 16px;color:#666;font-style:italic}
+      .benefit{margin:4px 0;padding-left:16px}blockquote{border-left:3px solid #ddd;margin:12px 0;padding:8px 16px;color:#666}
       @media print{body{margin:20px}}</style>
     </head><body>
       <h1>Validation Kit — ${biz}</h1><p class="meta">${loc} · Generated ${new Date().toLocaleDateString()}</p>`;
     html += `<p><strong>Methods:</strong> ${Array.from(selectedMethods).map(m => ALL_METHODS.find(am => am.id === m)?.name || m).join(', ')}</p>`;
-    const lp = result.landing_page;
+    const exportable = filterValidateResult(result, relevantOutputs);
+    const lp = exportable.landing_page;
     if (lp) {
       html += `<h2>Landing Page Copy</h2><p style="font-size:20px;font-weight:600">${lp.headline}</p><p style="color:#666">${lp.subheadline}</p>`;
       lp.benefits.forEach(b => { html += `<p class="benefit">— ${b}</p>`; });
       html += `<p><strong>CTA:</strong> ${lp.cta}</p><blockquote>${lp.social_proof}</blockquote>`;
     }
-    if (result.survey) {
+    if (exportable.survey) {
       html += `<h2>Survey</h2><table><tr><th>#</th><th>Question</th><th>Type</th></tr>`;
-      result.survey.forEach((q, i) => { html += `<tr><td>${i + 1}</td><td>${q.question}</td><td>${q.type}</td></tr>`; });
+      exportable.survey.forEach((q, i) => { html += `<tr><td>${i + 1}</td><td>${q.question}</td><td>${q.type}</td></tr>`; });
       html += `</table>`;
     }
-    if (result.whatsapp) {
-      html += `<h2>Outreach Message</h2><div style="background:#f5f5f5;padding:16px;border-radius:8px;white-space:pre-line">${result.whatsapp.message}</div>`;
+    if (exportable.whatsapp) {
+      html += `<h2>Outreach Message</h2><div style="background:#f5f5f5;padding:16px;border-radius:8px;white-space:pre-line">${exportable.whatsapp.message}</div>`;
     }
-    if (result.communities) {
+    if (exportable.communities) {
       html += `<h2>Communities</h2><table><tr><th>Name</th><th>Platform</th><th>Members</th></tr>`;
-      result.communities.forEach(c => { html += `<tr><td>${c.name}</td><td>${c.platform}</td><td>${c.members}</td></tr>`; });
+      exportable.communities.forEach(c => { html += `<tr><td>${c.name}</td><td>${c.platform}</td><td>${c.members}</td></tr>`; });
       html += `</table>`;
     }
     html += `<h2>Scorecard</h2><table><tr><th>Metric</th><th>Target</th></tr>`;
@@ -347,7 +364,7 @@ export default function ValidateModule() {
     printWin.document.write(html);
     printWin.document.close();
     setTimeout(() => { printWin.print(); setExporting(false); }, 500);
-  }, [result, context, idea, selectedMethods]);
+  }, [result, context, idea, selectedMethods, relevantOutputs]);
 
   // ═══ EMPTY STATE ═══
   if (!decomposeResult) return (
@@ -377,8 +394,9 @@ export default function ValidateModule() {
       {/* Suggested method banner */}
       {suggestedMethods.length > 0 && (
         <div className="mb-8 rounded-xl overflow-hidden" style={{ 
-          background: 'linear-gradient(135deg, rgba(0,212,230,0.06), rgba(168,124,255,0.04))',
-          border: '1px solid rgba(0,212,230,0.15)',
+          backgroundColor: 'var(--surface-card)',
+          border: '1px solid var(--divider)',
+          boxShadow: 'var(--shadow-sm)',
           padding: '20px 24px',
         }}>
           <div className="flex items-center gap-3 mb-3">
@@ -389,9 +407,9 @@ export default function ValidateModule() {
           </div>
           <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
             {analyzeData?.customers?.segments?.[0]?.pain_intensity >= 8
-              ? 'High customer pain detected — landing page and pre-sale are your strongest validation methods.'
+              ? 'High customer pain detected. Landing page and pre-sale are your strongest validation methods.'
               : analyzeData?.competitors?.competitors?.length <= 3
-                ? 'Low competition in your market — community outreach will help you capture early adopters.'
+                ? 'Low competition in your market. Community outreach will help you capture early adopters.'
                 : 'Based on your market analysis, these methods balance speed and signal quality.'}
           </p>
         </div>
@@ -450,7 +468,7 @@ export default function ValidateModule() {
           <p className="section-label mb-2" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em' }}>VALIDATE</p>
           <p className="font-heading" style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>Your Starter Toolkit</p>
           <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            {selectedMethods.size} methods — {Array.from(selectedMethods).map(m => ALL_METHODS.find(am => am.id === m)?.name).filter(Boolean).join(', ')}
+            {selectedMethods.size} methods - {Array.from(selectedMethods).map(m => ALL_METHODS.find(am => am.id === m)?.name).filter(Boolean).join(', ')}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -485,9 +503,9 @@ export default function ValidateModule() {
               }}>{tab.mono}</span>
               {tab.label}
               {isRelevant && !isActive && (
-                <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--accent-primary)', boxShadow: '0 0 8px rgba(0,212,230,0.5)' }} />
+                <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--accent-primary)' }} />
               )}
-              {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 2, background: 'linear-gradient(90deg, var(--accent-primary), var(--accent-purple))', borderRadius: 1 }} />}
+              {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 2, backgroundColor: 'var(--accent-primary)', borderRadius: 1 }} />}
             </button>
           );
         })}
@@ -532,6 +550,24 @@ export default function ValidateModule() {
             {activeTab === 'survey' && result.survey && <SurveySection data={result.survey} onChange={(s) => updateResult({ survey: s })} />}
             {activeTab === 'whatsapp' && result.whatsapp && <WhatsAppSection data={result.whatsapp} onChange={(w) => updateResult({ whatsapp: w })} />}
             {activeTab === 'communities' && result.communities && <CommunitiesSection data={result.communities} />}
+            {!activeTab && (
+              <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', boxShadow: 'var(--shadow-sm)' }}>
+                <p className="section-label" style={{ fontWeight: 700, marginBottom: 10 }}>MEASUREMENT PLAN</p>
+                <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>
+                  This toolkit is focused on testing and scoring, not content assets.
+                </p>
+                <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 16 }}>
+                  You selected methods like smoke tests or competitive teardowns. We are keeping the output focused on measurement instead of showing an unrelated landing page.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {result.scorecard.map((metric) => (
+                    <span key={metric.id} className="badge badge-muted" title={`Target: ${metric.target_label}`}>
+                      {metric.label}: {metric.target_label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
@@ -555,8 +591,8 @@ function MethodCard({ method, isSelected, isSuggested, onToggle }: { method: Val
         border: isSelected ? '1.5px solid var(--accent-primary)' : '1px solid var(--divider)',
         transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
         boxShadow: isSelected 
-          ? '0 0 20px rgba(0,212,230,0.08)' 
-          : hovered ? '0 8px 24px rgba(0,0,0,0.3)' : 'none',
+          ? 'var(--shadow-sm)' 
+          : hovered ? 'var(--shadow-md)' : 'none',
       }}
     >
       <div className="flex items-center justify-between mb-3">
@@ -627,17 +663,16 @@ function LandingSection({ data, onChange }: { data: NonNullable<ValidateResult['
               </div>
             ))}
           </div>
-          <div className="rounded-xl inline-block" style={{ 
-            padding: '14px 32px', 
-            background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-teal))',
-            color: '#080810', fontSize: 15, fontWeight: 700,
-            boxShadow: '0 0 24px rgba(0,212,230,0.2)',
+          <div className="rounded-xl inline-block" style={{
+            padding: '14px 32px',
+            backgroundColor: 'var(--text-primary)',
+            color: '#fff', fontSize: 15, fontWeight: 700,
           }}>
-            <EditableText value={data.cta} onChange={(v) => onChange({ ...data, cta: v })} style={{ color: '#080810' }} />
+            <EditableText value={data.cta} onChange={(v) => onChange({ ...data, cta: v })} style={{ color: '#fff' }} />
           </div>
           <div style={{ marginTop: 28 }}>
             <EditableText value={data.social_proof} onChange={(v) => onChange({ ...data, social_proof: v })}
-              style={{ fontStyle: 'italic', fontSize: 14, fontWeight: 500, color: 'var(--text-muted)', display: 'inline' }} />
+              style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-muted)', display: 'inline' }} />
           </div>
         </div>
       </div>
@@ -730,7 +765,7 @@ function CommunitiesSection({ data }: { data: NonNullable<ValidateResult['commun
                 backgroundColor: 'var(--surface-card)',
                 border: `1px solid ${isHov ? 'var(--divider-section)' : 'var(--divider)'}`,
                 transform: isHov ? 'translateY(-2px)' : 'translateY(0)',
-                boxShadow: isHov ? '0 8px 24px rgba(0,0,0,0.3)' : 'none',
+                boxShadow: isHov ? 'var(--shadow-md)' : 'none',
               }}
               onMouseEnter={() => setHoveredId(i)} onMouseLeave={() => setHoveredId(null)}>
               <div className="flex items-center justify-between mb-3">

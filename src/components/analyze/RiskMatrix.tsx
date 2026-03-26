@@ -56,19 +56,19 @@ export default function RiskMatrix({ context, onData, onError, shouldRun = true,
   return (
     <div>
       {/* Overall risk */}
-      <div className="rounded-[12px] p-5 mb-8" style={{ backgroundColor: LEVEL_CONFIG[data.overall_risk_level].bg, border: `1px solid ${LEVEL_CONFIG[data.overall_risk_level].color}20` }}>
+      <div className="rounded-[16px] p-6 mb-8" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', boxShadow: 'var(--shadow-sm)' }}>
         <div className="flex items-center gap-3 mb-2">
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: LEVEL_CONFIG[data.overall_risk_level].color }}>
+          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: LEVEL_CONFIG[data.overall_risk_level].color }}>
             Overall Risk: {LEVEL_CONFIG[data.overall_risk_level].label}
           </span>
         </div>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{data.summary}</p>
+        <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>{data.summary}</p>
       </div>
 
       {/* Risk matrix grid */}
       <div className="mb-8">
         <p className="font-caption" style={{ fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Likelihood vs Impact Matrix</p>
-        <div style={{ display: 'grid', gridTemplateColumns: '40px 1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr 28px', gap: 2, height: 280 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '48px 1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr 28px', gap: 8, height: 320 }}>
           {/* Y-axis labels */}
           <div style={{ gridRow: 1, gridColumn: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ fontSize: 9, color: 'var(--text-muted)', transform: 'rotate(-90deg)', whiteSpace: 'nowrap', fontFamily: "'Outfit', sans-serif", letterSpacing: '0.04em' }}>HIGH</span>
@@ -84,14 +84,14 @@ export default function RiskMatrix({ context, onData, onError, shouldRun = true,
           {matrixCells.map((cell) => {
             const risksInCell = data.risks.filter(r => r.likelihood === cell.row && r.impact === cell.col);
             return (
-              <div key={`${cell.row}-${cell.col}`} className="rounded-[8px] p-2 relative" style={{ gridRow: cell.gridRow, gridColumn: cell.gridCol + 1, backgroundColor: cell.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+              <div key={`${cell.row}-${cell.col}`} className="rounded-[16px] p-3 relative" style={{ gridRow: cell.gridRow, gridColumn: cell.gridCol + 1, backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                 {risksInCell.map((r, i) => (
-                  <div key={i} className="rounded-full px-2 py-0.5" style={{ fontSize: 9, fontFamily: "'Outfit', sans-serif", fontWeight: 400, backgroundColor: 'var(--surface-card)', color: 'var(--text-primary)', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div key={i} className="rounded-full px-3 py-1" title={r.risk} style={{ fontSize: 11, fontWeight: 600, backgroundColor: 'var(--color-bg-muted)', color: 'var(--text-primary)', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {r.risk.slice(0, 20)}
                   </div>
                 ))}
                 {risksInCell.length === 0 && (
-                  <span style={{ fontSize: 9, color: 'var(--text-muted)', opacity: 0.4 }}>{cell.label}</span>
+                  <span style={{ fontSize: 10, color: 'var(--text-muted)', opacity: 0.7 }}>{cell.label}</span>
                 )}
               </div>
             );
@@ -112,17 +112,18 @@ export default function RiskMatrix({ context, onData, onError, shouldRun = true,
       </div>
 
       {/* Risk cards */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
         {data.risks.map((risk, i) => {
           const isHovered = hoveredRisk === i;
           return (
             <div
               key={i}
-              className="rounded-[12px] p-5 transition-all duration-200 cursor-pointer"
-              style={{ backgroundColor: 'var(--surface-card)', border: `1px solid ${isHovered ? 'var(--divider-section)' : 'var(--divider)'}` }}
+              className="rounded-[16px] p-5 transition-all duration-200 cursor-pointer"
+              style={{ backgroundColor: 'var(--surface-card)', border: `1px solid ${isHovered ? 'var(--divider-section)' : 'var(--divider)'}`, boxShadow: 'var(--shadow-sm)' }}
               onClick={() => setHoveredRisk(isHovered ? null : i)}
               onMouseEnter={() => setHoveredRisk(i)}
               onMouseLeave={() => setHoveredRisk(null)}
+              title="Click to see the mitigation plan"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
@@ -133,11 +134,11 @@ export default function RiskMatrix({ context, onData, onError, shouldRun = true,
                     </span>
                   </div>
                   <div className="flex items-center gap-4 mt-2">
-                    <span style={{ fontSize: 11, fontFamily: "'Outfit', sans-serif", color: 'var(--text-muted)' }}>
-                      Likelihood: <span style={{ color: LEVEL_CONFIG[risk.likelihood].color, fontWeight: 400 }}>{risk.likelihood}</span>
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                      Likelihood: <span style={{ color: LEVEL_CONFIG[risk.likelihood].color, fontWeight: 600 }}>{risk.likelihood}</span>
                     </span>
-                    <span style={{ fontSize: 11, fontFamily: "'Outfit', sans-serif", color: 'var(--text-muted)' }}>
-                      Impact: <span style={{ color: LEVEL_CONFIG[risk.impact].color, fontWeight: 400 }}>{risk.impact}</span>
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                      Impact: <span style={{ color: LEVEL_CONFIG[risk.impact].color, fontWeight: 600 }}>{risk.impact}</span>
                     </span>
                   </div>
                 </div>
@@ -145,7 +146,7 @@ export default function RiskMatrix({ context, onData, onError, shouldRun = true,
               {isHovered && (
                 <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--divider)' }}>
                   <p className="font-caption" style={{ fontSize: 10, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--accent-teal)', marginBottom: 4 }}>Mitigation</p>
-                  <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{risk.mitigation}</p>
+                  <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>{risk.mitigation}</p>
                 </div>
               )}
             </div>

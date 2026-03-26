@@ -74,18 +74,24 @@ function normalizeSource(source: any): DiscoverSource {
 }
 
 export function normalizeDiscoverResult(result: any): DiscoverResult {
-  const insights: DiscoverInsight[] = (result?.insights || []).map((insight: any) => ({
-    title: insight?.title || "",
-    type: insight?.type || "pain_point",
-    description: insight?.description || insight?.title || "",
-    frequency_score: normalizeScore(insight?.frequency_score || insight?.score || 0),
-    severity_score: normalizeScore(insight?.severity_score || insight?.intensity_score || 0),
-    willingness_to_pay: normalizeScore(insight?.willingness_to_pay || insight?.willingness_to_pay_score || 0),
-    market_size_signal: normalizeScore(insight?.market_size_signal || 0),
-    composite_score: normalizeScore(insight?.composite_score || insight?.score || 0),
-    tags: Array.isArray(insight?.tags) ? insight.tags : Array.isArray(insight?.source_platforms) ? insight.source_platforms : [],
-    sources: (insight?.sources || insight?.evidence || insight?.mentions || []).map(normalizeSource),
-  }));
+  const topLevelSources = (result?.sources || []).map(normalizeSource);
+  const insights: DiscoverInsight[] = (result?.insights || []).map((insight: any) => {
+    const normalizedSources = (insight?.sources || insight?.evidence || insight?.mentions || []).map(normalizeSource);
+    const fallbackSources = normalizedSources.length > 0 ? normalizedSources : topLevelSources.slice(0, 3);
+
+    return {
+      title: insight?.title || "",
+      type: insight?.type || "pain_point",
+      description: insight?.description || insight?.title || "",
+      frequency_score: normalizeScore(insight?.frequency_score || insight?.score || 0),
+      severity_score: normalizeScore(insight?.severity_score || insight?.intensity_score || 0),
+      willingness_to_pay: normalizeScore(insight?.willingness_to_pay || insight?.willingness_to_pay_score || 0),
+      market_size_signal: normalizeScore(insight?.market_size_signal || 0),
+      composite_score: normalizeScore(insight?.composite_score || insight?.score || 0),
+      tags: Array.isArray(insight?.tags) ? insight.tags : Array.isArray(insight?.source_platforms) ? insight.source_platforms : [],
+      sources: fallbackSources,
+    };
+  });
 
   const allSources = insights.flatMap((insight) => insight.sources);
 

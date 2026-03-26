@@ -128,9 +128,8 @@ export default function InsightCard({ insight, sources, onSeeMentions }: Insight
               >
                 <p
                   style={{
-                    fontFamily: "'Playfair Display', serif",
-                    fontStyle: 'italic',
                     fontSize: 15,
+                    fontWeight: 500,
                     lineHeight: 1.6,
                     color: 'var(--text-primary)',
                   }}

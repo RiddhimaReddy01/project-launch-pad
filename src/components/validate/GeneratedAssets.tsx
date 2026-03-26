@@ -78,7 +78,7 @@ function LandingPageAsset() {
           }}>
             {lp.cta}
           </button>
-          <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 13, color: 'var(--text-muted)', marginTop: 20 }}>{lp.socialProof}</p>
+          <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', marginTop: 20 }}>{lp.socialProof}</p>
         </div>
       </div>
     </SectionBlock>
