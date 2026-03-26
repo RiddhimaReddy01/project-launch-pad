@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useIdea } from '@/context/IdeaContext';
 import { toast } from 'sonner';
+import { AppShell, PillButton, SecondaryButton, TopNav } from '@/components/system/editorial';
 
 interface SavedIdea {
   id: string;
@@ -140,23 +141,20 @@ export default function Dashboard() {
   const latestProject = ideas[0] || null;
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface-bg)' }}>
-      {/* Header */}
-      <header className="glass flex items-center justify-between px-6 sticky top-0 z-50" style={{ height: 60, borderBottom: '1px solid var(--divider)' }}>
-        <span className="cursor-pointer flex items-center gap-1.5" onClick={() => navigate('/')}>
-          <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: 17, color: 'var(--text-primary)' }}>Launch</span>
-          <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: 17, color: 'var(--accent-primary)' }}>Lean</span>
-        </span>
-        <div className="flex items-center gap-5">
-          <span className="cursor-pointer transition-colors duration-200" style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}
-            onMouseEnter={e => e.currentTarget.style.color = 'var(--accent-primary)'}
-            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
-            onClick={() => navigate('/')}>+ New idea</span>
-          <span className="cursor-pointer" style={{ fontSize: 13, fontWeight: 500, color: 'var(--error)' }} onClick={signOut}>Sign out</span>
-        </div>
-      </header>
-
-      <div style={{ maxWidth: 1000, margin: '0 auto', padding: '48px 24px 120px' }}>
+    <AppShell
+      nav={
+        <TopNav
+          compact
+          rightSlot={
+            <>
+              <SecondaryButton onClick={() => navigate('/')}>New idea</SecondaryButton>
+              <PillButton onClick={signOut}>Sign out</PillButton>
+            </>
+          }
+        />
+      }
+    >
+      <div style={{ maxWidth: 1000, paddingTop: 'var(--space-10)' }}>
         <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>DASHBOARD</p>
         <h1 className="font-heading" style={{ fontSize: 32, fontWeight: 700, marginBottom: 6, color: 'var(--text-primary)' }}>Welcome back</h1>
         <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 36 }}>{user.email}</p>
@@ -218,7 +216,7 @@ export default function Dashboard() {
           </>
         )}
       </div>
-    </div>
+    </AppShell>
   );
 }
 
