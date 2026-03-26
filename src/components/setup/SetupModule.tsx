@@ -23,6 +23,11 @@ const TABS = [
 
 type TabKey = typeof TABS[number]['key'];
 
+function formatCurrency(value?: number | null) {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return 'Not available';
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+}
+
 interface SectionState<T> {
   data: T | null;
   status: 'idle' | 'loading' | 'completed' | 'error';
@@ -292,6 +297,46 @@ export default function SetupModule() {
           })}
         </div>
       </div>
+
+      {costsState.data?.recommendation && (
+        <div className="grid gap-4 mb-10" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+          <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+            <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>RECOMMENDED TIER</p>
+            <p className="font-heading" style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
+              {costsState.data.recommendation.recommended_tier}
+            </p>
+            <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
+              {costsState.data.recommendation.rationale}
+            </p>
+          </div>
+
+          {costsState.data.revenue_projection && (
+            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+              <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>REVENUE OUTLOOK</p>
+              <p className="font-heading" style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
+                {formatCurrency(costsState.data.revenue_projection.expected_monthly_revenue)}/mo
+              </p>
+              <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
+                Break-even: {costsState.data.revenue_projection.breakeven_label}
+              </p>
+            </div>
+          )}
+
+          {costsState.data.founder_time_allocation?.length ? (
+            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+              <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>FOUNDER TIME</p>
+              <div className="flex flex-col gap-2">
+                {costsState.data.founder_time_allocation.slice(0, 3).map((item) => (
+                  <div key={item.area} className="flex items-center justify-between" style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
+                    <span>{item.area}</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>{item.percent}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </div>
+      )}
 
       {/* Tab navigation */}
       <div className="flex gap-1 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider-section)' }}>

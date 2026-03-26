@@ -5,6 +5,26 @@ import DiscoverInsightCard from './DiscoverInsightCard';
 import DiscoverLoading from './DiscoverLoading';
 import SynthesisPanel from './SynthesisPanel';
 
+function SummaryStat({
+  label,
+  value,
+  detail,
+}: {
+  label: string;
+  value: string;
+  detail?: string;
+}) {
+  return (
+    <article className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+      <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.12em' }}>{label}</p>
+      <p className="font-heading" style={{ fontSize: 28, fontWeight: 700, marginBottom: detail ? 6 : 0 }}>{value}</p>
+      {detail ? (
+        <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>{detail}</p>
+      ) : null}
+    </article>
+  );
+}
+
 type Status = 'idle' | 'loading' | 'done' | 'error';
 
 const KNOWN_TABS: Record<string, { label: string }> = {
@@ -176,6 +196,37 @@ export default function DiscoverModule() {
       {status === 'done' && result && ready && (
         <div className="flex gap-6 animate-fade-in" style={{ alignItems: 'flex-start' }}>
           <div className="flex-1 min-w-0">
+            <div className="grid gap-4 mb-6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))' }}>
+              <SummaryStat
+                label="Demand Strength"
+                value={`${result.summary.demand_strength.toFixed(1)} / 10`}
+                detail={result.summary.summary || 'Weighted from customer pain, willingness to pay, and signal quality.'}
+              />
+              <SummaryStat
+                label="Signal Density"
+                value={result.summary.signal_density ? result.summary.signal_density[0].toUpperCase() + result.summary.signal_density.slice(1) : 'Low'}
+                detail={result.summary.trend_label || 'Trend is still stabilizing from the available evidence.'}
+              />
+              <SummaryStat
+                label="Top Regions"
+                value={result.summary.top_regions.length ? result.summary.top_regions.slice(0, 3).join(', ') : 'Not enough data'}
+                detail="Where demand signals cluster most often in the evidence set."
+              />
+            </div>
+
+            {result.summary.mixed_signals.length > 0 && (
+              <div className="rounded-xl p-5 mb-6" style={{ backgroundColor: 'rgba(185, 124, 44, 0.08)', border: '1px solid rgba(185, 124, 44, 0.18)' }}>
+                <p className="section-label mb-3" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>MIXED SIGNALS</p>
+                <div className="flex flex-col gap-2">
+                  {result.summary.mixed_signals.map((signal, index) => (
+                    <p key={index} style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.6, margin: 0 }}>
+                      {signal}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <SourceSummaryBar summary={result.source_summary} />
 
             {visibleTabs.length > 1 && (

@@ -45,6 +45,26 @@ export interface ValidateResult {
   whatsapp: WhatsAppOutput | null;
   communities: Community[] | null;
   scorecard: ScorecardMetric[];
+  strategy?: {
+    business_model: string;
+    recommended_methods: string[];
+    effort_estimate_hours: number;
+    timeline_weeks: number;
+    typical_conversion_rate: number;
+    typical_cac: number;
+    description: string;
+  } | null;
+  expected_outcomes?: Record<string, Record<string, string>>;
+  simulation?: {
+    starting_audience?: number;
+    expected_signups?: number;
+    expected_paid_conversions?: number;
+    expected_survey_responses?: number;
+    outreach_messages?: number;
+    expected_replies?: number;
+    notes?: string[];
+  };
+  recommended_sequence?: string[];
 }
 
 export interface ValidateContext {
@@ -76,5 +96,24 @@ export async function generateValidation(
     ? { idea: ideaOrContext, channels: channelsOrOutputs || [] }
     : { context: ideaOrContext, required_outputs: channelsOrOutputs };
 
-  return await invokeApi<ValidateResult>("validate-idea", body);
+  const result = await invokeApi<any>("validate-idea", body);
+  return {
+    landing_page: result?.landing_page || null,
+    survey: Array.isArray(result?.survey)
+      ? result.survey
+      : Array.isArray(result?.survey?.questions)
+        ? result.survey.questions
+        : null,
+    whatsapp: result?.whatsapp || result?.whatsapp_message || null,
+    communities: Array.isArray(result?.communities) ? result.communities : null,
+    scorecard: Array.isArray(result?.scorecard)
+      ? result.scorecard
+      : Array.isArray(result?.scorecard?.metrics)
+        ? result.scorecard.metrics
+        : [],
+    strategy: result?.strategy || null,
+    expected_outcomes: result?.expected_outcomes || {},
+    simulation: result?.simulation || {},
+    recommended_sequence: Array.isArray(result?.recommended_sequence) ? result.recommended_sequence : [],
+  };
 }

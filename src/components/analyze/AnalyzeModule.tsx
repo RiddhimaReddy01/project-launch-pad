@@ -307,6 +307,9 @@ export default function AnalyzeModule() {
   };
 
   const activeFindings = getSectionFindings(activeModule);
+  const activeSynthesis = activeModule === 'opportunity'
+    ? (activeSec.data as OpportunityData | null)?.synthesis
+    : null;
 
   const handleSaveFinding = async (finding: { id: string; text: string; section: string }) => {
     if (!user) { toast.error('Sign in to save findings'); return; }
@@ -440,6 +443,41 @@ export default function AnalyzeModule() {
 
         {/* Content */}
         <div className="flex-1 px-6 py-8" style={{ maxWidth: 800, margin: '0 auto', width: '100%' }}>
+          {activeSynthesis && activeSec.status === 'completed' && (
+            <div className="grid gap-4 mb-8" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+              <div className="rounded-[14px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+                <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>FINAL VERDICT</p>
+                <p className="font-heading" style={{ fontSize: 26, fontWeight: 700, marginBottom: 8 }}>
+                  {activeSynthesis.final_verdict.toUpperCase()}
+                </p>
+                <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
+                  {activeSynthesis.summary}
+                </p>
+              </div>
+
+              <div className="rounded-[14px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+                <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>OPPORTUNITY SCORE</p>
+                <p className="font-heading" style={{ fontSize: 26, fontWeight: 700, marginBottom: 8 }}>
+                  {activeSynthesis.opportunity_score} / 100
+                </p>
+                <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
+                  Confidence: {activeSynthesis.confidence}
+                </p>
+              </div>
+
+              <div className="rounded-[14px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+                <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>TOP DRIVERS</p>
+                <div className="flex flex-col gap-2">
+                  {activeSynthesis.top_drivers.slice(0, 3).map((driver, index) => (
+                    <p key={index} style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                      {index + 1}. {driver}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Module output */}
           {activeSec.status === 'idle' && (
             <div className="flex flex-col items-center justify-center" style={{ minHeight: 300 }}>

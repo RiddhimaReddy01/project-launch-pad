@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { analyzeSection, type AnalyzeContext, type LocationData } from '@/lib/analyze';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import SectionSkeleton from './SectionSkeleton';
 
 export default function LocationIntel({ context, onData, onError, shouldRun = true, initialData }: { context: AnalyzeContext; onData?: (data: LocationData) => void; onError?: (error: string) => void; shouldRun?: boolean; initialData?: LocationData | null }) {
@@ -34,12 +33,6 @@ export default function LocationIntel({ context, onData, onError, shouldRun = tr
   const fmtNum = (v: number) => v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `${(v / 1e3).toFixed(0)}K` : v.toString();
   const fmtDollar = (v: number) => v >= 1e3 ? `$${(v / 1e3).toFixed(0)}K` : `$${v}`;
 
-  const demoData = [
-    { label: 'Population', value: data.demographics.population },
-    { label: 'Median Income', value: data.demographics.median_income },
-    { label: 'Median Age', value: data.demographics.median_age },
-  ];
-
   const scoreColor = data.score >= 7 ? 'var(--accent-teal)' : data.score >= 4 ? 'var(--accent-amber)' : 'hsl(0 84% 60%)';
 
   return (
@@ -54,6 +47,14 @@ export default function LocationIntel({ context, onData, onError, shouldRun = tr
           <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{data.verdict}</p>
         </div>
       </div>
+
+      {/* Map panel */}
+      {data.city_center && data.focus_areas && data.focus_areas.length > 0 && (
+        <div className="mb-8">
+          <p className="font-caption" style={{ fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Location Map</p>
+          <LocationMap data={data} scoreColor={scoreColor} />
+        </div>
+      )}
 
       {/* Demographics grid */}
       <div className="mb-8">
@@ -130,6 +131,103 @@ function StatCard({ label, value }: { label: string; value: string }) {
     <div className="rounded-[10px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
       <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>{label}</p>
       <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 400, color: 'var(--text-primary)' }}>{value}</p>
+    </div>
+  );
+}
+
+function LocationMap({ data, scoreColor }: { data: LocationData; scoreColor: string }) {
+  const center = data.city_center;
+  const areas = data.focus_areas || [];
+  if (!center || areas.length === 0) return null;
+
+  const allLats = [center.lat, ...areas.map((area) => area.lat)];
+  const allLngs = [center.lng, ...areas.map((area) => area.lng)];
+  const minLat = Math.min(...allLats);
+  const maxLat = Math.max(...allLats);
+  const minLng = Math.min(...allLngs);
+  const maxLng = Math.max(...allLngs);
+  const latSpan = Math.max(0.02, maxLat - minLat);
+  const lngSpan = Math.max(0.02, maxLng - minLng);
+
+  const project = (lat: number, lng: number) => {
+    const x = 40 + ((lng - minLng) / lngSpan) * 520;
+    const y = 40 + ((maxLat - lat) / latSpan) * 220;
+    return { x, y };
+  };
+
+  const emphasisStyle = (emphasis: string) => {
+    if (emphasis === 'high') return { r: 11, fill: scoreColor, opacity: 0.95 };
+    if (emphasis === 'low') return { r: 7, fill: 'var(--text-muted)', opacity: 0.65 };
+    return { r: 9, fill: 'var(--accent-blue)', opacity: 0.85 };
+  };
+
+  const centerPoint = project(center.lat, center.lng);
+
+  return (
+    <div className="rounded-[16px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', boxShadow: 'var(--shadow-sm)' }}>
+      <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
+        <div>
+          <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>{center.label}</p>
+          <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+            Focus areas are positioned relative to the city center so you can compare where the strongest launch opportunities cluster.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {areas.map((area) => (
+            <span key={area.name} className="badge badge-muted" title={area.reason}>
+              {area.name}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="rounded-[14px] overflow-hidden" style={{ border: '1px solid var(--divider)', backgroundColor: 'var(--surface-subtle)' }}>
+        <svg viewBox="0 0 600 300" style={{ display: 'block', width: '100%', height: 'auto' }} role="img" aria-label={`Map of ${center.label}`}>
+          <rect x="0" y="0" width="600" height="300" fill="var(--surface-subtle)" />
+          <path d="M40 220 C120 130, 220 130, 280 195 S440 245, 560 120" stroke="rgba(60,64,67,0.14)" strokeWidth="18" fill="none" strokeLinecap="round" />
+          <path d="M70 70 C190 30, 330 60, 540 50" stroke="rgba(60,64,67,0.08)" strokeWidth="10" fill="none" strokeLinecap="round" />
+          <circle cx={centerPoint.x} cy={centerPoint.y} r="10" fill="var(--text-primary)" />
+          <circle cx={centerPoint.x} cy={centerPoint.y} r="22" fill="var(--text-primary)" opacity="0.08" />
+          <text x={centerPoint.x + 14} y={centerPoint.y - 12} style={{ fontSize: 12, fontWeight: 700, fill: 'var(--text-primary)' }}>
+            City center
+          </text>
+
+          {areas.map((area) => {
+            const point = project(area.lat, area.lng);
+            const style = emphasisStyle(area.emphasis);
+            return (
+              <g key={area.name}>
+                <circle cx={point.x} cy={point.y} r={style.r + 10} fill={style.fill} opacity="0.10" />
+                <circle cx={point.x} cy={point.y} r={style.r} fill={style.fill} opacity={style.opacity} />
+                <line x1={point.x} y1={point.y} x2={point.x + 16} y2={point.y - 16} stroke={style.fill} strokeWidth="1.5" opacity="0.7" />
+                <text x={point.x + 20} y={point.y - 18} style={{ fontSize: 12, fontWeight: 600, fill: 'var(--text-primary)' }}>
+                  {area.name}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+
+      <div className="mt-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
+        {areas.map((area) => (
+          <div key={area.name} className="rounded-[12px] p-4" style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid var(--divider)' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <span style={{
+                width: 10,
+                height: 10,
+                borderRadius: '50%',
+                backgroundColor: area.emphasis === 'high' ? scoreColor : area.emphasis === 'medium' ? 'var(--accent-blue)' : 'var(--text-muted)',
+                flexShrink: 0,
+              }} />
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>{area.name}</p>
+            </div>
+            <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+              {area.reason}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -78,6 +78,10 @@ function filterValidateResult(result: ValidateResult, outputs: Set<string>): Val
     whatsapp: outputs.has('whatsapp') ? result.whatsapp : null,
     communities: outputs.has('communities') ? result.communities : null,
     scorecard: result.scorecard || [],
+    strategy: result.strategy || null,
+    expected_outcomes: result.expected_outcomes || {},
+    simulation: result.simulation || {},
+    recommended_sequence: result.recommended_sequence || [],
   };
 }
 
@@ -487,6 +491,45 @@ export default function ValidateModule() {
         </div>
       </div>
 
+      {(result?.strategy || result?.simulation || result?.recommended_sequence?.length) && (
+        <div className="grid gap-4 mb-8" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+          {result?.strategy && (
+            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+              <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>VALIDATION STRATEGY</p>
+              <p className="font-heading" style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>{result.strategy.business_model}</p>
+              <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
+                {result.strategy.description}
+              </p>
+            </div>
+          )}
+
+          {result?.simulation && (
+            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+              <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>SIMULATION</p>
+              <p className="font-heading" style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
+                {(result.simulation.expected_signups || 0).toLocaleString()} expected signups
+              </p>
+              <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
+                From {(result.simulation.starting_audience || 0).toLocaleString()} starting visitors or contacts.
+              </p>
+            </div>
+          )}
+
+          {result?.recommended_sequence?.length ? (
+            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
+              <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>RECOMMENDED ORDER</p>
+              <div className="flex flex-col gap-2">
+                {result.recommended_sequence.slice(0, 3).map((step, index) => (
+                  <p key={index} style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                    {step}
+                  </p>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </div>
+      )}
+
       {/* Tab navigation */}
       <div className="flex gap-1 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider-section)' }}>
         {visibleTabs.map(tab => {
@@ -514,6 +557,7 @@ export default function ValidateModule() {
       {/* Deploy guide for active tab */}
       {activeTab && (() => {
         const currentTab = ALL_TABS.find(t => t.key === activeTab);
+        const currentOutcomes = result?.expected_outcomes?.[currentTab?.outputKey || ''];
         if (!currentTab) return null;
         return (
           <div className="rounded-xl mb-8 overflow-hidden" style={{ border: '1px solid var(--divider)' }}>
@@ -538,6 +582,18 @@ export default function ValidateModule() {
                 </div>
               )}
             </div>
+            {currentOutcomes && (
+              <div className="px-5 py-4" style={{ backgroundColor: 'var(--surface-bg)', borderTop: '1px solid var(--divider)' }}>
+                <p className="section-label mb-3" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>EXPECTED OUTCOMES</p>
+                <div className="flex flex-wrap gap-2">
+                  {Object.entries(currentOutcomes).map(([key, value]) => (
+                    <span key={key} className="badge badge-muted" title={`${key.replace(/_/g, ' ')} benchmark`}>
+                      {key.replace(/_/g, ' ')}: {value}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         );
       })()}

@@ -37,10 +37,21 @@ export interface DiscoverSourceSummary {
   total_signals: number;
 }
 
+export interface DiscoverSummary {
+  demand_strength: number;
+  signal_density: string;
+  trend_direction: string;
+  trend_label: string;
+  top_regions: string[];
+  mixed_signals: string[];
+  summary: string;
+}
+
 export interface DiscoverResult {
   insights: DiscoverInsight[];
   synthesis: DiscoverSynthesis;
   source_summary: DiscoverSourceSummary;
+  summary: DiscoverSummary;
 }
 
 function normalizePlatform(value: unknown): "reddit" | "google" | "yelp" {
@@ -109,6 +120,15 @@ export function normalizeDiscoverResult(result: any): DiscoverResult {
       google_count: allSources.filter((source) => source.platform === "google").length,
       yelp_count: allSources.filter((source) => source.platform === "yelp").length,
       total_signals: allSources.length,
+    },
+    summary: {
+      demand_strength: Number(result?.summary?.demand_strength || 0),
+      signal_density: String(result?.summary?.signal_density || "low"),
+      trend_direction: String(result?.summary?.trend_direction || "stable"),
+      trend_label: String(result?.summary?.trend_label || ""),
+      top_regions: Array.isArray(result?.summary?.top_regions) ? result.summary.top_regions : [],
+      mixed_signals: Array.isArray(result?.summary?.mixed_signals) ? result.summary.mixed_signals : [],
+      summary: String(result?.summary?.summary || ""),
     },
   };
 }

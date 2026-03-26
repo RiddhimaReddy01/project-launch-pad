@@ -32,6 +32,19 @@ export interface OpportunityData {
     willing_to_try: number;
     repeat_customers: number;
   };
+  synthesis?: {
+    final_verdict: "build" | "modify" | "avoid";
+    opportunity_score: number;
+    confidence: "low" | "medium" | "high";
+    key_insight: string;
+    tradeoff_reasoning: string;
+    top_drivers: string[];
+    sensitivity_analysis: Array<{
+      scenario: string;
+      impact: string;
+    }>;
+    summary: string;
+  };
 }
 
 export interface CustomerSegment {
@@ -121,6 +134,18 @@ export interface LocationData {
   };
   score: number;
   verdict: string;
+  city_center?: {
+    lat: number;
+    lng: number;
+    label: string;
+  };
+  focus_areas?: Array<{
+    name: string;
+    lat: number;
+    lng: number;
+    reason: string;
+    emphasis: "high" | "medium" | "low";
+  }>;
 }
 
 export interface MoatDimension {

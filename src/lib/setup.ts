@@ -38,6 +38,30 @@ export interface CostCategory {
 export interface CostsResult {
   tiers: TierDef[];
   breakdown: Record<string, CostCategory[]>;
+  recommendation?: {
+    selected_tier: string;
+    recommended_tier: string;
+    rationale: string;
+    not_recommended: string[];
+  };
+  revenue_projection?: {
+    expected_monthly_revenue: number;
+    expected_monthly_operating_cost: number;
+    expected_monthly_profit: number;
+    breakeven_months: number | null;
+    breakeven_label: string;
+  };
+  founder_time_allocation?: Array<{
+    area: string;
+    percent: number;
+  }>;
+  vendor_benchmarks?: Array<{
+    vendor: string;
+    category: string;
+    location: string;
+    benchmark_cost_range?: { min: number; max: number } | null;
+    why_recommended: string;
+  }>;
 }
 
 // ── Supplier types ──
