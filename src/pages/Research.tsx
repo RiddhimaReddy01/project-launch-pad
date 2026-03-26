@@ -9,7 +9,6 @@ import DiscoverModule from '@/components/discover/DiscoverModule';
 import AnalyzeModule from '@/components/analyze/AnalyzeModule';
 import SetupModule from '@/components/setup/SetupModule';
 import ValidateModule from '@/components/validate/ValidateModule';
-import { AppShell, PillButton, SecondaryButton, TopNav } from '@/components/system/editorial';
 
 const STEPS: { key: Step; label: string }[] = [
   { key: 'discover', label: 'Discover' },
@@ -37,7 +36,7 @@ function StepperDot({
   return (
     <div
       style={{
-        opacity: locked ? 0.45 : 1,
+        opacity: locked ? 0.35 : 1,
         transition: 'opacity 220ms ease-out',
         cursor: locked ? 'not-allowed' : 'pointer',
         textAlign: 'center',
@@ -50,8 +49,10 @@ function StepperDot({
           height: 12,
           borderRadius: 999,
           margin: '0 auto',
-          backgroundColor: isCompleted || isActive ? 'var(--color-accent)' : 'var(--color-surface)',
-          border: `2px solid ${isCompleted || isActive ? 'var(--color-accent)' : 'var(--color-border)'}`,
+          backgroundColor: isCompleted || isActive ? 'var(--color-accent)' : 'rgba(255,255,255,0.08)',
+          border: `2px solid ${isCompleted || isActive ? 'var(--color-accent)' : 'rgba(255,255,255,0.15)'}`,
+          boxShadow: isActive ? '0 0 12px rgba(0,212,230,0.3)' : 'none',
+          transition: 'all 300ms ease',
         }}
       />
       <span
@@ -60,7 +61,8 @@ function StepperDot({
           marginTop: 10,
           fontSize: 12,
           fontWeight: isActive ? 700 : 600,
-          color: isActive ? 'var(--color-text)' : 'var(--color-text-muted)',
+          color: isActive ? 'var(--color-accent)' : isCompleted ? 'var(--color-text-soft)' : 'var(--color-text-muted)',
+          letterSpacing: '0.02em',
         }}
       >
         {step.label}
@@ -96,14 +98,14 @@ function ResearchTabLoading({ step }: { step: Step }) {
   const current = copy[step];
 
   return (
-    <section className="section-card" style={{ maxWidth: 760 }}>
+    <section className="rounded-2xl p-8" style={{ maxWidth: 760, backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
       <p className="eyebrow">{current.label}</p>
       <h2 className="section-title">{current.title}</h2>
       <p className="section-copy" style={{ marginTop: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>{current.body}</p>
       <div style={{ display: 'grid', gap: 'var(--space-3)' }}>
         {[100, 88, 72].map((width, index) => (
           <div key={index} style={{ padding: 'var(--space-4)', borderRadius: 'var(--radius-md)', background: 'var(--color-bg-muted)' }}>
-            <div style={{ height: 10, borderRadius: 999, background: 'rgba(45, 38, 31, 0.08)', overflow: 'hidden' }}>
+            <div style={{ height: 10, borderRadius: 999, background: 'rgba(255,255,255,0.04)', overflow: 'hidden' }}>
               <div className="animate-progress" style={{ width: `${width}%`, height: '100%', borderRadius: 999, background: 'var(--color-accent)' }} />
             </div>
           </div>
@@ -175,90 +177,107 @@ export default function Research() {
     (currentStep === 'setup' && prefetchStatus === 'running' && !setupData?.costs);
 
   return (
-    <AppShell
-      nav={
-        <TopNav
-          compact
-          rightSlot={
-            <>
-              <SecondaryButton onClick={() => navigate('/')}>New idea</SecondaryButton>
-              {user ? (
-                <SecondaryButton
-                  onClick={async () => {
-                    setSaveStatus('saving');
-                    await saveIdea(idea, currentStep, {
-                      decompose: decomposeResult || undefined,
-                      discover: discoverResult || undefined,
-                      analyze: Object.keys(analyzeData).length > 0 ? { decompose: decomposeResult, sections: analyzeData } : undefined,
-                      setup: Object.keys(setupData).length > 0 ? setupData : undefined,
-                      validate: validateData || undefined,
-                    });
-                    setSaveStatus('saved');
-                    setTimeout(() => setSaveStatus('idle'), 2000);
-                  }}
-                >
-                  {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved' : 'Save'}
-                </SecondaryButton>
-              ) : null}
-              <PillButton onClick={() => navigate(user ? '/dashboard' : '/auth')}>
-                {user ? 'Dashboard' : 'Log in'}
-              </PillButton>
-            </>
-          }
-        />
-      }
-    >
-      {idea ? (
-        <section style={{ paddingTop: 'var(--space-10)', paddingBottom: 'var(--space-8)', maxWidth: 760 }}>
-          <p className="eyebrow">Research Workspace</p>
-          <h1 className="section-title" style={{ fontSize: '2.4rem', marginBottom: 'var(--space-3)' }}>{idea}</h1>
-          <p className="section-copy" style={{ margin: 0 }}>
-            Move from market evidence to operating decisions in one continuous founder narrative.
-          </p>
-        </section>
-      ) : null}
-
-      <section style={{ maxWidth: 560, margin: '0 auto', paddingBottom: 'var(--space-8)', position: 'relative' }}>
-        <div style={{ position: 'absolute', top: 5, left: '10%', right: '10%', height: 1, backgroundColor: 'var(--color-border)' }} />
-        <div
-          style={{
-            position: 'absolute',
-            top: 5,
-            left: '10%',
-            width: `${(currentIndex / (STEPS.length - 1)) * 80}%`,
-            height: 1,
-            backgroundColor: 'var(--color-accent)',
-            transition: 'width 500ms ease-out',
-          }}
-        />
-        <div className="relative flex items-start justify-between">
-          {STEPS.map((step, index) => (
-            <StepperDot
-              key={step.key}
-              step={step}
-              index={index}
-              currentIndex={currentIndex}
-              onNavigate={handleNavigate}
-              locked={isTabLocked(step.key)}
-            />
-          ))}
+    <div className="app-shell">
+      {/* Nav */}
+      <header className="top-nav top-nav--compact">
+        <div className="top-nav__inner">
+          <button type="button" className="brand-button" onClick={() => navigate('/')}>
+            <span className="brand-mark">
+              <span className="brand-mark__strong">Launch</span>{' '}
+              <span className="brand-mark__light">Lean</span>
+            </span>
+          </button>
+          <div className="top-nav__actions">
+            <button className="btn-secondary rounded-full px-5 py-2.5" style={{ fontSize: 14, fontWeight: 600 }} onClick={() => navigate('/')}>
+              New idea
+            </button>
+            {user ? (
+              <button
+                className="btn-secondary rounded-full px-5 py-2.5"
+                style={{ fontSize: 14, fontWeight: 600 }}
+                onClick={async () => {
+                  setSaveStatus('saving');
+                  await saveIdea(idea, currentStep, {
+                    decompose: decomposeResult || undefined,
+                    discover: discoverResult || undefined,
+                    analyze: Object.keys(analyzeData).length > 0 ? { decompose: decomposeResult, sections: analyzeData } : undefined,
+                    setup: Object.keys(setupData).length > 0 ? setupData : undefined,
+                    validate: validateData || undefined,
+                  });
+                  setSaveStatus('saved');
+                  setTimeout(() => setSaveStatus('idle'), 2000);
+                }}
+              >
+                {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved ✓' : 'Save'}
+              </button>
+            ) : null}
+            <button
+              className="btn-primary rounded-full px-5 py-2.5"
+              style={{ fontSize: 14, fontWeight: 600 }}
+              onClick={() => navigate(user ? '/dashboard' : '/auth')}
+            >
+              {user ? 'Dashboard' : 'Log in'}
+            </button>
+          </div>
         </div>
-      </section>
+      </header>
 
-      <div ref={contentRef} key={currentStep} className="scroll-reveal" style={{ paddingBottom: 'var(--space-20)' }}>
-        {showStepLoading ? (
-          <ResearchTabLoading step={currentStep} />
-        ) : currentStep === 'discover' ? (
-          <DiscoverModule />
-        ) : currentStep === 'analyze' ? (
-          <AnalyzeModule />
-        ) : currentStep === 'setup' ? (
-          <SetupModule />
-        ) : currentStep === 'validate' ? (
-          <ValidateModule />
+      <main className="app-shell__content">
+        {/* Idea header */}
+        {idea ? (
+          <section style={{ paddingTop: 'var(--space-10)', paddingBottom: 'var(--space-8)', maxWidth: 760 }}>
+            <p className="eyebrow">Research Workspace</p>
+            <h1 className="section-title" style={{ fontSize: '2.4rem', marginBottom: 'var(--space-3)' }}>{idea}</h1>
+            <p className="section-copy" style={{ margin: 0 }}>
+              Move from market evidence to operating decisions in one continuous founder narrative.
+            </p>
+          </section>
         ) : null}
-      </div>
-    </AppShell>
+
+        {/* Stepper */}
+        <section style={{ maxWidth: 560, margin: '0 auto', paddingBottom: 'var(--space-8)', position: 'relative' }}>
+          <div style={{ position: 'absolute', top: 5, left: '10%', right: '10%', height: 1, backgroundColor: 'rgba(255,255,255,0.06)' }} />
+          <div
+            style={{
+              position: 'absolute',
+              top: 5,
+              left: '10%',
+              width: `${(currentIndex / (STEPS.length - 1)) * 80}%`,
+              height: 1,
+              backgroundColor: 'var(--color-accent)',
+              transition: 'width 500ms ease-out',
+              boxShadow: '0 0 8px rgba(0,212,230,0.3)',
+            }}
+          />
+          <div className="relative flex items-start justify-between">
+            {STEPS.map((step, index) => (
+              <StepperDot
+                key={step.key}
+                step={step}
+                index={index}
+                currentIndex={currentIndex}
+                onNavigate={handleNavigate}
+                locked={isTabLocked(step.key)}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Content */}
+        <div ref={contentRef} key={currentStep} className="scroll-reveal" style={{ paddingBottom: 'var(--space-20)' }}>
+          {showStepLoading ? (
+            <ResearchTabLoading step={currentStep} />
+          ) : currentStep === 'discover' ? (
+            <DiscoverModule />
+          ) : currentStep === 'analyze' ? (
+            <AnalyzeModule />
+          ) : currentStep === 'setup' ? (
+            <SetupModule />
+          ) : currentStep === 'validate' ? (
+            <ValidateModule />
+          ) : null}
+        </div>
+      </main>
+    </div>
   );
 }
-

@@ -433,7 +433,7 @@ export default function AnalyzeModule() {
                 width: 22, height: 22, borderRadius: 999,
                 fontSize: 10, fontWeight: 700,
                 backgroundColor: isActive ? 'var(--accent-primary)' : state.status === 'completed' ? 'var(--color-accent-soft)' : 'var(--surface-elevated)',
-                color: isActive ? '#fff' : state.status === 'completed' ? 'var(--accent-primary)' : 'var(--text-muted)',
+                color: isActive ? '#080810' : state.status === 'completed' ? 'var(--accent-primary)' : 'var(--text-muted)',
               }}>
                 {module.mono}
               </span>
@@ -529,7 +529,7 @@ export default function AnalyzeModule() {
                   setSections(prev => ({ ...prev, [activeModule]: { ...prev[activeModule], status: 'loading' } }));
                 }}
                 className="rounded-[10px] px-5 py-2.5 transition-all duration-200 active:scale-[0.97]"
-                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
+                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500, backgroundColor: 'var(--accent-primary)', color: '#080810', border: 'none', cursor: 'pointer' }}
               >
                 Run {MODULE_DEFS.find(m => m.key === activeModule)?.label}
               </button>
@@ -547,7 +547,7 @@ export default function AnalyzeModule() {
               <button
                 onClick={() => setSections(prev => ({ ...prev, [activeModule]: { ...prev[activeModule], status: 'loading', error: undefined } }))}
                 className="rounded-[10px] px-5 py-2.5 transition-all duration-200"
-                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500, backgroundColor: 'var(--text-primary)', color: '#fff', border: 'none', cursor: 'pointer' }}
+                style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500, backgroundColor: 'var(--accent-primary)', color: '#080810', border: 'none', cursor: 'pointer' }}
               >
                 Retry
               </button>
