@@ -141,22 +141,6 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
         })}
       </div>
 
-      {/* Bar chart */}
-      <div className="mb-10">
-        <p className="section-label mb-4">Market Size Comparison</p>
-        <div className="card-base p-4" style={{ height: 180 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 30 }}>
-              <XAxis type="number" tickFormatter={fmt} style={{ fontSize: 10 }} />
-              <YAxis type="category" dataKey="name" width={40} style={{ fontSize: 11 }} />
-              <Tooltip formatter={(v: number) => fmt(v)} />
-              <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                {chartData.map((_, i) => <Cell key={i} fill={barColors[i]} opacity={0.65} />)}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
 
       {/* Customer funnel — visual pyramid */}
       {/* Methodology toggle */}

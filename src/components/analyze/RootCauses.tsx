@@ -100,15 +100,6 @@ export default function RootCauses({ context, onData, onError, shouldRun = true,
 
   return (
     <div>
-      {/* Difficulty overview */}
-      <div className="flex gap-3 mb-8">
-        {grouped.map((g, i) => (
-          <div key={i} className="rounded-[10px] px-4 py-3 flex-1 text-center" style={{ backgroundColor: g.bg, border: `1px solid ${g.border}` }}>
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 400, color: g.color }}>{g.count}</p>
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.04em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>{g.label}</p>
-          </div>
-        ))}
-      </div>
 
       {/* Cards */}
       <div className="flex flex-col gap-2">
