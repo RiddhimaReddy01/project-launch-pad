@@ -293,17 +293,7 @@ export default function Index() {
         </button>
       </section>
 
-      <style>{`
-        .reveal-target {
-          opacity: 0;
-          transform: translateY(20px);
-          transition: opacity 600ms ease, transform 600ms ease;
-        }
-        .reveal-target.revealed {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      `}</style>
+      {/* reveal-target styles now in index.css */}
     </div>
   );
 }
