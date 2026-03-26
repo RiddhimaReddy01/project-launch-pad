@@ -8,7 +8,6 @@ import {
   HeroSection,
   IdeaInputCard,
   PillButton,
-  ScoreSummaryCard,
   SectionCard,
   SecondaryButton,
   TopNav,
@@ -20,20 +19,6 @@ const examples = [
   'An authentic Thai street food restaurant in Dallas',
 ];
 
-const buildMeasureLearn = [
-  {
-    title: 'Build',
-    body: 'Founders know they should validate before they build. The problem is that validation usually begins with slow, scattered research.',
-  },
-  {
-    title: 'Measure',
-    body: 'LaunchLean compresses the evidence-gathering step from weeks into minutes by structuring customer signals, market logic, operating assumptions, and test methods in one flow.',
-  },
-  {
-    title: 'Learn',
-    body: 'You leave with a clearer go, refine, or stop decision and a practical validation sequence you can run with real people right away.',
-  },
-];
 
 const sections = [
   {
@@ -97,13 +82,6 @@ export default function Index() {
             <p style={{ margin: 0 }}>
               Research is passive. Validation is active. LaunchLean handles the evidence gathering so you can move into demand testing faster and decide with less drift.
             </p>
-          </div>
-        }
-        aside={
-          <div style={{ display: 'grid', gap: 'var(--space-4)' }}>
-            {buildMeasureLearn.map((item) => (
-              <ScoreSummaryCard key={item.title} label={item.title} value={item.title} note={item.body} />
-            ))}
           </div>
         }
       />
