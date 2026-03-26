@@ -411,7 +411,7 @@ export default function SetupModule() {
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 width: 22, height: 22, borderRadius: 6, fontSize: 10, fontWeight: 700,
                 backgroundColor: state.status === 'completed' ? 'var(--accent-primary)' : isActive ? 'var(--color-accent-soft)' : 'var(--surface-elevated)',
-                color: state.status === 'completed' ? '#fff' : isActive ? 'var(--accent-primary)' : 'var(--text-muted)',
+                color: state.status === 'completed' ? '#080810' : isActive ? 'var(--accent-primary)' : 'var(--text-muted)',
               }}>{tab.mono}</span>
               {tab.label}
               {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 2, backgroundColor: 'var(--accent-primary)', borderRadius: 1 }} />}
