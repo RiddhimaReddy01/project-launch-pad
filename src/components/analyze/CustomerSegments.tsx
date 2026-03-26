@@ -45,15 +45,14 @@ export default function CustomerSegments({ context, onData, onError, shouldRun =
 
   return (
     <div>
-      {/* Segment selector */}
       <div className="flex gap-2 mb-8 overflow-x-auto pb-1 hide-scrollbar">
         {data.segments.map((s, i) => (
           <button
             key={i}
             onClick={() => setSelected(i)}
-            className="rounded-[8px] px-4 py-2 whitespace-nowrap transition-all duration-200"
+            className="rounded-[8px] px-5 py-2.5 whitespace-nowrap transition-all duration-200"
             style={{
-              fontSize: 13,
+              fontSize: 14,
               fontWeight: selected === i ? 500 : 400,
               backgroundColor: selected === i ? 'var(--text-primary)' : 'transparent',
               color: selected === i ? '#fff' : 'var(--text-muted)',
@@ -62,81 +61,95 @@ export default function CustomerSegments({ context, onData, onError, shouldRun =
             }}
           >
             {s.name}
-            <span className="ml-1.5" style={{ fontSize: 13, opacity: 0.7 }}>{s.pain_intensity}/10</span>
+            <span className="ml-1.5" style={{ fontSize: 14, opacity: 0.75 }}>{s.pain_intensity}/10</span>
           </button>
         ))}
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Left: detail */}
-        <div className="flex-1">
-          <div className="rounded-[12px] p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-            <p style={{ fontSize: 18, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 2 }}>{seg.name}</p>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 16 }}>~{fmtSize(seg.estimated_size)} people locally</p>
-            <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-secondary)', lineHeight: 1.65, marginBottom: 20 }}>{seg.description}</p>
+      <div
+        className="rounded-[12px] flex flex-col lg:flex-row lg:items-stretch overflow-hidden"
+        style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}
+      >
+        <div className="flex-1 min-w-0 p-6 lg:p-8 lg:pr-6">
+          <h3 style={{ fontSize: 20, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6, lineHeight: 1.25 }}>{seg.name}</h3>
+          <p style={{ fontSize: 16, fontWeight: 500, color: 'var(--text-muted)', marginBottom: 16 }}>~{fmtSize(seg.estimated_size)} people locally</p>
+          <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 24 }}>{seg.description}</p>
 
-            {/* Pain bar */}
-            <div className="mb-5">
-              <p style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Pain Intensity</p>
-              <div className="flex items-center gap-1">
-                {Array.from({ length: 10 }).map((_, i) => (
-                  <div key={i} className="rounded-[2px]" style={{ width: 22, height: 6, backgroundColor: i < seg.pain_intensity ? 'var(--text-primary)' : 'var(--divider)', opacity: i < seg.pain_intensity ? 0.6 + (i * 0.04) : 0.3 }} />
-                ))}
-                <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-primary)', marginLeft: 8 }}>{seg.pain_intensity}/10</span>
-              </div>
+          <div className="mb-6">
+            <p style={{ fontSize: 14, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 10 }}>Pain Intensity</p>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-[3px]"
+                  style={{
+                    width: 28,
+                    height: 8,
+                    backgroundColor: i < seg.pain_intensity ? 'var(--text-primary)' : 'var(--divider)',
+                    opacity: i < seg.pain_intensity ? 0.55 + (i * 0.04) : 0.35,
+                  }}
+                />
+              ))}
+              <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', marginLeft: 10 }}>{seg.pain_intensity}/10</span>
             </div>
+          </div>
 
-            {/* Details */}
-            {[
-              { label: 'Primary Need', value: seg.primary_need, pill: true },
-              { label: 'Spending Pattern', value: seg.spending_pattern },
-              { label: 'Where to Find Them', value: seg.where_to_find },
-            ].map((item) => (
-              <div key={item.label} className="mb-4">
-                <p style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>{item.label}</p>
-                {item.pill ? (
-                  <span className="rounded-full px-3 py-1" style={{ fontSize: 13, backgroundColor: 'rgba(26,26,26,0.03)', color: 'var(--text-primary)', border: '1px solid var(--divider)' }}>{item.value}</span>
-                ) : (
-                  <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{item.value}</p>
-                )}
-              </div>
-            ))}
+          <div className="mb-6">
+            <p style={{ fontSize: 14, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 10 }}>Primary Need</p>
+            <span
+              className="inline-block rounded-full px-5 py-2.5"
+              style={{
+                fontSize: 16,
+                fontWeight: 500,
+                backgroundColor: 'rgba(26,26,26,0.06)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--divider)',
+                lineHeight: 1.35,
+              }}
+            >
+              {seg.primary_need}
+            </span>
+          </div>
+
+          <div className="mb-5">
+            <p style={{ fontSize: 14, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 8 }}>Spending Pattern</p>
+            <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-secondary)', lineHeight: 1.55 }}>{seg.spending_pattern}</p>
+          </div>
+
+          <div>
+            <p style={{ fontSize: 14, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 8 }}>Where to Find Them</p>
+            <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-secondary)', lineHeight: 1.55 }}>{seg.where_to_find}</p>
           </div>
         </div>
 
-        {/* Right: radar + comparison */}
-        <div className="lg:w-[280px] flex-shrink-0 flex flex-col gap-3">
-          <div className="rounded-[12px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-            <p style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 8, textAlign: 'center' }}>Segment Profile</p>
-            <div style={{ height: 220 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={radarData}>
-                  <PolarGrid stroke="var(--divider)" />
-                  <PolarAngleAxis dataKey="metric" style={{ fontSize: 10, fill: 'var(--text-muted)' }} />
-                  <Radar dataKey="value" stroke="var(--accent-teal)" fill="var(--accent-teal)" fillOpacity={0.15} strokeWidth={2} />
-                </RadarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          <div className="rounded-[12px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-            <p style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 8 }}>All Segments</p>
-            <div className="flex flex-col gap-1.5">
-              {data.segments.map((s, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between py-1.5 px-2 rounded-[6px] cursor-pointer transition-colors duration-150"
-                  style={{ backgroundColor: selected === i ? 'rgba(26,26,26,0.03)' : 'transparent' }}
-                  onClick={() => setSelected(i)}
-                >
-                  <span style={{ fontSize: 13, fontWeight: 400, color: selected === i ? 'var(--text-primary)' : 'var(--text-muted)' }}>{s.name}</span>
-                  <div className="flex items-center gap-2">
-                    <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{fmtSize(s.estimated_size)}</span>
-                    <span style={{ fontSize: 13, fontWeight: 400, color: s.pain_intensity >= 8 ? 'var(--accent-teal)' : s.pain_intensity >= 5 ? 'var(--accent-amber)' : 'hsl(0 84% 60%)' }}>{s.pain_intensity}/10</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+        <div
+          className="lg:w-[320px] flex-shrink-0 flex flex-col items-center justify-center px-4 pb-8 pt-2 lg:py-8 lg:pl-4 lg:pr-8 border-t lg:border-t-0 lg:border-l"
+          style={{ borderColor: 'var(--divider)' }}
+        >
+          <p
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: 'var(--text-muted)',
+              marginBottom: 12,
+              textAlign: 'center',
+            }}
+          >
+            Segment Profile
+          </p>
+          <div className="w-full max-w-[300px] mx-auto" style={{ height: 280 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart data={radarData} outerRadius="75%">
+                <PolarGrid stroke="var(--divider)" />
+                <PolarAngleAxis
+                  dataKey="metric"
+                  tick={{ fontSize: 14, fill: 'var(--text-muted)', fontWeight: 500 }}
+                />
+                <Radar dataKey="value" stroke="var(--accent-teal)" fill="var(--accent-teal)" fillOpacity={0.15} strokeWidth={2} />
+              </RadarChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
