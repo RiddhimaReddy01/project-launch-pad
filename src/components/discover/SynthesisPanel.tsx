@@ -10,16 +10,16 @@ function OpportunityGauge({ score }: { score: number }) {
   const offset = circumference * (1 - pct);
 
   const color =
-    score >= 70 ? 'var(--accent-primary)' :
-    score >= 40 ? 'var(--accent-amber)' :
-    'var(--error)';
+    score >= 70 ? 'var(--color-success)' :
+    score >= 40 ? 'var(--color-warning)' :
+    'var(--color-danger)';
 
   return (
     <div className="flex flex-col items-center">
       <svg width={size} height={size / 2 + 10} viewBox={`0 0 ${size} ${size / 2 + 10}`}>
         <path
           d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
-          fill="none" stroke="var(--divider)" strokeWidth={strokeWidth} strokeLinecap="round"
+          fill="none" stroke="var(--color-border)" strokeWidth={strokeWidth} strokeLinecap="round"
         />
         <path
           d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
@@ -28,10 +28,10 @@ function OpportunityGauge({ score }: { score: number }) {
           style={{ transition: 'stroke-dashoffset 1s ease-out' }}
         />
       </svg>
-      <span style={{ fontSize: 28, fontWeight: 700, color, marginTop: -20 }}>
+      <span style={{ fontSize: 28, fontWeight: 800, color, marginTop: -20, fontFamily: 'var(--font-display)' }}>
         {score}
       </span>
-      <span className="section-label" style={{ marginTop: 4, fontWeight: 700 }}>
+      <span className="section-label" style={{ marginTop: 4 }}>
         OPPORTUNITY SCORE
       </span>
     </div>
@@ -46,7 +46,7 @@ function ClickableSection({
 }) {
   return (
     <div className="mb-5">
-      <p className="section-label" style={{ marginBottom: 8, fontWeight: 700 }}>{title}</p>
+      <p className="section-label" style={{ marginBottom: 8 }}>{title}</p>
       <div className="flex flex-col gap-1.5">
         {items.map((item, i) => {
           const isActive = activeItem === item;
@@ -56,14 +56,14 @@ function ClickableSection({
               className="rounded-lg px-3 py-2.5 transition-all duration-150 cursor-pointer"
               style={{
                 backgroundColor: isActive ? 'var(--color-accent-soft)' : 'transparent',
-                border: isActive ? '1px solid rgba(224,90,71,0.2)' : '1px solid transparent',
+                border: isActive ? '1px solid rgba(255,56,92,0.15)' : '1px solid transparent',
               }}
               onClick={() => onItemClick?.(item)}
             >
               <p style={{
                 fontSize: 14,
                 fontWeight: 500,
-                color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                color: isActive ? 'var(--color-accent)' : 'var(--color-text-soft)',
               }}>
                 {item}
               </p>
@@ -91,15 +91,15 @@ export default function SynthesisPanel({
   return (
     <div
       className="rounded-xl p-6 lg:sticky"
-      style={{ top: 120, backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)', boxShadow: 'var(--shadow-md)' }}
+      style={{ top: 120, backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-card)' }}
     >
-      <p className="font-heading" style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20 }}>
+      <p className="font-heading" style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-text)', marginBottom: 20 }}>
         Founder Synthesis
       </p>
 
       <OpportunityGauge score={synthesis.opportunity_score} />
 
-      <div style={{ height: 1, backgroundColor: 'var(--divider-section)', margin: '20px 0' }} />
+      <div style={{ height: 1, backgroundColor: 'var(--color-border)', margin: '20px 0' }} />
 
       <ClickableSection title="TOP PAIN POINTS" items={synthesis.top_pain_points} onItemClick={handleClick} activeItem={activeItem} />
       <ClickableSection title="WHAT THEY DO INSTEAD" items={synthesis.current_workarounds} onItemClick={handleClick} activeItem={activeItem} />
