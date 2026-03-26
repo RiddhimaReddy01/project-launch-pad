@@ -99,13 +99,6 @@ export default function Index() {
             </p>
           </div>
         }
-        aside={
-          <div style={{ display: 'grid', gap: 'var(--space-4)' }}>
-            {buildMeasureLearn.map((item) => (
-              <ScoreSummaryCard key={item.title} label={item.title} value={item.title} note={item.body} />
-            ))}
-          </div>
-        }
       />
 
       <IdeaInputCard
