@@ -1,7 +1,7 @@
 /**
  * 3-tier fallback API client:
- *   1. PRIMARY: Render (5s timeout)
- *   2. BACKUP:  Ngrok (90s timeout)
+ *   1. PRIMARY: Render (3s timeout)
+ *   2. BACKUP:  Ngrok (4s timeout)
  *   3. LOVABLE: Lovable Cloud edge functions (supabase.functions.invoke)
  */
 
@@ -9,8 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 const PRIMARY_API = "https://launch-lean-ed28c2e7.onrender.com";
 const BACKUP_API = "https://steven-impervious-lorretta.ngrok-free.dev";
-const PRIMARY_TIMEOUT = 5000;
-const BACKUP_TIMEOUT = 90000;
+const PRIMARY_TIMEOUT = 3000;
+const BACKUP_TIMEOUT = 4000;
 
 // Map edge function names to Render API paths
 const RENDER_ENDPOINTS: Record<string, string> = {
@@ -21,8 +21,7 @@ const RENDER_ENDPOINTS: Record<string, string> = {
   "validate-idea": "/api/generate-validation",
 };
 
-// Functions where Lovable Cloud is the ONLY option (skip broken Render/Ngrok)
-const LOVABLE_ONLY = new Set<string>(["setup-section"]);
+const LOVABLE_ONLY = new Set<string>([]);
 
 // Sections not supported by the Render backend — route to Lovable Cloud
 const RENDER_UNSUPPORTED_SECTIONS = new Set(["risk", "location", "moat"]);
@@ -65,9 +64,12 @@ async function tryFetch(baseUrl: string, path: string, body: unknown, timeoutMs:
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (baseUrl.includes("ngrok")) headers["ngrok-skip-browser-warning"] = "true";
+
     const resp = await fetch(`${baseUrl}${path}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify(body),
       signal: controller.signal,
     });
@@ -177,10 +179,18 @@ function transformResponseFromRender(functionName: string, data: any): any {
 }
 
 async function tryLovableCloud<T>(functionName: string, body: unknown): Promise<T> {
-  const { data, error } = await supabase.functions.invoke(functionName, { body });
-  if (error) throw new Error(error.message || `Failed: ${functionName}`);
-  if (data?.error) throw new Error(data.error);
-  return data as T;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const { data, error } = await supabase.functions.invoke(functionName, { body });
+      if (error) throw new Error(error.message || `Failed: ${functionName}`);
+      if (data?.error) throw new Error(data.error);
+      return data as T;
+    } catch (e) {
+      if (attempt === 1) throw e;
+      console.warn(`[API] Lovable Cloud attempt 1 failed for ${functionName}, retrying`);
+    }
+  }
+  throw new Error("Unreachable");
 }
 
 async function tryExternalApi<T>(baseUrl: string, functionName: string, body: unknown, timeoutMs: number): Promise<T> {
@@ -217,9 +227,9 @@ async function tryExternalApi<T>(baseUrl: string, functionName: string, body: un
 
 /**
  * Invoke an API function with 3-tier fallback:
- *   1. PRIMARY: Render (5s timeout)
- *   2. BACKUP:  Ngrok tunnel (90s timeout)
- *   3. LOVABLE Cloud edge functions
+ *   1. PRIMARY: Render (3s timeout)
+ *   2. BACKUP:  Ngrok tunnel (4s timeout)
+ *   3. LOVABLE Cloud edge functions (1 retry)
  */
 export async function invokeApi<T = unknown>(functionName: string, body: unknown): Promise<T> {
   // Route unsupported analyze sections directly to Lovable Cloud

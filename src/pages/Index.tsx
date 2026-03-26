@@ -77,7 +77,7 @@ function useReveal() {
 export default function Index() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { setIdea } = useIdea();
+  const { setIdea, resetProject } = useIdea();
   const [ideaInput, setIdeaInput] = useState('');
   const placeholder = useTypewriter([
     'A mobile pet grooming service in Austin...',
@@ -100,6 +100,7 @@ export default function Index() {
 
   const startResearch = () => {
     if (!canStart) return;
+    resetProject();
     setIdea(trimmedIdea);
     navigate('/research');
   };

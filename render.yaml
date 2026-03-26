@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: launchlens-backend
+    runtime: python
+    runtimeVersion: '3.13'
+
+    buildCommand: |
+      cd backend
+      pip install --no-cache-dir -r requirements.txt
+
+    startCommand: |
+      cd backend
+      uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 1 --limit-max-requests 500
+
+    healthCheckPath: /health
+
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: SERPER_API_KEY
+        sync: false
+      - key: ENVIRONMENT
+        value: production
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-20b
+      - key: FRONTEND_URL
+        value: https://your-lovable-app.lovable.app
+      - key: WEB_CONCURRENCY
+        value: '1'

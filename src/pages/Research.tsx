@@ -189,6 +189,7 @@ export default function Research() {
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
   const hasDecomposed = useRef(false);
+  const prevIdea = useRef<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [tabTransitioning, setTabTransitioning] = useState(false);
@@ -196,6 +197,13 @@ export default function Research() {
   const pendingNavigation = useRef<string | null>(null);
 
   const hasUnsavedWork = !!(discoverResult || Object.keys(analyzeData).length > 0 || Object.keys(setupData).length > 0 || validateData);
+
+  useEffect(() => {
+    if (idea && idea !== prevIdea.current) {
+      prevIdea.current = idea;
+      hasDecomposed.current = false;
+    }
+  }, [idea]);
 
   useEffect(() => {
     if (idea && !decomposeResult && !hasDecomposed.current) {

@@ -163,6 +163,21 @@ export default function DiscoverModule() {
   const [activePlatform, setActivePlatform] = useState<'reddit' | 'google' | 'yelp' | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const hasRun = useRef(!!contextDiscover);
+  const prevIdea = useRef(idea);
+
+  useEffect(() => {
+    if (idea !== prevIdea.current) {
+      prevIdea.current = idea;
+      hasRun.current = false;
+      setResult(null);
+      setStatus('idle');
+      setError(null);
+      setCached(false);
+      setFilter(null);
+      setReady(false);
+      setActivePlatform(null);
+    }
+  }, [idea]);
 
   useEffect(() => {
     if (contextDiscover && !result && status !== 'loading') {
