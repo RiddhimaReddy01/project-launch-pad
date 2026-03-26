@@ -353,8 +353,9 @@ export default function ValidateModule() {
         .eq('idea_text', idea)
         .maybeSingle();
       let ideaId: string;
+      const prevAnalysis = typeof existing?.analysis_data === 'object' && existing?.analysis_data !== null ? existing.analysis_data : {};
       const nextAnalysisData = {
-        ...(existing?.analysis_data || {}),
+        ...prevAnalysis,
         ...(decomposePayload ? { decompose: decomposePayload } : {}),
       };
       if (existing) {
@@ -747,14 +748,15 @@ export default function ValidateModule() {
             {activeMethod && (() => {
               const method = ALL_METHODS.find((entry) => entry.id === activeMethod);
               if (!method) return null;
+              const methodContentOutputs = method.outputs.filter((o: string) => ['landing_page', 'survey', 'whatsapp', 'communities'].includes(o));
               return (
                 <div className="flex flex-col gap-6">
                   <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
                     <p className="section-label mb-2" style={{ fontWeight: 700 }}>{method.name}</p>
                     <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>{method.description}</p>
                     <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0 }}>
-                      {contentOutputs.length > 0
-                        ? `Outputs included: ${contentOutputs.map((output) => output.replace('_', ' ')).join(', ')}`
+                      {methodContentOutputs.length > 0
+                        ? `Outputs included: ${methodContentOutputs.map((output: string) => output.replace('_', ' ')).join(', ')}`
                         : 'This method creates an experiment plan. Track targets and live results from the Dashboard after you save it.'}
                     </p>
                   </div>
@@ -762,7 +764,7 @@ export default function ValidateModule() {
                   {method.outputs.includes('survey') && result.survey && <SurveySection data={result.survey} onChange={(s) => updateResult({ survey: s })} />}
                   {method.outputs.includes('whatsapp') && result.whatsapp && <WhatsAppSection data={result.whatsapp} onChange={(w) => updateResult({ whatsapp: w })} />}
                   {method.outputs.includes('communities') && result.communities && <CommunitiesSection data={result.communities} />}
-                  {contentOutputs.length === 0 && (
+                  {methodContentOutputs.length === 0 && (
                     <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
                       <p className="section-label" style={{ fontWeight: 700, marginBottom: 10 }}>EXPERIMENT TRACKING</p>
                       <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>
