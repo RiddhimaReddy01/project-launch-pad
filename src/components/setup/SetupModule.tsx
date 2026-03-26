@@ -215,7 +215,7 @@ export default function SetupModule() {
         <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>We couldn't load this section right now.</p>
         <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', marginBottom: 16 }}>{state.error || 'Give it another shot'}</p>
         <button onClick={() => loadSection(activeTab)} className="rounded-[10px] px-5 py-2.5"
-          style={{ fontSize: 13, fontWeight: 600, backgroundColor: 'var(--accent-primary)', color: '#080810', border: 'none', cursor: 'pointer' }}>
+          style={{ fontSize: 13, fontWeight: 600, backgroundColor: 'var(--color-accent)', color: '#fff', border: 'none', cursor: 'pointer' }}>
           Retry
         </button>
       </div>
@@ -283,9 +283,10 @@ export default function SetupModule() {
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     width: 28, height: 28, borderRadius: 8, fontSize: 12, fontWeight: 700,
-                    backgroundColor: isSelected ? 'var(--accent-primary)' : 'var(--surface-elevated)',
-                    color: isSelected ? '#080810' : 'var(--text-muted)',
+                    backgroundColor: isSelected ? 'var(--color-accent)' : 'var(--surface-elevated)',
+                    color: isSelected ? '#fff' : 'var(--text-muted)',
                   }}>
+
                     {TIER_MONOS[tier]}
                   </span>
                   <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>
@@ -410,8 +411,8 @@ export default function SetupModule() {
               <span style={{
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 width: 22, height: 22, borderRadius: 6, fontSize: 10, fontWeight: 700,
-                backgroundColor: state.status === 'completed' ? 'var(--accent-primary)' : isActive ? 'var(--color-accent-soft)' : 'var(--surface-elevated)',
-                color: state.status === 'completed' ? '#080810' : isActive ? 'var(--accent-primary)' : 'var(--text-muted)',
+                backgroundColor: state.status === 'completed' ? 'var(--color-accent)' : isActive ? 'var(--color-accent-soft)' : 'var(--surface-elevated)',
+                color: state.status === 'completed' ? '#fff' : isActive ? 'var(--color-accent)' : 'var(--text-muted)',
               }}>{tab.mono}</span>
               {tab.label}
               {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 2, backgroundColor: 'var(--accent-primary)', borderRadius: 1 }} />}
