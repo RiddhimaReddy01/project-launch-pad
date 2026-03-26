@@ -49,9 +49,8 @@ function StepperDot({
           height: 12,
           borderRadius: 999,
           margin: '0 auto',
-          backgroundColor: isCompleted || isActive ? 'var(--color-accent)' : 'rgba(255,255,255,0.08)',
-          border: `2px solid ${isCompleted || isActive ? 'var(--color-accent)' : 'rgba(255,255,255,0.15)'}`,
-          boxShadow: isActive ? '0 0 12px rgba(0,212,230,0.3)' : 'none',
+          backgroundColor: isCompleted || isActive ? 'var(--color-accent)' : 'var(--color-border)',
+          border: `2px solid ${isCompleted || isActive ? 'var(--color-accent)' : 'var(--color-border)'}`,
           transition: 'all 300ms ease',
         }}
       />
@@ -60,8 +59,8 @@ function StepperDot({
           display: 'block',
           marginTop: 10,
           fontSize: 12,
-          fontWeight: isActive ? 700 : 600,
-          color: isActive ? 'var(--color-accent)' : isCompleted ? 'var(--color-text-soft)' : 'var(--color-text-muted)',
+          fontWeight: isActive ? 700 : 500,
+          color: isActive ? 'var(--color-accent)' : isCompleted ? 'var(--color-text)' : 'var(--color-text-muted)',
           letterSpacing: '0.02em',
         }}
       >
@@ -98,14 +97,14 @@ function ResearchTabLoading({ step }: { step: Step }) {
   const current = copy[step];
 
   return (
-    <section className="rounded-2xl p-8" style={{ maxWidth: 760, backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+    <section className="rounded-2xl p-8" style={{ maxWidth: 760, backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-card)' }}>
       <p className="eyebrow">{current.label}</p>
       <h2 className="section-title">{current.title}</h2>
       <p className="section-copy" style={{ marginTop: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>{current.body}</p>
       <div style={{ display: 'grid', gap: 'var(--space-3)' }}>
         {[100, 88, 72].map((width, index) => (
           <div key={index} style={{ padding: 'var(--space-4)', borderRadius: 'var(--radius-md)', background: 'var(--color-bg-muted)' }}>
-            <div style={{ height: 10, borderRadius: 999, background: 'rgba(255,255,255,0.04)', overflow: 'hidden' }}>
+            <div style={{ height: 6, borderRadius: 999, background: 'var(--color-border)', overflow: 'hidden' }}>
               <div className="animate-progress" style={{ width: `${width}%`, height: '100%', borderRadius: 999, background: 'var(--color-accent)' }} />
             </div>
           </div>
@@ -227,7 +226,7 @@ export default function Research() {
         {idea ? (
           <section style={{ paddingTop: 'var(--space-10)', paddingBottom: 'var(--space-8)', maxWidth: 760 }}>
             <p className="eyebrow">Research Workspace</p>
-            <h1 className="section-title" style={{ fontSize: '2.4rem', marginBottom: 'var(--space-3)' }}>{idea}</h1>
+            <h1 className="section-title" style={{ fontSize: '2rem', marginBottom: 'var(--space-3)' }}>{idea}</h1>
             <p className="section-copy" style={{ margin: 0 }}>
               Move from market evidence to operating decisions in one continuous founder narrative.
             </p>
@@ -236,17 +235,16 @@ export default function Research() {
 
         {/* Stepper */}
         <section style={{ maxWidth: 560, margin: '0 auto', paddingBottom: 'var(--space-8)', position: 'relative' }}>
-          <div style={{ position: 'absolute', top: 5, left: '10%', right: '10%', height: 1, backgroundColor: 'rgba(255,255,255,0.06)' }} />
+          <div style={{ position: 'absolute', top: 5, left: '10%', right: '10%', height: 1, backgroundColor: 'var(--color-border)' }} />
           <div
             style={{
               position: 'absolute',
               top: 5,
               left: '10%',
               width: `${(currentIndex / (STEPS.length - 1)) * 80}%`,
-              height: 1,
+              height: 2,
               backgroundColor: 'var(--color-accent)',
               transition: 'width 500ms ease-out',
-              boxShadow: '0 0 8px rgba(0,212,230,0.3)',
             }}
           />
           <div className="relative flex items-start justify-between">

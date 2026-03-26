@@ -4,8 +4,8 @@ interface ScoreDonutProps {
   color: string;
 }
 
-export default function ScoreDonut({ score, size = 52, color }: ScoreDonutProps) {
-  const strokeWidth = 3.5;
+export default function ScoreDonut({ score, size = 56, color }: ScoreDonutProps) {
+  const strokeWidth = 4;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const pct = Math.min(score / 10, 1);
@@ -19,7 +19,7 @@ export default function ScoreDonut({ score, size = 52, color }: ScoreDonutProps)
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="var(--divider-light)"
+          stroke="var(--color-border)"
           strokeWidth={strokeWidth}
         />
         <circle
@@ -38,9 +38,9 @@ export default function ScoreDonut({ score, size = 52, color }: ScoreDonutProps)
       <span
         className="absolute"
         style={{
-          fontFamily: "'Outfit', sans-serif",
-          fontSize: size * 0.3,
-          fontWeight: 400,
+          fontFamily: "var(--font-display)",
+          fontSize: size * 0.28,
+          fontWeight: 700,
           color,
         }}
       >
