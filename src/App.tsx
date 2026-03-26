@@ -27,7 +27,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/research" element={<ErrorBoundary><Research /></ErrorBoundary>} />
-                <Route path="/auth" element={<Auth />} />
+                <Route path="/auth" element={<ErrorBoundary><Auth /></ErrorBoundary>} />
                 <Route path="/dashboard" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="*" element={<NotFound />} />

@@ -70,6 +70,21 @@ const TAB_LABELS: Record<DashboardTab, string> = {
   account: 'Account',
 };
 
+function ConfirmDialog({ title, message, onConfirm, onCancel }: { title: string; message: string; onConfirm: () => void; onCancel: () => void }) {
+  return (
+    <div className="confirm-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-desc" onClick={onCancel}>
+      <div className="confirm-dialog" onClick={(e) => e.stopPropagation()}>
+        <h2 id="confirm-title" style={{ margin: '0 0 8px', fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>{title}</h2>
+        <p id="confirm-desc" style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 24 }}>{message}</p>
+        <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end' }}>
+          <button onClick={onCancel} className="btn-secondary rounded-lg px-5 py-2" style={{ fontSize: 14, fontWeight: 600 }}>Cancel</button>
+          <button onClick={onConfirm} className="btn-primary rounded-lg px-5 py-2" style={{ fontSize: 14, fontWeight: 600, background: 'var(--error)', borderColor: 'var(--error)' }}>Delete</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const STATUS_FLOW = ['planned', 'running', 'completed'] as const;
 
 export default function Dashboard() {
@@ -122,6 +137,12 @@ export default function Dashboard() {
     navigate('/research');
   };
 
+  const [confirmAction, setConfirmAction] = useState<{ title: string; message: string; action: () => void } | null>(null);
+
+  const confirmDelete = (title: string, message: string, action: () => void) => {
+    setConfirmAction({ title, message, action });
+  };
+
   const deleteIdea = async (id: string) => { await supabase.from('saved_ideas').delete().eq('id', id).eq('user_id', user.id); toast.success('Removed'); loadData(); };
   const deleteInsight = async (id: string) => { await supabase.from('saved_insights').delete().eq('id', id).eq('user_id', user.id); toast.success('Removed'); loadData(); };
   const updateExperimentStatus = async (exp: Experiment) => {
@@ -133,6 +154,14 @@ export default function Dashboard() {
   const deleteExperiment = async (id: string) => { await supabase.from('experiments').delete().eq('id', id).eq('user_id', user.id); toast.success('Removed'); loadData(); };
 
   if (authLoading || !user) return null;
+
+  const tabCounts: Record<DashboardTab, number | null> = {
+    overview: null,
+    projects: ideas.length,
+    insights: insights.length,
+    validation: experiments.length,
+    account: null,
+  };
 
   const filteredIdeas = ideas.filter(i =>
     !searchQuery || i.idea_text.toLowerCase().includes(searchQuery.toLowerCase()) || (i.title || '').toLowerCase().includes(searchQuery.toLowerCase())
@@ -164,9 +193,19 @@ export default function Dashboard() {
         </p>
 
         {/* Tabs */}
-        <div className="flex overflow-x-auto hide-scrollbar" style={{ gap: 0, marginBottom: 36, borderBottom: '1px solid var(--divider-section)' }}>
-          {(Object.keys(TAB_LABELS) as DashboardTab[]).map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)}
+        <div className="flex overflow-x-auto hide-scrollbar" role="tablist" aria-label="Dashboard sections" style={{ gap: 0, marginBottom: 36, borderBottom: '1px solid var(--divider-section)' }}>
+          {(Object.keys(TAB_LABELS) as DashboardTab[]).map((tab, i, arr) => (
+            <button key={tab}
+              role="tab"
+              aria-selected={activeTab === tab}
+              aria-controls={`panel-${tab}`}
+              id={`tab-${tab}`}
+              tabIndex={activeTab === tab ? 0 : -1}
+              onClick={() => setActiveTab(tab)}
+              onKeyDown={(e) => {
+                if (e.key === 'ArrowRight') { e.preventDefault(); setActiveTab(arr[(i + 1) % arr.length]); }
+                if (e.key === 'ArrowLeft') { e.preventDefault(); setActiveTab(arr[(i - 1 + arr.length) % arr.length]); }
+              }}
               className="whitespace-nowrap transition-all duration-200"
               style={{
                 padding: '14px 20px', fontSize: 15,
@@ -175,8 +214,20 @@ export default function Dashboard() {
                 backgroundColor: 'transparent', border: 'none',
                 borderBottom: activeTab === tab ? '2px solid var(--accent-primary)' : '2px solid transparent',
                 cursor: 'pointer', marginBottom: -1,
+                display: 'inline-flex', alignItems: 'center', gap: 6,
               }}>
               {TAB_LABELS[tab]}
+              {tabCounts[tab] !== null && tabCounts[tab]! > 0 && (
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  minWidth: 20, height: 20, padding: '0 6px', borderRadius: 999,
+                  fontSize: 11, fontWeight: 700, lineHeight: 1,
+                  background: activeTab === tab ? 'var(--accent-primary)' : 'var(--surface-elevated)',
+                  color: activeTab === tab ? '#fff' : 'var(--text-muted)',
+                }} aria-label={`${tabCounts[tab]} items`}>
+                  {tabCounts[tab]}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -198,17 +249,19 @@ export default function Dashboard() {
             )}
             {activeTab === 'projects' && (
               <>
-                <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search projects…"
+                <label htmlFor="project-search" className="sr-only">Search projects</label>
+                <input id="project-search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search projects…"
                   className="w-full rounded-xl px-4 py-3 mb-5"
                   style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-primary)', outline: 'none', backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}
                   onFocus={e => { e.currentTarget.style.borderColor = 'var(--accent-primary)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(224,90,71,0.12)'; }}
                   onBlur={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = 'none'; }}
+                  aria-label="Search your projects"
                 />
-                <ProjectsTab ideas={filteredIdeas} onResume={resumeIdea} onDelete={deleteIdea} onNavigate={() => navigate('/')} />
+                <ProjectsTab ideas={filteredIdeas} onResume={resumeIdea} onDelete={(id) => confirmDelete('Delete project?', 'This permanently removes the project and all its research data.', () => deleteIdea(id))} onNavigate={() => navigate('/')} />
               </>
             )}
-            {activeTab === 'insights' && <InsightsTab insights={insights} onDelete={deleteInsight} />}
-            {activeTab === 'validation' && <ValidationTab experiments={experiments} onStatusChange={updateExperimentStatus} onDelete={deleteExperiment} onUpdateMetric={async (expId, metricKey, actual) => {
+            {activeTab === 'insights' && <InsightsTab insights={insights} onDelete={(id) => confirmDelete('Delete insight?', 'This removes the saved insight permanently.', () => deleteInsight(id))} />}
+            {activeTab === 'validation' && <ValidationTab experiments={experiments} onStatusChange={updateExperimentStatus} onDelete={(id) => confirmDelete('Delete experiment?', 'This permanently removes this experiment and its metrics.', () => deleteExperiment(id))} onUpdateMetric={async (expId, metricKey, actual) => {
               const exp = experiments.find(e => e.id === expId);
               if (!exp?.metrics) return;
               const updated = { ...exp.metrics, [metricKey]: { ...exp.metrics[metricKey], actual } };
@@ -220,6 +273,15 @@ export default function Dashboard() {
           </>
         )}
       </div>
+
+      {confirmAction && (
+        <ConfirmDialog
+          title={confirmAction.title}
+          message={confirmAction.message}
+          onConfirm={() => { confirmAction.action(); setConfirmAction(null); }}
+          onCancel={() => setConfirmAction(null)}
+        />
+      )}
     </AppShell>
   );
 }
@@ -335,7 +397,7 @@ function ProjectsTab({ ideas, onResume, onDelete, onNavigate }: {
                   <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>{progress}%</span>
                 </div>
               </div>
-              <button onClick={(e) => { e.stopPropagation(); onDelete(idea.id); }}
+              <button onClick={(e) => { e.stopPropagation(); onDelete(idea.id); }} aria-label="Delete this project"
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', fontSize: 14, color: 'var(--text-muted)' }}>✕</button>
             </div>
           </div>
@@ -376,7 +438,7 @@ function InsightsTab({ insights, onDelete }: { insights: SavedInsight[]; onDelet
                 </div>
               </div>
             </div>
-            <button onClick={() => onDelete(insight.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', fontSize: 14, color: 'var(--text-muted)' }}>✕</button>
+            <button onClick={() => onDelete(insight.id)} aria-label="Delete this insight" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', fontSize: 14, color: 'var(--text-muted)' }}>✕</button>
           </div>
         </div>
       ))}
@@ -537,7 +599,7 @@ function ValidationTab({ experiments, onStatusChange, onDelete, onUpdateMetric }
                           className="btn-secondary rounded-lg" style={{ fontSize: 11, fontWeight: 600, padding: '4px 10px' }} title="Advance status">
                           ↻ Next
                         </button>
-                        <button onClick={(e) => { e.stopPropagation(); onDelete(exp.id); }}
+                        <button onClick={(e) => { e.stopPropagation(); onDelete(exp.id); }} aria-label="Delete this experiment"
                           style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-muted)', padding: '4px 8px' }}>✕</button>
                       </div>
                     </div>

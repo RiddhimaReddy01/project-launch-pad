@@ -349,12 +349,12 @@ export default function DiscoverModule() {
             )}
 
             {visibleTabs.length > 1 && (
-              <div className="flex gap-2 mb-6 overflow-x-auto pb-1 hide-scrollbar">
+              <div className="flex gap-2 mb-6 overflow-x-auto pb-1 hide-scrollbar" role="tablist" aria-label="Filter insights by type">
                 {visibleTabs.map((tab) => {
                   const isActive = filter === tab.key;
                   const count = counts[tab.key] || 0;
                   return (
-                    <button key={tab.key} onClick={() => setFilter(tab.key)}
+                    <button key={tab.key} role="tab" aria-selected={isActive} aria-label={`${tab.label} (${count} insights)`} onClick={() => setFilter(tab.key)}
                       className="flex items-center gap-2 rounded-lg px-4 py-2.5 transition-all duration-200 whitespace-nowrap"
                       style={{
                         fontSize: 14,

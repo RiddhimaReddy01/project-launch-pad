@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 
 function brandLogo(accentColor = 'var(--color-accent)') {
   return (
-    <span className="brand-mark">
+    <span className="brand-mark" aria-label="LaunchLens home">
       <span className="brand-mark__strong">Launch</span>{' '}
-      <span className="brand-mark__light" style={{ color: accentColor }}>Lean</span>
+      <span className="brand-mark__light" style={{ color: accentColor }}>Lens</span>
     </span>
   );
 }
@@ -23,8 +23,12 @@ export function AppShell({
 }) {
   return (
     <div className="app-shell">
+      <a href="#main-content" className="skip-link">Skip to content</a>
       {nav}
-      <main className={readable || width === 'readable' ? 'app-shell__content app-shell__content--readable' : 'app-shell__content'}>
+      <main
+        id="main-content"
+        className={readable || width === 'readable' ? 'app-shell__content app-shell__content--readable' : 'app-shell__content'}
+      >
         {children}
       </main>
     </div>
@@ -41,15 +45,15 @@ export function TopNav({
   const navigate = useNavigate();
 
   return (
-    <header className={`top-nav${compact ? ' top-nav--compact' : ''}`}>
-      <div className="top-nav__inner">
-        <button type="button" className="brand-button" onClick={() => navigate('/')}>
+    <header className={`top-nav${compact ? ' top-nav--compact' : ''}`} role="banner">
+      <nav className="top-nav__inner" aria-label="Main navigation">
+        <button type="button" className="brand-button" onClick={() => navigate('/')} aria-label="Go to homepage">
           {brandLogo()}
         </button>
-        <div className="top-nav__actions">
+        <div className="top-nav__actions" role="group" aria-label="Navigation actions">
           {rightSlot}
         </div>
-      </div>
+      </nav>
     </header>
   );
 }
@@ -179,15 +183,27 @@ export function PillButton({
   onClick,
   style,
   type = 'button',
+  disabled = false,
+  'aria-label': ariaLabel,
 }: {
   children: ReactNode;
   active?: boolean;
   onClick?: () => void;
   style?: CSSProperties;
   type?: 'button' | 'submit';
+  disabled?: boolean;
+  'aria-label'?: string;
 }) {
   return (
-    <button type={type} className={`pill-button${active ? ' pill-button--active' : ''}`} onClick={onClick} style={style}>
+    <button
+      type={type}
+      className={`pill-button${active ? ' pill-button--active' : ''}`}
+      onClick={onClick}
+      style={{ ...style, ...(disabled ? { opacity: 0.55, pointerEvents: 'none' as const } : {}) }}
+      disabled={disabled}
+      aria-label={ariaLabel}
+      aria-pressed={active || undefined}
+    >
       {children}
     </button>
   );
@@ -198,14 +214,18 @@ export function SecondaryButton({
   onClick,
   type = 'button',
   style,
+  disabled = false,
+  'aria-label': ariaLabel,
 }: {
   children: ReactNode;
   onClick?: () => void;
   type?: 'button' | 'submit';
   style?: CSSProperties;
+  disabled?: boolean;
+  'aria-label'?: string;
 }) {
   return (
-    <button type={type} className="secondary-button" onClick={onClick} style={style}>
+    <button type={type} className="secondary-button" onClick={onClick} style={style} disabled={disabled} aria-label={ariaLabel}>
       {children}
     </button>
   );

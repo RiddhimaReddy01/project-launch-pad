@@ -105,22 +105,44 @@ function transformResponseFromRender(functionName: string, data: any): any {
         },
       };
 
-    case "discover-insights":
-      const normalizeScore = (v: number) => v > 1 ? v / 10 : v;
-      const insights = (data.insights || []).map((ins: any) => ({
-        title: ins.title || "",
-        type: ins.type || "pain_point",
-        description: ins.description || ins.title || "",
-        frequency_score: normalizeScore(ins.frequency_score || ins.score || 0),
-        severity_score: normalizeScore(ins.intensity_score || ins.severity_score || 0),
-        willingness_to_pay: normalizeScore(ins.willingness_to_pay_score || ins.willingness_to_pay || 0),
-        market_size_signal: normalizeScore(ins.market_size_signal || 0),
-        composite_score: normalizeScore(ins.score || ins.composite_score || 0),
-        tags: ins.tags || ins.source_platforms || [],
-        sources: (ins.evidence || ins.sources || ins.mentions || []).map(normalizeDiscoverSource),
-      }));
+        case "discover-insights": {
+      const normalizeRatio = (v: number) => {
+        const parsed = Number(v || 0);
+        if (!Number.isFinite(parsed)) return 0;
+        return Math.max(0, Math.min(1, parsed > 1 ? parsed / 10 : parsed));
+      };
+
+      const normalizeComposite = (v: number) => {
+        const parsed = Number(v || 0);
+        if (!Number.isFinite(parsed)) return 0;
+        return Math.max(0, Math.min(10, parsed <= 1 ? parsed * 10 : parsed));
+      };
+
+      const topLevelSources = Array.isArray(data.sources)
+        ? data.sources.map(normalizeDiscoverSource)
+        : [];
+
+      const insights = (data.insights || []).map((ins: any) => {
+        const mappedSources = (ins.evidence || ins.sources || ins.mentions || []).map(normalizeDiscoverSource);
+        const fallbackSources = mappedSources.length > 0 ? mappedSources : topLevelSources.slice(0, 3);
+
+        return {
+          title: ins.title || "",
+          type: ins.type || "pain_point",
+          description: ins.description || ins.title || "",
+          frequency_score: normalizeRatio(ins.frequency_score || ins.score || 0),
+          severity_score: normalizeRatio(ins.intensity_score || ins.severity_score || 0),
+          willingness_to_pay: normalizeRatio(ins.willingness_to_pay_score || ins.willingness_to_pay || 0),
+          market_size_signal: normalizeRatio(ins.market_size_signal || 0),
+          composite_score: normalizeComposite(ins.composite_score || ins.score || 0),
+          tags: ins.tags || ins.source_platforms || [],
+          sources: fallbackSources,
+        };
+      });
+
       return {
         insights,
+        sources: topLevelSources,
         synthesis: data.synthesis || {
           top_pain_points: [],
           current_workarounds: [],
@@ -128,9 +150,18 @@ function transformResponseFromRender(functionName: string, data: any): any {
           willingness_signals: [],
           opportunity_score: 0,
         },
-        source_summary: buildSourceSummary(insights),
+        source_summary: data.source_summary || buildSourceSummary(insights),
+        summary: data.summary || {
+          demand_strength: 0,
+          signal_density: "low",
+          trend_direction: "stable",
+          trend_label: "",
+          top_regions: [],
+          mixed_signals: [],
+          summary: "",
+        },
       };
-
+    }
     case "analyze-section":
       return data.data ? data : { data: data };
 

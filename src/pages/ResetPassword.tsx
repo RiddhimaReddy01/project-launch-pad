@@ -58,12 +58,18 @@ export default function ResetPassword() {
         </p>
 
         {!success ? (
-          <form onSubmit={handleReset} style={{ display: 'grid', gap: 'var(--space-4)', marginTop: 'var(--space-6)' }}>
-            <input type="password" required minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="New password" style={{ padding: '0.95rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'var(--color-surface)' }} />
-            <input type="password" required minLength={6} value={confirm} onChange={(event) => setConfirm(event.target.value)} placeholder="Confirm password" style={{ padding: '0.95rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'var(--color-surface)' }} />
-            {error ? <p style={{ color: 'var(--color-danger)', margin: 0 }}>{error}</p> : null}
+          <form onSubmit={handleReset} style={{ display: 'grid', gap: 'var(--space-4)', marginTop: 'var(--space-6)' }} aria-label="Reset password form">
+            <div>
+              <label htmlFor="new-pw" style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--color-text-muted)', marginBottom: 6 }}>New password</label>
+              <input id="new-pw" type="password" required minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="At least 6 characters" autoComplete="new-password" style={{ width: '100%', padding: '0.95rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-text)', outline: 'none' }} />
+            </div>
+            <div>
+              <label htmlFor="confirm-pw" style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--color-text-muted)', marginBottom: 6 }}>Confirm password</label>
+              <input id="confirm-pw" type="password" required minLength={6} value={confirm} onChange={(event) => setConfirm(event.target.value)} placeholder="Type the same password again" autoComplete="new-password" style={{ width: '100%', padding: '0.95rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-text)', outline: 'none' }} />
+            </div>
+            {error ? <p role="alert" style={{ color: 'var(--color-danger)', margin: 0, fontSize: 14 }}>{error}</p> : null}
             <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-              <PillButton type="submit">{loading ? 'Updating...' : 'Update password'}</PillButton>
+              <PillButton type="submit" disabled={loading}>{loading ? 'Updating...' : 'Update password'}</PillButton>
               <SecondaryButton onClick={() => navigate('/auth')}>Cancel</SecondaryButton>
             </div>
           </form>

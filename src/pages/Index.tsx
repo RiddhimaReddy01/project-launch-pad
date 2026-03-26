@@ -1,7 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useIdea } from '@/context/IdeaContext';
+
+const MIN_IDEA_LENGTH = 10;
 
 const examples = [
   { label: 'Juice bar in Plano', value: 'A fresh-pressed juice bar in Plano, Texas' },
@@ -88,24 +90,33 @@ export default function Index() {
   const stepsRef = useReveal();
   const ctaRef = useReveal();
 
+  const trimmedIdea = ideaInput.trim();
+  const canStart = trimmedIdea.length >= MIN_IDEA_LENGTH;
+  const charHint = useMemo(() => {
+    if (trimmedIdea.length > 0 && trimmedIdea.length < MIN_IDEA_LENGTH)
+      return `${MIN_IDEA_LENGTH - trimmedIdea.length} more characters needed`;
+    return '';
+  }, [trimmedIdea]);
+
   const startResearch = () => {
-    if (!ideaInput.trim()) return;
-    setIdea(ideaInput.trim());
+    if (!canStart) return;
+    setIdea(trimmedIdea);
     navigate('/research');
   };
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--color-bg)', color: 'var(--color-text)' }}>
+      <a href="#main-content" className="skip-link">Skip to content</a>
       {/* Nav */}
-      <header className="top-nav">
-        <div className="top-nav__inner">
-          <button onClick={() => navigate('/')} className="brand-button">
-            <span className="brand-mark">
+      <header className="top-nav" role="banner">
+        <nav className="top-nav__inner" aria-label="Main navigation">
+          <button onClick={() => navigate('/')} className="brand-button" aria-label="Go to homepage">
+            <span className="brand-mark" aria-label="LaunchLens home">
               <span className="brand-mark__strong">Launch</span>
-              <span className="brand-mark__light">Lean</span>
+              <span className="brand-mark__light">Lens</span>
             </span>
           </button>
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ display: 'flex', gap: 10 }} role="group" aria-label="Navigation actions">
             <button
               onClick={() => navigate(user ? '/dashboard' : '/auth')}
               className="btn-secondary"
@@ -114,7 +125,7 @@ export default function Index() {
               {user ? 'Dashboard' : 'Log in'}
             </button>
           </div>
-        </div>
+        </nav>
       </header>
 
       {/* Hero */}
@@ -139,18 +150,22 @@ export default function Index() {
       </section>
 
       {/* Input */}
-      <section ref={inputRef} className="reveal-target" style={{ maxWidth: 560, margin: '0 auto', padding: '0 24px 80px' }}>
+      <section id="main-content" ref={inputRef} className="reveal-target" style={{ maxWidth: 560, margin: '0 auto', padding: '0 24px 80px' }}>
         <div style={{
           borderRadius: 16, padding: 24,
           background: 'var(--color-surface)',
           border: '1px solid var(--color-border)',
           boxShadow: 'var(--shadow-lg)',
-        }}>
+        }} role="form" aria-label="Describe your business idea">
+          <label htmlFor="idea-input" className="sr-only">Describe your business idea</label>
           <textarea
+            id="idea-input"
             value={ideaInput}
             onChange={e => setIdeaInput(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && canStart) { e.preventDefault(); startResearch(); } }}
             placeholder={placeholder || 'Describe your idea in one sentence...'}
             rows={2}
+            aria-describedby="idea-hint"
             style={{
               width: '100%', resize: 'none', outline: 'none',
               minHeight: 72, padding: '14px 16px',
@@ -169,12 +184,22 @@ export default function Index() {
             }}
           />
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 14, flexWrap: 'wrap', gap: 10 }}>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          <div id="idea-hint" aria-live="polite" style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            marginTop: 8, fontSize: 12, minHeight: 18,
+            color: charHint ? 'var(--color-warning)' : 'var(--color-text-muted)',
+          }}>
+            <span>{charHint || 'Tip: include a location and business type for best results'}</span>
+            <span style={{ color: 'var(--color-text-muted)' }}>{trimmedIdea.length} chars</span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8, flexWrap: 'wrap', gap: 10 }}>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }} role="group" aria-label="Example ideas">
               {examples.map(s => (
                 <button
                   key={s.label}
                   onClick={() => setIdeaInput(s.value)}
+                  aria-label={`Use example: ${s.label}`}
                   style={{
                     padding: '6px 14px', borderRadius: 999, fontSize: 12, fontWeight: 500,
                     background: 'var(--color-bg-muted)', border: '1px solid var(--color-border)',
@@ -191,10 +216,12 @@ export default function Index() {
             <button
               onClick={startResearch}
               className="btn-primary"
+              disabled={!canStart}
+              aria-label="Start researching your idea"
               style={{
                 padding: '10px 24px', fontSize: 14,
-                opacity: ideaInput.trim() ? 1 : 0.5,
-                cursor: ideaInput.trim() ? 'pointer' : 'default',
+                opacity: canStart ? 1 : 0.5,
+                cursor: canStart ? 'pointer' : 'default',
               }}
             >
               Research this idea →
@@ -204,10 +231,10 @@ export default function Index() {
       </section>
 
       {/* How it works */}
-      <section ref={stepsRef} className="reveal-target" style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px 100px' }}>
+      <section ref={stepsRef} className="reveal-target" aria-labelledby="how-it-works-heading" style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px 100px' }}>
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <p className="eyebrow" style={{ marginBottom: 12 }}>WORKFLOW</p>
-          <h2 style={{ fontFamily: "var(--font-display)", fontSize: 'clamp(22px, 3.5vw, 30px)', fontWeight: 700, letterSpacing: '-0.02em', margin: 0, color: 'var(--color-text)' }}>
+          <h2 id="how-it-works-heading" style={{ fontFamily: "var(--font-display)", fontSize: 'clamp(22px, 3.5vw, 30px)', fontWeight: 700, letterSpacing: '-0.02em', margin: 0, color: 'var(--color-text)' }}>
             One sentence in. A complete plan out.
           </h2>
         </div>

@@ -562,7 +562,7 @@ export default function ValidateModule() {
       )}
 
       {/* Method Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 14 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(300px, 100%), 1fr))', gap: 14 }} role="group" aria-label="Validation methods">
         {ALL_METHODS.map(m => {
           const isSelected = selectedMethods.has(m.id);
           const isSuggested = suggestedMethods.includes(m.id);
@@ -804,6 +804,11 @@ function MethodCard({ method, isSelected, isSuggested, onToggle }: { method: Val
   const [hovered, setHovered] = useState(false);
   return (
     <div
+      role="checkbox"
+      aria-checked={isSelected}
+      aria-label={`${method.label}${isSuggested ? ' (recommended)' : ''}`}
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } }}
       onClick={onToggle}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -978,7 +983,7 @@ function CommunitiesSection({ data }: { data: NonNullable<ValidateResult['commun
         <p className="section-label" style={{ fontWeight: 700 }}>COMMUNITIES TO TEST</p>
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>{data.length} communities</span>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(300px, 100%), 1fr))', gap: 12 }}>
         {data.map((c, i) => {
           const isHov = hoveredId === i;
           const platformColor = PLATFORM_COLORS[c.platform] || 'var(--text-muted)';
