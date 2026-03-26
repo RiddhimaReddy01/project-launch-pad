@@ -75,7 +75,7 @@ function ScoreBar({
         >
           <span
             style={{
-              fontSize: 12,
+              fontSize: 13,
               fontWeight: 600,
               color: 'var(--text-muted)',
               letterSpacing: '0.04em',
@@ -85,7 +85,7 @@ function ScoreBar({
           </span>
         </button>
 
-        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
           {pct}%
         </span>
       </div>
@@ -121,7 +121,7 @@ function ScoreBar({
         >
           <p
             style={{
-              fontSize: 12,
+              fontSize: 13,
               lineHeight: 1.5,
               fontWeight: 500,
               color: 'var(--text-secondary)',
@@ -197,7 +197,7 @@ function NoteInput({
           }}
           disabled={!text.trim()}
           className="btn-primary rounded-lg disabled:opacity-40"
-          style={{ fontSize: 12, fontWeight: 600, padding: '5px 14px' }}
+          style={{ fontSize: 13, fontWeight: 600, padding: '5px 14px' }}
         >
           Save note
         </button>
@@ -343,7 +343,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
                 style={{
                   backgroundColor: config.bg,
                   color: config.color,
-                  fontSize: 10,
+                  fontSize: 13,
                   fontWeight: 700,
                   letterSpacing: '0.06em',
                 }}
@@ -373,13 +373,13 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
                     title={`View ${count} ${meta.label} source${count > 1 ? 's' : ''}`}
                   >
                     {meta.label}
-                    <span style={{ fontSize: 9, opacity: 0.7 }}>({count})</span>
+                    <span style={{ fontSize: 13, opacity: 0.7 }}>({count})</span>
                   </a>
                 ) : (
                   <span
                     key={platform}
                     className="badge badge-muted"
-                    style={{ fontSize: 10, fontWeight: 600 }}
+                    style={{ fontSize: 13, fontWeight: 600 }}
                   >
                     {meta.label} ({count})
                   </span>
@@ -445,7 +445,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
                   <span
                     key={`${tag}-${i}`}
                     className="badge badge-muted"
-                    style={{ fontWeight: 600, fontSize: 12 }}
+                    style={{ fontWeight: 600, fontSize: 13 }}
                   >
                     {tag}
                   </span>
@@ -495,7 +495,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
                 setShowMethodology((prev) => !prev);
               }}
               className="btn-secondary rounded-lg"
-              style={{ fontSize: 12, fontWeight: 600, padding: '6px 12px' }}
+              style={{ fontSize: 13, fontWeight: 600, padding: '6px 12px' }}
             >
               {showMethodology ? 'Hide methodology' : 'How we scored this'}
             </button>
@@ -574,7 +574,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
                         style={{
-                          fontSize: 12,
+                          fontSize: 13,
                           fontWeight: 600,
                           color: 'var(--accent-primary)',
                           textDecoration: 'underline',
@@ -586,7 +586,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
                     ) : source?.author ? (
                       <span
                         style={{
-                          fontSize: 12,
+                          fontSize: 13,
                           fontWeight: 500,
                           color: 'var(--text-secondary)',
                         }}
@@ -596,7 +596,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
                     ) : null}
 
                     {source?.upvotes != null && (
-                      <span className="badge badge-green" style={{ fontSize: 10, fontWeight: 600 }}>
+                      <span className="badge badge-green" style={{ fontSize: 13, fontWeight: 600 }}>
                         +{source.upvotes}
                       </span>
                     )}
@@ -604,7 +604,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
                     {source?.date && (
                       <span
                         style={{
-                          fontSize: 11,
+                          fontSize: 13,
                           fontWeight: 500,
                           color: 'var(--text-muted)',
                         }}

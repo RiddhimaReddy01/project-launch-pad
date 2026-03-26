@@ -59,7 +59,6 @@ export default function InsightCard({ insight, sources, onSeeMentions }: Insight
             width: 40,
             height: 40,
             backgroundColor: config.bg,
-            fontFamily: "'Outfit', sans-serif",
             fontSize: 15,
             fontWeight: 400,
             color: config.color,
@@ -72,8 +71,7 @@ export default function InsightCard({ insight, sources, onSeeMentions }: Insight
           {/* Type label */}
           <span
             style={{
-              fontFamily: "'Outfit', sans-serif",
-              fontSize: 11,
+              fontSize: 13,
               fontWeight: 400,
               letterSpacing: '0.06em',
               color: config.color,
@@ -85,7 +83,6 @@ export default function InsightCard({ insight, sources, onSeeMentions }: Insight
           {/* Title */}
           <p
             style={{
-              fontFamily: "'Outfit', sans-serif",
               fontSize: 15,
               fontWeight: 400,
               color: 'var(--text-primary)',
@@ -99,7 +96,7 @@ export default function InsightCard({ insight, sources, onSeeMentions }: Insight
           {/* Meta */}
           <p
             className="font-caption"
-            style={{ marginTop: 6, fontSize: 12 }}
+            style={{ marginTop: 6, fontSize: 13 }}
           >
             {insight.mentionCount} mentions · {intensityLabel(insight.intensity)} · {monetizationLabel(insight.monetization)}
           </p>
@@ -144,8 +141,7 @@ export default function InsightCard({ insight, sources, onSeeMentions }: Insight
                     onClick={(e) => e.stopPropagation()}
                     className="transition-colors duration-200"
                     style={{
-                      fontFamily: "'Outfit', sans-serif",
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: 400,
                       color: 'var(--accent-primary)',
                     }}
@@ -153,11 +149,11 @@ export default function InsightCard({ insight, sources, onSeeMentions }: Insight
                     {ev.sourceName}
                   </a>
                   {ev.upvotes !== null && (
-                    <span className="font-caption" style={{ fontSize: 12 }}>
+                    <span className="font-caption" style={{ fontSize: 13 }}>
                       ↑ {ev.upvotes}
                     </span>
                   )}
-                  <span className="font-caption" style={{ fontSize: 12 }}>
+                  <span className="font-caption" style={{ fontSize: 13 }}>
                     {ev.date}
                   </span>
                 </div>
@@ -173,7 +169,7 @@ export default function InsightCard({ insight, sources, onSeeMentions }: Insight
               { label: 'Monetization', value: insight.monetization },
             ].map((s) => (
               <div key={s.label}>
-                <span className="font-caption" style={{ fontSize: 11 }}>{s.label}</span>
+                <span className="font-caption" style={{ fontSize: 13 }}>{s.label}</span>
                 <div className="flex items-center gap-1.5 mt-1">
                   {Array.from({ length: 10 }).map((_, i) => (
                     <div
@@ -193,7 +189,7 @@ export default function InsightCard({ insight, sources, onSeeMentions }: Insight
           </div>
 
           {/* Audience estimate */}
-          <p className="font-caption mt-4" style={{ fontSize: 12 }}>
+          <p className="font-caption mt-4" style={{ fontSize: 13 }}>
             Audience: {insight.audienceEstimate}
           </p>
 
@@ -208,7 +204,6 @@ export default function InsightCard({ insight, sources, onSeeMentions }: Insight
               className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
               style={{
                 fontSize: 13,
-                fontFamily: "'Outfit', sans-serif",
                 fontWeight: 400,
                 backgroundColor: 'var(--accent-primary)',
                 color: '#FFFFFF',
@@ -224,7 +219,6 @@ export default function InsightCard({ insight, sources, onSeeMentions }: Insight
               className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
               style={{
                 fontSize: 13,
-                fontFamily: "'Outfit', sans-serif",
                 fontWeight: 400,
                 backgroundColor: config.bg,
                 color: config.color,
@@ -237,8 +231,7 @@ export default function InsightCard({ insight, sources, onSeeMentions }: Insight
               className="rounded-[10px] px-4 py-2 transition-all duration-200 active:scale-[0.97]"
               style={{
                 fontSize: 13,
-                fontFamily: "'Outfit', sans-serif",
-                fontWeight: 300,
+                fontWeight: 400,
                 backgroundColor: 'var(--surface-input)',
                 color: 'var(--text-secondary)',
               }}

@@ -21,10 +21,10 @@ function MetricCard({ metric, onChange }: { metric: MetricTarget & { actual: num
       }}
     >
       <div className="flex items-center justify-between" style={{ marginBottom: 16 }}>
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
+        <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
           {metric.label}
         </span>
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}>
+        <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)' }}>
           Target: {metric.targetLabel}
         </span>
       </div>
@@ -38,11 +38,11 @@ function MetricCard({ metric, onChange }: { metric: MetricTarget & { actual: num
           style={{
             width: 80, padding: '8px 12px', borderRadius: 8,
             border: '1px solid var(--divider-light)', backgroundColor: 'var(--surface-bg)',
-            fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-primary)',
+            fontSize: 15, fontWeight: 400, color: 'var(--text-primary)',
             outline: 'none',
           }}
         />
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}>
+        <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)' }}>
           {metric.unit}
         </span>
       </div>
@@ -50,7 +50,7 @@ function MetricCard({ metric, onChange }: { metric: MetricTarget & { actual: num
       <div style={{ height: 4, borderRadius: 2, backgroundColor: 'var(--divider-light)', overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, backgroundColor: barColor, borderRadius: 2, transition: 'width 300ms ease-out' }} />
       </div>
-      <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginTop: 6, textAlign: 'right' }}>
+      <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)', marginTop: 6, textAlign: 'right' }}>
         {Math.round(pct)}% of target
       </p>
     </div>
@@ -76,10 +76,10 @@ function DerivedSignals({ metrics }: { metrics: (MetricTarget & { actual: number
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginTop: 24 }}>
       {signals.map((s) => (
         <div key={s.label} style={{ padding: 20, borderRadius: 12, backgroundColor: 'var(--surface-bg)', textAlign: 'center' }}>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             {s.label}
           </p>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 18, fontWeight: 400, color: s.color }}>
+          <p style={{ fontSize: 18, fontWeight: 400, color: s.color }}>
             {s.value}
           </p>
         </div>
@@ -99,13 +99,13 @@ function VerdictCard({ verdict, reasoning }: { verdict: Verdict; reasoning: stri
 
   return (
     <div style={{ marginTop: 32, padding: 32, borderRadius: 16, backgroundColor: c.bg, textAlign: 'center' }}>
-      <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+      <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
         Verdict
       </p>
       <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 26, fontWeight: 400, color: c.color, letterSpacing: '-0.02em', marginBottom: 16 }}>
         {c.label}
       </p>
-      <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.75, maxWidth: 500, margin: '0 auto' }}>
+      <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-secondary)', lineHeight: 1.75, maxWidth: 500, margin: '0 auto' }}>
         {reasoning}
       </p>
     </div>

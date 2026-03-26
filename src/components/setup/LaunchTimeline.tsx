@@ -45,17 +45,17 @@ export default function LaunchTimeline({ data, tier, context }: { data: Timeline
         <div className="card-base p-4 text-center">
           <p className="section-label mb-2">Total Duration</p>
           <p className="font-heading" style={{ fontSize: 22 }}>{totalWeeks} weeks</p>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginTop: 2 }}>~{Math.round(totalWeeks / 4.3)} months</p>
+          <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)', marginTop: 2 }}>~{Math.round(totalWeeks / 4.3)} months</p>
         </div>
         <div className="card-base p-4 text-center">
           <p className="section-label mb-2">Phases</p>
           <p className="font-heading" style={{ fontSize: 22 }}>{data.phases.length}</p>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginTop: 2 }}>{tier.toUpperCase()} strategy</p>
+          <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)', marginTop: 2 }}>{tier.toUpperCase()} strategy</p>
         </div>
         <div className="card-base p-4 text-center">
           <p className="section-label mb-2">Milestones</p>
           <p className="font-heading" style={{ fontSize: 22 }}>{data.phases.reduce((s, p) => s + p.milestones.length, 0)}</p>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginTop: 2 }}>total checkpoints</p>
+          <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)', marginTop: 2 }}>total checkpoints</p>
         </div>
       </div>
 
@@ -69,7 +69,7 @@ export default function LaunchTimeline({ data, tier, context }: { data: Timeline
         <div className="flex mb-2" style={{ paddingLeft: 120 }}>
           {Array.from({ length: Math.ceil(totalWeeks / 4) }, (_, i) => (
             <div key={i} style={{ flex: 4, minWidth: 0 }}>
-              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, color: 'var(--text-muted)' }}>W{i * 4 + 1}</span>
+              <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>W{i * 4 + 1}</span>
             </div>
           ))}
         </div>
@@ -93,7 +93,7 @@ export default function LaunchTimeline({ data, tier, context }: { data: Timeline
                   onMouseLeave={() => setHoveredBar(null)}
                 >
                   <div style={{ width: 120, flexShrink: 0, paddingRight: 12 }}>
-                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: isExpanded ? 500 : 400, color: isExpanded ? pc.color : 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+                    <span style={{ fontSize: 13, fontWeight: isExpanded ? 500 : 400, color: isExpanded ? pc.color : 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
                       {row.phase}
                     </span>
                   </div>
@@ -116,7 +116,7 @@ export default function LaunchTimeline({ data, tier, context }: { data: Timeline
                       }}
                     >
                       <span style={{
-                        fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500,
+                        fontSize: 13, fontWeight: 500,
                         color: isHovered || isExpanded ? '#fff' : pc.color,
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '0 6px',
                       }}>
@@ -127,7 +127,7 @@ export default function LaunchTimeline({ data, tier, context }: { data: Timeline
 
                   {/* Cumulative badge */}
                   <div style={{ width: 50, flexShrink: 0, textAlign: 'right', paddingLeft: 8 }}>
-                    <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 400, color: 'var(--text-muted)' }}>
+                    <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)' }}>
                       W{row.endWeek}
                     </span>
                   </div>
@@ -141,13 +141,13 @@ export default function LaunchTimeline({ data, tier, context }: { data: Timeline
                       {row.milestones.map((m, j) => (
                         <div key={j} className="flex items-start gap-2">
                           <div style={{ width: 14, height: 14, borderRadius: 3, border: `1.5px solid ${pc.color}40`, flexShrink: 0, marginTop: 2 }} />
-                          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{m}</p>
+                          <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{m}</p>
                         </div>
                       ))}
                     </div>
                     <div className="rounded-[8px] p-3" style={{ backgroundColor: 'rgba(255,255,255,0.5)' }}>
                       <p className="section-label" style={{ color: pc.color, marginBottom: 3 }}>Success Metric</p>
-                      <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.5 }}>{row.success_metric}</p>
+                      <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-primary)', lineHeight: 1.5 }}>{row.success_metric}</p>
                     </div>
                   </div>
                 )}
@@ -173,7 +173,7 @@ export default function LaunchTimeline({ data, tier, context }: { data: Timeline
                 onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.opacity = '0.7'; }}
               >
                 {row.budget_percent >= 15 && (
-                  <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, fontWeight: 500, color: '#fff' }}>{row.budget_percent}%</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: '#fff' }}>{row.budget_percent}%</span>
                 )}
               </div>
             );
@@ -183,7 +183,7 @@ export default function LaunchTimeline({ data, tier, context }: { data: Timeline
           {ganttRows.map((row, i) => {
             const pc = getPhaseColor(row.phase);
             return (
-              <span key={i} style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, color: pc.color }}>{row.phase}</span>
+              <span key={i} style={{ fontSize: 13, color: pc.color }}>{row.phase}</span>
             );
           })}
         </div>

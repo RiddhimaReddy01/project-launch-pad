@@ -56,8 +56,7 @@ export default function ScoreMethodology({ insight }: { insight: DiscoverInsight
       style={{ backgroundColor: 'rgba(108,92,231,0.03)', border: '1px solid rgba(108,92,231,0.08)' }}
     >
       <p style={{
-        fontFamily: "'Outfit', sans-serif",
-        fontSize: 12,
+        fontSize: 13,
         fontWeight: 400,
         color: 'var(--text-primary)',
         marginBottom: 4,
@@ -65,9 +64,8 @@ export default function ScoreMethodology({ insight }: { insight: DiscoverInsight
         How this score was calculated
       </p>
       <p style={{
-        fontFamily: "'Outfit', sans-serif",
-        fontSize: 11,
-        fontWeight: 300,
+        fontSize: 13,
+        fontWeight: 400,
         color: 'var(--text-muted)',
         lineHeight: 1.5,
         marginBottom: 12,
@@ -83,11 +81,10 @@ export default function ScoreMethodology({ insight }: { insight: DiscoverInsight
           return (
             <div key={key} className="rounded-[8px] p-3" style={{ backgroundColor: 'var(--surface-card)' }}>
               <div className="flex items-center justify-between mb-1.5">
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-primary)' }}>
+                <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
                   {label}
                 </span>
                 <span style={{
-                  fontFamily: "'Outfit', sans-serif",
                   fontSize: 13,
                   fontWeight: 400,
                   color: pct >= 70 ? 'var(--accent-teal)' : pct >= 40 ? 'var(--accent-amber)' : '#8C6B6B',
@@ -95,10 +92,10 @@ export default function ScoreMethodology({ insight }: { insight: DiscoverInsight
                   {pct}%
                 </span>
               </div>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 4 }}>
+              <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 4 }}>
                 {getDesc(value)}
               </p>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.4 }}>
+              <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.4 }}>
                 Method: {getMethod()}
               </p>
             </div>
@@ -108,11 +105,10 @@ export default function ScoreMethodology({ insight }: { insight: DiscoverInsight
 
       {/* Final composite */}
       <div className="mt-3 pt-3 flex items-center justify-between" style={{ borderTop: '1px solid var(--divider-light)' }}>
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 400, color: 'var(--text-primary)' }}>
+        <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
           Composite Score
         </span>
         <span style={{
-          fontFamily: "'Outfit', sans-serif",
           fontSize: 16,
           fontWeight: 400,
           color: composite >= 7 ? 'var(--accent-teal)' : composite >= 4 ? 'var(--accent-amber)' : '#8C6B6B',

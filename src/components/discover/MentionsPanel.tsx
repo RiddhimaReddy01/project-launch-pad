@@ -33,9 +33,8 @@ export default function MentionsPanel({ insight, onClose }: MentionsPanelProps) 
             onClick={onClose}
             className="mb-6 transition-colors duration-200 active:scale-[0.96]"
             style={{
-              fontFamily: "'Outfit', sans-serif",
               fontSize: 13,
-              fontWeight: 300,
+              fontWeight: 400,
               color: 'var(--text-muted)',
             }}
           >
@@ -79,8 +78,7 @@ export default function MentionsPanel({ insight, onClose }: MentionsPanelProps) 
                     rel="noopener noreferrer"
                     className="transition-colors duration-200"
                     style={{
-                      fontFamily: "'Outfit', sans-serif",
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: 400,
                       color: 'var(--accent-primary)',
                     }}
@@ -88,11 +86,11 @@ export default function MentionsPanel({ insight, onClose }: MentionsPanelProps) 
                     {ev.sourceName} ↗
                   </a>
                   {ev.upvotes !== null && (
-                    <span className="font-caption" style={{ fontSize: 12 }}>
+                    <span className="font-caption" style={{ fontSize: 13 }}>
                       ↑ {ev.upvotes}
                     </span>
                   )}
-                  <span className="font-caption" style={{ fontSize: 12 }}>
+                  <span className="font-caption" style={{ fontSize: 13 }}>
                     {ev.date}
                   </span>
                 </div>
@@ -108,7 +106,7 @@ export default function MentionsPanel({ insight, onClose }: MentionsPanelProps) 
             <p className="font-caption" style={{ fontSize: 13 }}>
               Showing {insight.evidence.length} of {insight.mentionCount} mentions
             </p>
-            <p className="font-caption mt-1" style={{ fontSize: 12 }}>
+            <p className="font-caption mt-1" style={{ fontSize: 13 }}>
               Full data available in the complete report
             </p>
           </div>

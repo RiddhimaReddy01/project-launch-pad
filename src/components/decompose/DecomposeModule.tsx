@@ -50,7 +50,7 @@ export default function DecomposeModule() {
             animation: 'spin 0.8s linear infinite',
           }}
         />
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)' }}>
+        <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)' }}>
           Analyzing your idea...
         </span>
       </div>
@@ -60,7 +60,7 @@ export default function DecomposeModule() {
   if (status === 'error') {
     return (
       <div className="flex items-center justify-center gap-4 py-6">
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, color: 'hsl(var(--destructive))' }}>
+        <span style={{ fontSize: 13, color: 'hsl(var(--destructive))' }}>
           {error}
         </span>
         <button
@@ -81,13 +81,13 @@ export default function DecomposeModule() {
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M3 7L6 10L11 4" stroke="var(--accent-primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
+          <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
             {result.stage1.business_type}
           </span>
           {loc && (
             <>
               <span style={{ color: 'var(--divider-light)' }}>/</span>
-              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)' }}>
+              <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)' }}>
                 {loc}
               </span>
             </>
@@ -98,8 +98,7 @@ export default function DecomposeModule() {
               <span
                 className="rounded-full px-2 py-0.5"
                 style={{
-                  fontFamily: "'Outfit', sans-serif",
-                  fontSize: 11,
+                  fontSize: 13,
                   fontWeight: 400,
                   backgroundColor: 'rgba(45,107,82,0.08)',
                   color: 'var(--accent-primary)',

@@ -347,12 +347,12 @@ export default function DiscoverModule() {
                         <span className={`source-chip ${item.platform === 'reddit' ? 'source-chip-reddit' : item.platform === 'yelp' ? 'source-chip-yelp' : 'source-chip-google'}`} style={{ fontWeight: 600 }}>
                           {platformLabel(item.platform)}
                         </span>
-                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>Open source ↗</span>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>Open source ↗</span>
                       </div>
                       <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.6, marginBottom: 8 }}>
                         {item.text.length > 145 ? `${item.text.slice(0, 145)}…` : item.text}
                       </p>
-                      <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.55, margin: 0 }}>
+                      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.55, margin: 0 }}>
                         Related insight: {item.insightTitle}
                         {item.author ? ` · ${item.author}` : ''}
                         {item.date ? ` · ${item.date}` : ''}
@@ -381,7 +381,7 @@ export default function DiscoverModule() {
                       }}>
                       {tab.label}
                       <span className="rounded-full px-2 py-0.5" style={{
-                        fontSize: 10, fontWeight: 700, minWidth: 20, textAlign: 'center',
+                        fontSize: 13, fontWeight: 700, minWidth: 20, textAlign: 'center',
                         backgroundColor: isActive ? 'rgba(8,8,16,0.2)' : 'var(--surface-elevated)',
                         color: isActive ? '#fff' : 'var(--text-muted)',
                       }}>{count}</span>

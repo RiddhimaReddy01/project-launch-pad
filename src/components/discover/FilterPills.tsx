@@ -17,8 +17,7 @@ export default function FilterPills({ selected, onSelect }: FilterPillsProps) {
             className="rounded-full px-4 py-1.5 transition-all duration-200"
             style={{
               fontSize: 13,
-              fontFamily: "'Outfit', sans-serif",
-              fontWeight: isActive ? 400 : 300,
+              fontWeight: 400,
               backgroundColor: isActive ? 'var(--accent-primary)' : 'var(--surface-input)',
               color: isActive ? '#FFFFFF' : 'var(--text-secondary)',
             }}

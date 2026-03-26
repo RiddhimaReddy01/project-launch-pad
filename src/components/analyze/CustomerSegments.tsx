@@ -53,8 +53,8 @@ export default function CustomerSegments({ context, onData, onError, shouldRun =
             onClick={() => setSelected(i)}
             className="rounded-[8px] px-4 py-2 whitespace-nowrap transition-all duration-200"
             style={{
-              fontSize: 12, fontFamily: "'Outfit', sans-serif",
-              fontWeight: selected === i ? 400 : 300,
+              fontSize: 13,
+              fontWeight: selected === i ? 500 : 400,
               backgroundColor: selected === i ? 'var(--text-primary)' : 'transparent',
               color: selected === i ? '#fff' : 'var(--text-muted)',
               border: selected === i ? 'none' : '1px solid var(--divider-light)',
@@ -62,7 +62,7 @@ export default function CustomerSegments({ context, onData, onError, shouldRun =
             }}
           >
             {s.name}
-            <span className="ml-1.5" style={{ fontSize: 10, opacity: 0.7 }}>{s.pain_intensity}/10</span>
+            <span className="ml-1.5" style={{ fontSize: 13, opacity: 0.7 }}>{s.pain_intensity}/10</span>
           </button>
         ))}
       </div>
@@ -71,18 +71,18 @@ export default function CustomerSegments({ context, onData, onError, shouldRun =
         {/* Left: detail */}
         <div className="flex-1">
           <div className="rounded-[12px] p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 18, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 2 }}>{seg.name}</p>
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)', marginBottom: 16 }}>~{fmtSize(seg.estimated_size)} people locally</p>
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.65, marginBottom: 20 }}>{seg.description}</p>
+            <p style={{ fontSize: 18, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 2 }}>{seg.name}</p>
+            <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 16 }}>~{fmtSize(seg.estimated_size)} people locally</p>
+            <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-secondary)', lineHeight: 1.65, marginBottom: 20 }}>{seg.description}</p>
 
             {/* Pain bar */}
             <div className="mb-5">
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Pain Intensity</p>
+              <p style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>Pain Intensity</p>
               <div className="flex items-center gap-1">
                 {Array.from({ length: 10 }).map((_, i) => (
                   <div key={i} className="rounded-[2px]" style={{ width: 22, height: 6, backgroundColor: i < seg.pain_intensity ? 'var(--text-primary)' : 'var(--divider)', opacity: i < seg.pain_intensity ? 0.6 + (i * 0.04) : 0.3 }} />
                 ))}
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, color: 'var(--text-primary)', marginLeft: 8 }}>{seg.pain_intensity}/10</span>
+                <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-primary)', marginLeft: 8 }}>{seg.pain_intensity}/10</span>
               </div>
             </div>
 
@@ -93,11 +93,11 @@ export default function CustomerSegments({ context, onData, onError, shouldRun =
               { label: 'Where to Find Them', value: seg.where_to_find },
             ].map((item) => (
               <div key={item.label} className="mb-4">
-                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>{item.label}</p>
+                <p style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>{item.label}</p>
                 {item.pill ? (
-                  <span className="rounded-full px-3 py-1" style={{ fontSize: 12, fontFamily: "'Outfit', sans-serif", backgroundColor: 'rgba(26,26,26,0.03)', color: 'var(--text-primary)', border: '1px solid var(--divider)' }}>{item.value}</span>
+                  <span className="rounded-full px-3 py-1" style={{ fontSize: 13, backgroundColor: 'rgba(26,26,26,0.03)', color: 'var(--text-primary)', border: '1px solid var(--divider)' }}>{item.value}</span>
                 ) : (
-                  <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{item.value}</p>
+                  <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{item.value}</p>
                 )}
               </div>
             ))}
@@ -107,7 +107,7 @@ export default function CustomerSegments({ context, onData, onError, shouldRun =
         {/* Right: radar + comparison */}
         <div className="lg:w-[280px] flex-shrink-0 flex flex-col gap-3">
           <div className="rounded-[12px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 8, textAlign: 'center' }}>Segment Profile</p>
+            <p style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 8, textAlign: 'center' }}>Segment Profile</p>
             <div style={{ height: 220 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={radarData}>
@@ -120,7 +120,7 @@ export default function CustomerSegments({ context, onData, onError, shouldRun =
           </div>
 
           <div className="rounded-[12px] p-4" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 8 }}>All Segments</p>
+            <p style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 8 }}>All Segments</p>
             <div className="flex flex-col gap-1.5">
               {data.segments.map((s, i) => (
                 <div
@@ -129,10 +129,10 @@ export default function CustomerSegments({ context, onData, onError, shouldRun =
                   style={{ backgroundColor: selected === i ? 'rgba(26,26,26,0.03)' : 'transparent' }}
                   onClick={() => setSelected(i)}
                 >
-                  <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: selected === i ? 400 : 300, color: selected === i ? 'var(--text-primary)' : 'var(--text-muted)' }}>{s.name}</span>
+                  <span style={{ fontSize: 13, fontWeight: 400, color: selected === i ? 'var(--text-primary)' : 'var(--text-muted)' }}>{s.name}</span>
                   <div className="flex items-center gap-2">
-                    <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{fmtSize(s.estimated_size)}</span>
-                    <span style={{ fontSize: 11, fontWeight: 400, color: s.pain_intensity >= 8 ? 'var(--accent-teal)' : s.pain_intensity >= 5 ? 'var(--accent-amber)' : 'hsl(0 84% 60%)' }}>{s.pain_intensity}/10</span>
+                    <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{fmtSize(s.estimated_size)}</span>
+                    <span style={{ fontSize: 13, fontWeight: 400, color: s.pain_intensity >= 8 ? 'var(--accent-teal)' : s.pain_intensity >= 5 ? 'var(--accent-amber)' : 'hsl(0 84% 60%)' }}>{s.pain_intensity}/10</span>
                   </div>
                 </div>
               ))}

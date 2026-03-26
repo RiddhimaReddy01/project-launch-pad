@@ -43,8 +43,8 @@ export default function DiscoverLoading() {
           <div className="rounded-full h-full" style={{ width: `${progress}%`, backgroundColor: 'var(--accent-primary)', transition: 'width 300ms ease-out' }} />
         </div>
         <div className="flex justify-between mt-3">
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>Analyzing sources</span>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{Math.round(progress)}%</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>Analyzing sources</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>{Math.round(progress)}%</span>
         </div>
       </div>
 
@@ -86,7 +86,7 @@ export default function DiscoverLoading() {
                   {step.label}
                 </p>
                 {isActive && (
-                  <p className="animate-fade-in" style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', marginTop: 3 }}>
+                  <p className="animate-fade-in" style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', marginTop: 3 }}>
                     {step.detail}
                   </p>
                 )}

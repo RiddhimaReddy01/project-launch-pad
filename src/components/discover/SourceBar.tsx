@@ -36,7 +36,7 @@ export default function SourceBar({ sources, selectedSourceId, onSelectSource }:
             <span
               className="font-caption"
               style={{
-                fontSize: 12,
+                fontSize: 13,
                 color: isSelected ? 'var(--accent-primary)' : 'var(--text-muted)',
               }}
             >

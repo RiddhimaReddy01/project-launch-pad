@@ -38,7 +38,7 @@ export default function CostBuilder({ data, selectedTier, onSelectTier }: { data
   }, [categories, totalMin, totalMax, selectedTier]);
 
   if (!data?.tiers || !data?.breakdown) {
-    return <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, color: 'var(--text-muted)' }}>Loading cost data...</p>;
+    return <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>Loading cost data...</p>;
   }
 
   const chartData = categories.map(c => ({
@@ -66,16 +66,16 @@ export default function CostBuilder({ data, selectedTier, onSelectTier }: { data
           <p className="section-label">
             Estimated Launch Cost -- {selectedTier.toUpperCase()} Tier
           </p>
-          <button onClick={handleExportCSV} className="btn-secondary rounded-[6px] px-3 py-1.5" style={{ fontSize: 11 }}>
+          <button onClick={handleExportCSV} className="btn-secondary rounded-[6px] px-3 py-1.5" style={{ fontSize: 13 }}>
             Download Spreadsheet
           </button>
         </div>
         <div className="flex items-baseline gap-3 mb-3">
           <span className="font-heading" style={{ fontSize: 28 }}>{formatCurrency(totalMin)}</span>
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-muted)' }}>to</span>
+          <span style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-muted)' }}>to</span>
           <span className="font-heading" style={{ fontSize: 28 }}>{formatCurrency(totalMax)}</span>
         </div>
-        {tier && <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6 }}>{tier.philosophy}</p>}
+        {tier && <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)', lineHeight: 1.6 }}>{tier.philosophy}</p>}
       </div>
 
       {/* Chart toggle + visualization */}
@@ -88,7 +88,7 @@ export default function CostBuilder({ data, selectedTier, onSelectTier }: { data
                 <button key={mode} onClick={() => setViewMode(mode)}
                   className="rounded-[6px] px-2.5 py-1 transition-all duration-200"
                   style={{
-                    fontFamily: "'Outfit', sans-serif", fontSize: 11,
+                    fontSize: 13,
                     backgroundColor: viewMode === mode ? 'var(--text-primary)' : 'transparent',
                     color: viewMode === mode ? '#fff' : 'var(--text-muted)',
                     border: viewMode === mode ? 'none' : '1px solid var(--divider-light)',
@@ -126,7 +126,7 @@ export default function CostBuilder({ data, selectedTier, onSelectTier }: { data
                     dataKey="value"
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                     labelLine={false}
-                    style={{ fontSize: 9, fontFamily: "'Outfit', sans-serif" }}
+                    style={{ fontSize: 9 }}
                   >
                     {pieData.map((entry, i) => <Cell key={i} fill={entry.fill} opacity={0.7} />)}
                   </Pie>
@@ -148,9 +148,9 @@ export default function CostBuilder({ data, selectedTier, onSelectTier }: { data
             <div key={cat.category} className="card-base">
               <button onClick={() => toggleCat(cat.category)} className="w-full text-left p-4 flex items-center justify-between"
                 style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
-                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{cat.category}</p>
+                <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{cat.category}</p>
                 <div className="flex items-center gap-3">
-                  <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
+                  <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-primary)' }}>
                     {formatCurrency(catMin)} -- {formatCurrency(catMax)}
                   </span>
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 200ms' }}>
@@ -164,10 +164,10 @@ export default function CostBuilder({ data, selectedTier, onSelectTier }: { data
                   {cat.items.map(item => (
                     <div key={item.label} className="flex items-center justify-between py-2.5 px-2 rounded-[6px]">
                       <div className="flex-1">
-                        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)' }}>{item.label}</p>
-                        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 300, color: 'var(--text-muted)', marginTop: 2 }}>{item.note}</p>
+                        <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)' }}>{item.label}</p>
+                        <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)', marginTop: 2 }}>{item.note}</p>
                       </div>
-                      <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 400, color: 'var(--text-primary)', whiteSpace: 'nowrap', marginLeft: 16 }}>
+                      <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-primary)', whiteSpace: 'nowrap', marginLeft: 16 }}>
                         {formatCurrency(item.min)} -- {formatCurrency(item.max)}
                       </span>
                     </div>

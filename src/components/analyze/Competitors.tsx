@@ -17,18 +17,18 @@ function CompetitorCard({ comp, index }: { comp: Competitor; index: number }) {
     <div className="card-base transition-all duration-200" style={{ border: `1px solid ${open ? 'var(--divider-section)' : 'var(--divider)'}` }}>
       <button onClick={() => setOpen(!open)} className="w-full text-left p-5 flex items-start gap-4" style={{ cursor: 'pointer', border: 'none', background: 'none' }}>
         <div className="flex-shrink-0 flex items-center justify-center rounded-full" style={{ width: 36, height: 36, backgroundColor: threat.bg, border: `1px solid ${threat.color}20` }}>
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 400, color: threat.color }}>
+          <span style={{ fontSize: 13, fontWeight: 400, color: threat.color }}>
             {comp.rating ? comp.rating.toFixed(1) : '--'}
           </span>
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-1">
-            <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{comp.name}</span>
-            <span className="rounded-full px-2 py-0.5" style={{ fontSize: 9, letterSpacing: '0.04em', backgroundColor: threat.bg, color: threat.color, border: `1px solid ${threat.color}20` }}>{threat.label} threat</span>
+            <span style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{comp.name}</span>
+            <span className="rounded-full px-2 py-0.5" style={{ fontSize: 13, letterSpacing: '0.04em', backgroundColor: threat.bg, color: threat.color, border: `1px solid ${threat.color}20` }}>{threat.label} threat</span>
           </div>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}>{comp.location} / {comp.price_range}</p>
+          <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)' }}>{comp.location} / {comp.price_range}</p>
         </div>
-        <span style={{ fontSize: 12, color: 'var(--text-muted)', transform: open ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 200ms', display: 'inline-block' }}>
+        <span style={{ fontSize: 13, color: 'var(--text-muted)', transform: open ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 200ms', display: 'inline-block' }}>
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </span>
       </button>
@@ -39,15 +39,15 @@ function CompetitorCard({ comp, index }: { comp: Competitor; index: number }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
             <div className="rounded-[8px] p-3" style={{ backgroundColor: 'rgba(91,140,126,0.03)', border: '1px solid rgba(91,140,126,0.08)' }}>
               <p className="section-label" style={{ color: 'var(--accent-teal)', marginBottom: 4 }}>Strength</p>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{comp.key_strength}</p>
+              <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{comp.key_strength}</p>
             </div>
             <div className="rounded-[8px] p-3" style={{ backgroundColor: 'rgba(196,69,62,0.03)', border: '1px solid rgba(196,69,62,0.08)' }}>
               <p className="section-label" style={{ color: 'hsl(var(--destructive))', marginBottom: 4 }}>Gap</p>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{comp.key_gap}</p>
+              <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{comp.key_gap}</p>
             </div>
           </div>
           {comp.url && (
-            <a href={comp.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--accent-primary)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+            <a href={comp.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent-primary)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
               View website
             </a>
           )}
@@ -103,7 +103,7 @@ export default function Competitors({ context, onData, onError, shouldRun = true
               <Tooltip content={({ payload }) => {
                 if (!payload?.[0]) return null;
                 const d = payload[0].payload;
-                return <div className="card-base px-3 py-1.5" style={{ fontSize: 11, fontFamily: "'Outfit', sans-serif" }}>{d.name}</div>;
+                return <div className="card-base px-3 py-1.5" style={{ fontSize: 13 }}>{d.name}</div>;
               }} />
               <Scatter data={scatterData}>
                 {scatterData.map((d, i) => <Cell key={i} fill={scatterColors[d.threat as keyof typeof scatterColors]} opacity={0.6} />)}
@@ -126,7 +126,7 @@ export default function Competitors({ context, onData, onError, shouldRun = true
             {data.unfilled_gaps.map((gap, i) => (
               <div key={i} className="flex items-start gap-3">
                 <div style={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: 'var(--accent-teal)', marginTop: 6, flexShrink: 0 }} />
-                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{gap}</p>
+                <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{gap}</p>
               </div>
             ))}
           </div>

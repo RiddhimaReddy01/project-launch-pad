@@ -69,7 +69,7 @@ function VisualCard({ configKey, label, value, onSave }: VisualCardProps) {
           >
             <Icon size={16} color="#fff" strokeWidth={2} />
           </div>
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: config.color }}>
+          <span style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: config.color }}>
             {label}
           </span>
         </div>
@@ -77,7 +77,7 @@ function VisualCard({ configKey, label, value, onSave }: VisualCardProps) {
           onClick={() => { if (editing) { onSave(draft); setEditing(false); } else setEditing(true); }}
           className="flex items-center gap-1 rounded-md px-2 py-1 transition-all duration-150"
           style={{
-            fontSize: 11, fontWeight: 400, fontFamily: "'Outfit', sans-serif",
+            fontSize: 13, fontWeight: 400,
             color: editing ? '#fff' : config.color,
             backgroundColor: editing ? config.color : 'transparent',
             border: 'none', cursor: 'pointer',
@@ -135,7 +135,7 @@ function VisualListCard({ label, items, onSave }: VisualListCardProps) {
           >
             <Icon size={16} color="#fff" strokeWidth={2} />
           </div>
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: config.color }}>
+          <span style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: config.color }}>
             {label}
           </span>
         </div>
@@ -143,7 +143,7 @@ function VisualListCard({ label, items, onSave }: VisualListCardProps) {
           onClick={() => { if (editing) { onSave(draft.split('\n').map(s => s.trim()).filter(Boolean)); setEditing(false); } else setEditing(true); }}
           className="flex items-center gap-1 rounded-md px-2 py-1 transition-all duration-150"
           style={{
-            fontSize: 11, fontWeight: 400, fontFamily: "'Outfit', sans-serif",
+            fontSize: 13, fontWeight: 400,
             color: editing ? '#fff' : config.color,
             backgroundColor: editing ? config.color : 'transparent',
             border: 'none', cursor: 'pointer',
@@ -158,7 +158,7 @@ function VisualListCard({ label, items, onSave }: VisualListCardProps) {
           onChange={(e) => setDraft(e.target.value)}
           rows={Math.max(3, items.length + 1)}
           className="w-full rounded-lg px-3 py-2.5 resize-none"
-          style={{ fontSize: 14, fontWeight: 300, color: 'var(--text-primary)', backgroundColor: 'var(--surface-card)', border: `1px solid ${config.border}`, outline: 'none', lineHeight: 1.6 }}
+          style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', backgroundColor: 'var(--surface-card)', border: `1px solid ${config.border}`, outline: 'none', lineHeight: 1.6 }}
           placeholder="One per line"
         />
       ) : (
@@ -297,7 +297,7 @@ export default function UnderstandModule() {
         <p className="font-heading" style={{ fontSize: 24, marginBottom: 6 }}>
           Understand Your Idea
         </p>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+        <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
           These four parameters shape all downstream research. Edit them to refine your results.
         </p>
       </div>
@@ -305,7 +305,7 @@ export default function UnderstandModule() {
       {/* Idea input area */}
       {status === 'idle' && (
         <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1.5px solid var(--divider)' }}>
-          <label style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+          <label style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
             Describe your business idea
           </label>
           <textarea
@@ -314,7 +314,7 @@ export default function UnderstandModule() {
             placeholder="e.g. A healthy meal prep delivery service in Austin, TX targeting busy professionals"
             rows={3}
             className="w-full mt-3 rounded-lg px-4 py-3 resize-none"
-            style={{ fontSize: 15, fontWeight: 300, lineHeight: 1.6, color: 'var(--text-primary)', backgroundColor: 'var(--surface-input)', border: '1.5px solid var(--divider)', outline: 'none' }}
+            style={{ fontSize: 15, fontWeight: 400, lineHeight: 1.6, color: 'var(--text-primary)', backgroundColor: 'var(--surface-input)', border: '1.5px solid var(--divider)', outline: 'none' }}
             onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
             onBlur={(e) => e.currentTarget.style.borderColor = 'var(--divider)'}
           />
@@ -336,7 +336,7 @@ export default function UnderstandModule() {
         <>
           <div className="flex items-center justify-center gap-3 py-8">
             <div className="rounded-full" style={{ width: 18, height: 18, border: '2px solid var(--divider)', borderTopColor: 'var(--accent-primary)', animation: 'spin 0.8s linear infinite' }} />
-            <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-secondary)' }}>Breaking down your idea...</span>
+            <span style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-secondary)' }}>Breaking down your idea...</span>
           </div>
           <ResultSkeleton />
         </>
@@ -366,7 +366,7 @@ export default function UnderstandModule() {
             )}
             <div className="flex items-center gap-3 ml-auto">
               <button onClick={() => { hasRun.current = false; runDecompose(); }}
-                className="btn-secondary flex items-center gap-1.5" style={{ fontSize: 12 }}>
+                className="btn-secondary flex items-center gap-1.5" style={{ fontSize: 13 }}>
                 <RotateCcw size={12} />
                 Re-analyze
               </button>
@@ -374,7 +374,7 @@ export default function UnderstandModule() {
                 <button onClick={handleSave} disabled={saveStatus === 'saving'}
                   className="btn-secondary flex items-center gap-1.5"
                   style={{
-                    fontSize: 12,
+                    fontSize: 13,
                     color: saveStatus === 'saved' ? 'var(--accent-primary)' : undefined,
                     backgroundColor: saveStatus === 'saved' ? 'var(--accent-primary-light)' : undefined,
                     borderColor: saveStatus === 'saved' ? 'rgba(45,107,82,0.2)' : undefined,
@@ -416,7 +416,7 @@ export default function UnderstandModule() {
             />
           </div>
 
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-secondary)', textAlign: 'center', marginTop: 8 }}>
+          <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', textAlign: 'center', marginTop: 8 }}>
             Edit any field above — your changes will flow into Discover, Analyze, and all downstream research.
           </p>
 

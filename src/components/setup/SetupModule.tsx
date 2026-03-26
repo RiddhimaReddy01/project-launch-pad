@@ -14,11 +14,13 @@ type TierId = 'lean' | 'mid' | 'premium';
 
 const TIER_MONOS: Record<string, string> = { lean: 'L', mid: 'M', premium: 'P' };
 
+const TAB_COLORS: Record<string, string> = { costs: '#008A05', suppliers: '#E07912', team: '#914EDB', timeline: '#428BCA' };
+
 const TABS = [
-  { key: 'costs' as const, label: 'Costs', mono: '$', subtitle: 'Launch budget by tier', icon: '💰' },
-  { key: 'suppliers' as const, label: 'Suppliers', mono: 'S', subtitle: 'Tier-appropriate vendors', icon: '🏪' },
-  { key: 'team' as const, label: 'Team', mono: 'T', subtitle: 'Year 1 hiring plan', icon: '👥' },
-  { key: 'timeline' as const, label: 'Timeline', mono: 'R', subtitle: '4-phase roadmap', icon: '📅' },
+  { key: 'costs' as const, label: 'Costs', mono: '$', subtitle: 'Launch budget by tier' },
+  { key: 'suppliers' as const, label: 'Suppliers', mono: 'S', subtitle: 'Tier-appropriate vendors' },
+  { key: 'team' as const, label: 'Team', mono: 'T', subtitle: 'Year 1 hiring plan' },
+  { key: 'timeline' as const, label: 'Timeline', mono: 'R', subtitle: '4-phase roadmap' },
 ];
 
 type TabKey = typeof TABS[number]['key'];
@@ -294,7 +296,7 @@ export default function SetupModule() {
                 <div className="flex items-center gap-2.5 mb-3">
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    width: 28, height: 28, borderRadius: 8, fontSize: 12, fontWeight: 700,
+                    width: 28, height: 28, borderRadius: 8, fontSize: 13, fontWeight: 700,
                     backgroundColor: isSelected ? 'var(--color-accent)' : 'var(--surface-elevated)',
                     color: isSelected ? '#fff' : 'var(--text-muted)',
                   }}>
@@ -435,7 +437,13 @@ export default function SetupModule() {
                 </div>
               )}
               <div className="flex items-center gap-2 mb-2">
-                <span style={{ fontSize: 20 }}>{tab.icon}</span>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: 28, height: 28, borderRadius: 8,
+                  fontSize: 13, fontWeight: 700,
+                  backgroundColor: `${TAB_COLORS[tab.key]}14`,
+                  color: TAB_COLORS[tab.key],
+                }}>{tab.mono}</span>
                 {isCompleted && (
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ marginLeft: 'auto' }}>
                     <circle cx="7" cy="7" r="6.5" fill="var(--color-accent)" />
@@ -444,7 +452,7 @@ export default function SetupModule() {
                 )}
               </div>
               <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>{tab.label}</p>
-              <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.4 }}>{tab.subtitle}</p>
+              <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.4 }}>{tab.subtitle}</p>
             </button>
           );
         })}

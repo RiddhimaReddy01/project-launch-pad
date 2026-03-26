@@ -16,15 +16,15 @@ const RiskMatrix = lazy(() => import('./RiskMatrix'));
 const LocationIntel = lazy(() => import('./LocationIntel'));
 const CompetitiveMoat = lazy(() => import('./CompetitiveMoat'));
 
-const MODULE_DEFS: { key: SectionKey; label: string; mono: string; subtitle: string; icon: string; color: string }[] = [
-  { key: 'opportunity', label: 'Opportunity', mono: 'O', subtitle: 'TAM / SAM / SOM sizing', icon: '📊', color: '#428BCA' },
-  { key: 'customers', label: 'Customers', mono: 'C', subtitle: 'Segment analysis', icon: '👥', color: '#914EDB' },
-  { key: 'competitors', label: 'Competitors', mono: 'X', subtitle: 'Landscape & gaps', icon: '⚔️', color: '#E07912' },
-  { key: 'rootcause', label: 'Root Cause', mono: 'R', subtitle: 'Strategic friction', icon: '🔍', color: '#C13515' },
-  { key: 'costs', label: 'Costs', mono: '$', subtitle: 'Launch budget', icon: '💰', color: '#008A05' },
-  { key: 'risk', label: 'Risk', mono: 'K', subtitle: 'Risk assessment', icon: '⚠️', color: '#E07912' },
-  { key: 'location', label: 'Location', mono: 'L', subtitle: 'Location intelligence', icon: '📍', color: '#428BCA' },
-  { key: 'moat', label: 'Moat', mono: 'M', subtitle: 'Competitive defensibility', icon: '🏰', color: '#914EDB' },
+const MODULE_DEFS: { key: SectionKey; label: string; mono: string; subtitle: string; color: string }[] = [
+  { key: 'opportunity', label: 'Opportunity', mono: 'O', subtitle: 'TAM / SAM / SOM sizing', color: '#428BCA' },
+  { key: 'customers', label: 'Customers', mono: 'C', subtitle: 'Segment analysis', color: '#914EDB' },
+  { key: 'competitors', label: 'Competitors', mono: 'X', subtitle: 'Landscape & gaps', color: '#E07912' },
+  { key: 'rootcause', label: 'Root Cause', mono: 'R', subtitle: 'Strategic friction', color: '#C13515' },
+  { key: 'costs', label: 'Costs', mono: '$', subtitle: 'Launch budget', color: '#008A05' },
+  { key: 'risk', label: 'Risk', mono: 'K', subtitle: 'Risk assessment', color: '#E07912' },
+  { key: 'location', label: 'Location', mono: 'L', subtitle: 'Location intelligence', color: '#428BCA' },
+  { key: 'moat', label: 'Moat', mono: 'M', subtitle: 'Competitive defensibility', color: '#914EDB' },
 ];
 
 const MODULE_QUESTIONS: Record<SectionKey, string> = {
@@ -445,7 +445,13 @@ export default function AnalyzeModule() {
                 </div>
               )}
               <div className="flex items-center gap-2 mb-2">
-                <span style={{ fontSize: 20 }}>{module.icon}</span>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: 28, height: 28, borderRadius: 8,
+                  fontSize: 13, fontWeight: 700,
+                  backgroundColor: `${module.color}14`,
+                  color: module.color,
+                }}>{module.mono}</span>
                 {isCompleted && (
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ marginLeft: 'auto' }}>
                     <circle cx="7" cy="7" r="6.5" fill="var(--color-accent)" />
@@ -454,7 +460,7 @@ export default function AnalyzeModule() {
                 )}
               </div>
               <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>{module.label}</p>
-              <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.4 }}>{module.subtitle}</p>
+              <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.4 }}>{module.subtitle}</p>
             </button>
           );
         })}
@@ -537,7 +543,7 @@ export default function AnalyzeModule() {
               <p className="font-heading" style={{ fontSize: 20, marginBottom: 8, textAlign: 'center' }}>
                 Ready to research
               </p>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-muted)', textAlign: 'center', maxWidth: 420, lineHeight: 1.7, marginBottom: 24 }}>
+              <p style={{ fontSize: 15, fontWeight: 400, color: 'var(--text-muted)', textAlign: 'center', maxWidth: 420, lineHeight: 1.7, marginBottom: 24 }}>
                 Run this section when you want a focused answer for this part of the idea.
               </p>
               <button
@@ -554,10 +560,10 @@ export default function AnalyzeModule() {
 
           {activeSec.status === 'error' && (
             <div className="flex flex-col items-center justify-center" style={{ minHeight: 300 }}>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>
+              <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-primary)', marginBottom: 4 }}>
                 This section couldn't load right now.
               </p>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 400, color: 'var(--text-muted)', marginBottom: 18 }}>
+              <p style={{ fontSize: 15, fontWeight: 400, color: 'var(--text-muted)', marginBottom: 18 }}>
                 {activeSec.error || 'Give it another shot — sometimes a retry does the trick.'}
               </p>
               <button
@@ -587,14 +593,14 @@ export default function AnalyzeModule() {
           {activeFindings.length > 0 && activeSec.status === 'completed' && (
             <div className="mt-12 rounded-[14px] p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
               <div className="flex items-center justify-between mb-1">
-                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
+                <p style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
                   Key findings — {MODULE_DEFS.find(m => m.key === activeModule)?.label}
                 </p>
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)' }}>
+                <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
                   {Array.from(selectedFindings).filter(f => activeFindings.some(af => af.text === f)).length} saved
                 </span>
               </div>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 400, color: 'var(--text-muted)', marginBottom: 18 }}>
+              <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-muted)', marginBottom: 18 }}>
                 Save findings to your dashboard for validation
               </p>
               <div className="flex flex-col gap-1.5">
@@ -603,7 +609,7 @@ export default function AnalyzeModule() {
                   const isSaving = savingFinding === finding.id;
                   return (
                     <div key={finding.id} className="flex items-start gap-3 rounded-[8px] p-3 transition-colors duration-150" style={{ backgroundColor: isSelected ? 'rgba(45,139,117,0.03)' : 'transparent' }}>
-                      <span className="flex-1" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: isSelected ? 500 : 400, color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)', lineHeight: 1.65 }}>
+                      <span className="flex-1" style={{ fontSize: 15, fontWeight: isSelected ? 500 : 400, color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)', lineHeight: 1.65 }}>
                         {finding.text}
                       </span>
                       <button
@@ -611,7 +617,7 @@ export default function AnalyzeModule() {
                         disabled={isSaving}
                         className="rounded-[6px] px-3 py-1 transition-all duration-200 flex-shrink-0"
                         style={{
-                          fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 500,
+                          fontSize: 13, fontWeight: 500,
                           backgroundColor: isSelected ? 'var(--text-primary)' : 'transparent',
                           color: isSelected ? '#fff' : 'var(--text-muted)',
                           border: isSelected ? 'none' : '1px solid var(--divider)',

@@ -49,7 +49,6 @@ export default function MethodSelector({ selected, onToggle }: Props) {
             <div className="flex items-center justify-between" style={{ marginBottom: 12 }}>
               <span
                 style={{
-                  fontFamily: "'Outfit', sans-serif",
                   fontSize: 15,
                   fontWeight: 400,
                   color: 'var(--text-primary)',
@@ -78,15 +77,14 @@ export default function MethodSelector({ selected, onToggle }: Props) {
               </div>
             </div>
 
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: 16 }}>
+            <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: 16 }}>
               {m.description}
             </p>
 
             <div className="flex items-center" style={{ gap: 12 }}>
               <span
                 style={{
-                  fontFamily: "'Outfit', sans-serif",
-                  fontSize: 12,
+                  fontSize: 13,
                   fontWeight: 400,
                   color: EFFORT_COLORS[m.effort],
                   padding: '3px 8px',
@@ -96,7 +94,7 @@ export default function MethodSelector({ selected, onToggle }: Props) {
               >
                 {m.effort} effort
               </span>
-              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 300, color: 'var(--text-muted)' }}>
+              <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)' }}>
                 {SPEED_LABELS[m.speed]}
               </span>
             </div>

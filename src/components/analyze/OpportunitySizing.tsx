@@ -83,7 +83,7 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
             </p>
           </div>
           <div className="rounded-xl px-4 py-3" style={{ backgroundColor: 'var(--surface-subtle)', border: '1px solid var(--divider)' }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--accent-primary)', textTransform: 'uppercase', marginBottom: 4 }}>
+            <p style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--accent-primary)', textTransform: 'uppercase', marginBottom: 4 }}>
               Repeat customer base
             </p>
             <p className="font-heading" style={{ fontSize: 24, letterSpacing: '-0.03em' }}>{fmtNum(data.funnel.repeat_customers)}</p>
@@ -98,11 +98,11 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
             return (
               <div key={step.name}>
                 <div className="flex items-center justify-between mb-1.5">
-                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{step.name}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>{step.name}</span>
                   <div className="flex items-center gap-3">
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)' }}>{fmtNum(step.value)}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>{fmtNum(step.value)}</span>
                     {i > 0 && (
-                      <span style={{ fontSize: 10, fontWeight: 700, color: colors[i], letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: colors[i], letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                         {conversion}% retained
                       </span>
                     )}
@@ -131,11 +131,11 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
               <div className="flex items-center gap-2 mb-2">
                 <span className="section-label">{t.key}</span>
                 <span style={{ width: 1, height: 10, backgroundColor: 'var(--divider-section)' }} />
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, letterSpacing: '0.04em', color: conf.color }}>{conf.label}</span>
+                <span style={{ fontSize: 13, letterSpacing: '0.04em', color: conf.color }}>{conf.label}</span>
               </div>
               <p className="font-heading" style={{ fontSize: 28, letterSpacing: '-0.02em', marginBottom: 4 }}>{t.formatted}</p>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.6 }}>{t.label}</p>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 8, lineHeight: 1.6 }}>{t.methodology}</p>
+              <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.6 }}>{t.label}</p>
+              <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 8, lineHeight: 1.6 }}>{t.methodology}</p>
             </div>
           );
         })}
@@ -144,13 +144,13 @@ export default function OpportunitySizing({ context, onData, onError, shouldRun 
 
       {/* Customer funnel — visual pyramid */}
       {/* Methodology toggle */}
-      <button onClick={() => setMethodOpen(!methodOpen)} title="See how the market size estimates were calculated" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+      <button onClick={() => setMethodOpen(!methodOpen)} title="See how the market size estimates were calculated" style={{ fontSize: 13, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
         {methodOpen ? 'Hide methodology' : 'How we estimated this'}
       </button>
       {methodOpen && (
         <div className="card-base mt-3 p-4">
           {tiers.map(t => (
-            <p key={t.key} style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', marginBottom: 8, lineHeight: 1.5 }}>
+            <p key={t.key} style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', marginBottom: 8, lineHeight: 1.5 }}>
               <span style={{ fontWeight: 400, color: 'var(--text-primary)' }}>{t.key}:</span> {t.methodology}
             </p>
           ))}

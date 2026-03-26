@@ -38,17 +38,17 @@ export default function CompetitiveMoat({ context, onData, onError, shouldRun = 
       {/* Overall moat score */}
       <div className="rounded-[12px] p-6 mb-8 flex items-center gap-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
         <div style={{ width: 72, height: 72, borderRadius: '50%', border: `3px solid ${scoreColor}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 400, color: scoreColor }}>{data.overall_score}</span>
+          <span style={{ fontSize: 24, fontWeight: 400, color: scoreColor }}>{data.overall_score}</span>
         </div>
         <div>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: scoreColor, marginBottom: 4 }}>Moat Score /10</p>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 300, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{data.recommendation}</p>
+          <p style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: scoreColor, marginBottom: 4 }}>Moat Score /10</p>
+          <p style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{data.recommendation}</p>
         </div>
       </div>
 
       {/* Ranked dimensions */}
       <div className="mb-8">
-        <p className="font-caption" style={{ fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Defensibility Dimensions</p>
+        <p className="font-caption" style={{ fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Defensibility Dimensions</p>
         <div className="rounded-[12px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
           <div className="flex flex-col gap-4">
             {sortedDimensions.map((dim, i) => {
@@ -74,11 +74,11 @@ export default function CompetitiveMoat({ context, onData, onError, shouldRun = 
       {/* Strongest & weakest */}
       <div className="grid grid-cols-2 gap-3 mb-8">
         <div className="rounded-[12px] p-4" style={{ backgroundColor: 'rgba(45,139,117,0.03)', border: '1px solid rgba(45,139,117,0.1)' }}>
-          <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--accent-teal)', marginBottom: 6 }}>Strongest</p>
+          <p style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--accent-teal)', marginBottom: 6 }}>Strongest</p>
           <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>{data.strongest}</p>
         </div>
         <div className="rounded-[12px] p-4" style={{ backgroundColor: 'rgba(239,68,68,0.03)', border: '1px solid rgba(239,68,68,0.1)' }}>
-          <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'hsl(0 84% 60%)', marginBottom: 6 }}>Weakest</p>
+          <p style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'hsl(0 84% 60%)', marginBottom: 6 }}>Weakest</p>
           <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>{data.weakest}</p>
         </div>
       </div>

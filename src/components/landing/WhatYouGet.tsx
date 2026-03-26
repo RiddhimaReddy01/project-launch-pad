@@ -89,7 +89,7 @@ export default function WhatYouGet() {
                     backgroundColor: 'var(--surface-card)',
                     border: '1px solid var(--divider)',
                     borderRadius: 10,
-                    fontSize: 12,
+                    fontSize: 13,
                     fontWeight: 400,
             color: 'var(--text-secondary)',
                     lineHeight: 1.6,

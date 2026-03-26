@@ -41,7 +41,7 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
               style={{
                 width: 34, height: 34, borderRadius: 8,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 12, fontWeight: 700,
+                fontSize: 13, fontWeight: 700,
                 backgroundColor: isActive ? 'var(--accent-primary)' : m.status === 'completed' ? 'rgba(0,212,230,0.1)' : 'transparent',
                 color: isActive ? '#080810' : m.status === 'completed' ? 'var(--accent-primary)' : 'var(--text-muted)',
                 border: 'none', cursor: 'pointer',
@@ -52,7 +52,7 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
           );
         })}
         <div className="mt-auto pt-3" style={{ borderTop: '1px solid var(--divider)' }}>
-          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>
             {completedCount}/{modules.length}
           </span>
         </div>
@@ -104,7 +104,7 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: 28, height: 28, borderRadius: 8,
-                  fontSize: 12, fontWeight: 700,
+                  fontSize: 13, fontWeight: 700,
                   backgroundColor: isActive ? 'var(--accent-primary)' : m.status === 'completed' ? 'rgba(0,212,230,0.1)' : 'var(--surface-elevated)',
                   color: isActive ? '#080810' : m.status === 'completed' ? 'var(--accent-primary)' : 'var(--text-muted)',
                   transition: 'all 200ms ease-out',
@@ -120,7 +120,7 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
                   }}>
                     {m.label}
                   </p>
-                  <p style={{ fontSize: 10, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.3 }}>
+                  <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.3 }}>
                     {m.subtitle}
                   </p>
                 </div>
@@ -128,11 +128,11 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
 
               <div className="flex items-center gap-1.5 mt-2 ml-9">
                 <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: statusColor, boxShadow: m.status === 'completed' ? `0 0 6px ${statusColor}` : 'none' }} className={m.status === 'loading' ? 'animate-pulse' : ''} />
-                <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)' }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>
                   {m.status === 'idle' ? 'Not run' : m.status === 'loading' ? 'Running...' : m.status === 'completed' ? 'Complete' : m.status === 'error' ? 'Failed' : 'Stale'}
                 </span>
                 {m.lastRun && m.status === 'completed' && (
-                  <span style={{ fontSize: 9, fontWeight: 500, color: 'var(--text-muted)', marginLeft: 'auto' }}>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)', marginLeft: 'auto' }}>
                     {m.lastRun}
                   </span>
                 )}
@@ -143,7 +143,7 @@ export default function ModuleRail({ modules, activeModule, onSelect, collapsed,
       </div>
 
       <div className="px-4 pt-3 mt-auto" style={{ borderTop: '1px solid var(--divider)' }}>
-        <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>
           {completedCount} of {modules.length} complete
         </p>
       </div>
