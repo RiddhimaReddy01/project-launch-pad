@@ -15,10 +15,10 @@ type TierId = 'lean' | 'mid' | 'premium';
 const TIER_MONOS: Record<string, string> = { lean: 'L', mid: 'M', premium: 'P' };
 
 const TABS = [
-  { key: 'costs' as const, label: 'Costs', mono: '$', subtitle: 'Launch budget by tier' },
-  { key: 'suppliers' as const, label: 'Suppliers', mono: 'S', subtitle: 'Tier-appropriate vendors' },
-  { key: 'team' as const, label: 'Team', mono: 'T', subtitle: 'Year 1 hiring plan' },
-  { key: 'timeline' as const, label: 'Timeline', mono: 'R', subtitle: '4-phase roadmap' },
+  { key: 'costs' as const, label: 'Costs', mono: '$', subtitle: 'Launch budget by tier', icon: '💰' },
+  { key: 'suppliers' as const, label: 'Suppliers', mono: 'S', subtitle: 'Tier-appropriate vendors', icon: '🏪' },
+  { key: 'team' as const, label: 'Team', mono: 'T', subtitle: 'Year 1 hiring plan', icon: '👥' },
+  { key: 'timeline' as const, label: 'Timeline', mono: 'R', subtitle: '4-phase roadmap', icon: '📅' },
 ];
 
 type TabKey = typeof TABS[number]['key'];
@@ -241,7 +241,20 @@ export default function SetupModule() {
             Your costs, vendors, team plan, and roadmap — tailored to the {selectedTier} launch strategy.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {/* Completion ring */}
+          <div style={{ position: 'relative', width: 48, height: 48 }}>
+            <svg width="48" height="48" viewBox="0 0 48 48">
+              <circle cx="24" cy="24" r="20" fill="none" stroke="var(--divider)" strokeWidth="3" />
+              <circle cx="24" cy="24" r="20" fill="none" stroke="var(--color-accent)" strokeWidth="3"
+                strokeDasharray={`${(completedCount / 4) * 125.6} 125.6`}
+                strokeLinecap="round" transform="rotate(-90 24 24)"
+                style={{ transition: 'stroke-dasharray 600ms ease-out' }} />
+            </svg>
+            <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
+              {completedCount}/4
+            </span>
+          </div>
           {completedCount > 0 && (
             <>
               <button onClick={handleSave} className="btn-primary rounded-lg px-5 py-2.5" style={{ fontSize: 14, fontWeight: 600 }}>Save</button>
@@ -250,7 +263,6 @@ export default function SetupModule() {
               </button>
             </>
           )}
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>{completedCount}/4</span>
         </div>
       </div>
 
@@ -399,23 +411,40 @@ export default function SetupModule() {
         </p>
       </div>
 
-      {/* Tab navigation */}
-      <div className="flex gap-1 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider-section)' }}>
+      {/* Tab navigation — visual cards */}
+      <div className="grid gap-3 mb-8" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
         {TABS.map(tab => {
           const isActive = activeTab === tab.key;
           const state = { costs: costsState, suppliers: suppliersState, team: teamState, timeline: timelineState }[tab.key];
+          const isCompleted = state.status === 'completed';
+          const isLoading = state.status === 'loading';
           return (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-              className="relative flex items-center gap-2.5 px-5 py-3.5 transition-all duration-200 whitespace-nowrap"
-              style={{ fontSize: 15, fontWeight: isActive ? 600 : 500, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                width: 22, height: 22, borderRadius: 6, fontSize: 10, fontWeight: 700,
-                backgroundColor: state.status === 'completed' ? 'var(--color-accent)' : isActive ? 'var(--color-accent-soft)' : 'var(--surface-elevated)',
-                color: state.status === 'completed' ? '#fff' : isActive ? 'var(--color-accent)' : 'var(--text-muted)',
-              }}>{tab.mono}</span>
-              {tab.label}
-              {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 2, backgroundColor: 'var(--accent-primary)', borderRadius: 1 }} />}
+              className="text-left rounded-xl p-4 transition-all duration-200 active:scale-[0.97]"
+              style={{
+                backgroundColor: isActive ? 'var(--color-accent-soft)' : 'var(--surface-card)',
+                border: isActive ? '2px solid var(--accent-primary)' : '1px solid var(--divider)',
+                cursor: 'pointer',
+                boxShadow: isActive ? '0 4px 16px rgba(255,56,92,0.12)' : 'none',
+                position: 'relative',
+                overflow: 'hidden',
+              }}>
+              {isLoading && (
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3 }}>
+                  <div className="animate-pulse" style={{ height: '100%', width: '60%', backgroundColor: 'var(--color-accent)', borderRadius: 2 }} />
+                </div>
+              )}
+              <div className="flex items-center gap-2 mb-2">
+                <span style={{ fontSize: 20 }}>{tab.icon}</span>
+                {isCompleted && (
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ marginLeft: 'auto' }}>
+                    <circle cx="7" cy="7" r="6.5" fill="var(--color-accent)" />
+                    <path d="M4.5 7L6.5 9L9.5 5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </div>
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>{tab.label}</p>
+              <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.4 }}>{tab.subtitle}</p>
             </button>
           );
         })}

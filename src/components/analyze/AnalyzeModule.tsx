@@ -16,15 +16,15 @@ const RiskMatrix = lazy(() => import('./RiskMatrix'));
 const LocationIntel = lazy(() => import('./LocationIntel'));
 const CompetitiveMoat = lazy(() => import('./CompetitiveMoat'));
 
-const MODULE_DEFS: { key: SectionKey; label: string; mono: string; subtitle: string }[] = [
-  { key: 'opportunity', label: 'Opportunity', mono: 'O', subtitle: 'TAM / SAM / SOM sizing' },
-  { key: 'customers', label: 'Customers', mono: 'C', subtitle: 'Segment analysis' },
-  { key: 'competitors', label: 'Competitors', mono: 'X', subtitle: 'Landscape & gaps' },
-  { key: 'rootcause', label: 'Root Cause', mono: 'R', subtitle: 'Strategic friction' },
-  { key: 'costs', label: 'Costs', mono: '$', subtitle: 'Launch budget' },
-  { key: 'risk', label: 'Risk', mono: 'K', subtitle: 'Risk assessment' },
-  { key: 'location', label: 'Location', mono: 'L', subtitle: 'Location intelligence' },
-  { key: 'moat', label: 'Moat', mono: 'M', subtitle: 'Competitive defensibility' },
+const MODULE_DEFS: { key: SectionKey; label: string; mono: string; subtitle: string; icon: string; color: string }[] = [
+  { key: 'opportunity', label: 'Opportunity', mono: 'O', subtitle: 'TAM / SAM / SOM sizing', icon: '📊', color: '#428BCA' },
+  { key: 'customers', label: 'Customers', mono: 'C', subtitle: 'Segment analysis', icon: '👥', color: '#914EDB' },
+  { key: 'competitors', label: 'Competitors', mono: 'X', subtitle: 'Landscape & gaps', icon: '⚔️', color: '#E07912' },
+  { key: 'rootcause', label: 'Root Cause', mono: 'R', subtitle: 'Strategic friction', icon: '🔍', color: '#C13515' },
+  { key: 'costs', label: 'Costs', mono: '$', subtitle: 'Launch budget', icon: '💰', color: '#008A05' },
+  { key: 'risk', label: 'Risk', mono: 'K', subtitle: 'Risk assessment', icon: '⚠️', color: '#E07912' },
+  { key: 'location', label: 'Location', mono: 'L', subtitle: 'Location intelligence', icon: '📍', color: '#428BCA' },
+  { key: 'moat', label: 'Moat', mono: 'M', subtitle: 'Competitive defensibility', icon: '🏰', color: '#914EDB' },
 ];
 
 const MODULE_QUESTIONS: Record<SectionKey, string> = {
@@ -356,89 +356,105 @@ export default function AnalyzeModule() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-            {/* Run All — parallel */}
-            {completedCount < MODULE_DEFS.length && idea && (
-              <button
-                onClick={async () => {
-                  const remaining = MODULE_DEFS.filter(m => sections[m.key].status !== 'completed').map(m => m.key);
-                  if (remaining.length === 0) return;
-                  // Mark all as loading
-                  setSections(prev => {
-                    const next = { ...prev };
-                    remaining.forEach(k => { next[k] = { ...next[k], status: 'loading', error: undefined }; });
-                    return next;
-                  });
-                  // Run in parallel
-                  const results = await analyzeSectionsParallel(remaining, idea);
-                  setSections(prev => {
-                    const next = { ...prev };
-                    Object.entries(results).forEach(([k, v]) => {
-                      if (v.data) {
-                        next[k as SectionKey] = { data: v.data, status: 'completed', lastRun: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), inputsUsed: { ...inputs, prior_sections: new Set(inputs.prior_sections) } };
-                      } else {
-                        next[k as SectionKey] = { ...next[k as SectionKey], status: 'error', error: v.error };
-                      }
-                    });
-                    // Update shared context
-                    const shared: Record<string, any> = {};
-                    Object.entries(next).forEach(([k, v]) => { if (v.data) shared[k] = v.data; });
-                    setAnalyzeData(shared);
-                    return next;
-                  });
-                  toast.success('All sections researched');
-                }}
-                className="btn-primary rounded-lg px-5 py-2.5"
-                style={{ fontSize: 14, fontWeight: 600 }}
-              >
-                Run all sections
-              </button>
-            )}
-            {completedCount > 0 && (
-              <>
-                <button onClick={handleSave} className="btn-primary rounded-lg px-5 py-2.5" style={{ fontSize: 14, fontWeight: 600 }}>
-                  Save
-                </button>
-                <button onClick={handleExportPDF} disabled={exporting} className="btn-secondary rounded-lg px-5 py-2.5" style={{ fontSize: 14, fontWeight: 600 }}>
-                  {exporting ? 'Exporting…' : 'Export PDF'}
-                </button>
-              </>
-            )}
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>
+        <div className="flex items-center gap-3">
+          {/* Completion ring */}
+          <div style={{ position: 'relative', width: 48, height: 48 }}>
+            <svg width="48" height="48" viewBox="0 0 48 48">
+              <circle cx="24" cy="24" r="20" fill="none" stroke="var(--divider)" strokeWidth="3" />
+              <circle cx="24" cy="24" r="20" fill="none" stroke="var(--color-accent)" strokeWidth="3"
+                strokeDasharray={`${(completedCount / MODULE_DEFS.length) * 125.6} 125.6`}
+                strokeLinecap="round" transform="rotate(-90 24 24)"
+                style={{ transition: 'stroke-dasharray 600ms ease-out' }} />
+            </svg>
+            <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
               {completedCount}/{MODULE_DEFS.length}
             </span>
+          </div>
+
+          {/* Run All — parallel */}
+          {completedCount < MODULE_DEFS.length && idea && (
+            <button
+              onClick={async () => {
+                const remaining = MODULE_DEFS.filter(m => sections[m.key].status !== 'completed').map(m => m.key);
+                if (remaining.length === 0) return;
+                setSections(prev => {
+                  const next = { ...prev };
+                  remaining.forEach(k => { next[k] = { ...next[k], status: 'loading', error: undefined }; });
+                  return next;
+                });
+                const results = await analyzeSectionsParallel(remaining, idea);
+                setSections(prev => {
+                  const next = { ...prev };
+                  Object.entries(results).forEach(([k, v]) => {
+                    if (v.data) {
+                      next[k as SectionKey] = { data: v.data, status: 'completed', lastRun: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), inputsUsed: { ...inputs, prior_sections: new Set(inputs.prior_sections) } };
+                    } else {
+                      next[k as SectionKey] = { ...next[k as SectionKey], status: 'error', error: v.error };
+                    }
+                  });
+                  const shared: Record<string, any> = {};
+                  Object.entries(next).forEach(([k, v]) => { if (v.data) shared[k] = v.data; });
+                  setAnalyzeData(shared);
+                  return next;
+                });
+                toast.success('All sections researched');
+              }}
+              className="btn-primary rounded-lg px-5 py-2.5"
+              style={{ fontSize: 14, fontWeight: 600 }}
+            >
+              Run all sections
+            </button>
+          )}
+          {completedCount > 0 && (
+            <>
+              <button onClick={handleSave} className="btn-primary rounded-lg px-5 py-2.5" style={{ fontSize: 14, fontWeight: 600 }}>
+                Save
+              </button>
+              <button onClick={handleExportPDF} disabled={exporting} className="btn-secondary rounded-lg px-5 py-2.5" style={{ fontSize: 14, fontWeight: 600 }}>
+                {exporting ? 'Exporting…' : 'Export PDF'}
+              </button>
+            </>
+          )}
         </div>
       </div>
 
-      <div className="flex gap-2 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider-section)' }}>
+      {/* Visual section grid */}
+      <div className="grid gap-3 mb-8" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
         {MODULE_DEFS.map((module) => {
           const isActive = activeModule === module.key;
           const state = sections[module.key];
+          const isCompleted = state.status === 'completed';
+          const isLoading = state.status === 'loading';
           return (
             <button
               key={module.key}
               onClick={() => handleSelectModule(module.key)}
-              className="relative flex items-center gap-2.5 px-5 py-3.5 transition-all duration-200 whitespace-nowrap"
+              className="text-left rounded-xl p-4 transition-all duration-200 active:scale-[0.97]"
               style={{
-                fontSize: 15,
-                fontWeight: isActive ? 600 : 500,
-                color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
-                backgroundColor: 'transparent',
-                border: 'none',
+                backgroundColor: isActive ? 'var(--color-accent-soft)' : 'var(--surface-card)',
+                border: isActive ? '2px solid var(--accent-primary)' : '1px solid var(--divider)',
                 cursor: 'pointer',
+                boxShadow: isActive ? '0 4px 16px rgba(255,56,92,0.12)' : 'none',
+                position: 'relative',
+                overflow: 'hidden',
               }}
             >
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                width: 22, height: 22, borderRadius: 999,
-                fontSize: 10, fontWeight: 700,
-                backgroundColor: isActive ? 'var(--color-accent)' : state.status === 'completed' ? 'var(--color-accent-soft)' : 'var(--surface-elevated)',
-                color: isActive ? '#fff' : state.status === 'completed' ? 'var(--color-accent)' : 'var(--text-muted)',
-              }}>
-                {module.mono}
-              </span>
-              {module.label}
-              {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 2, backgroundColor: 'var(--accent-primary)', borderRadius: 1 }} />}
+              {isLoading && (
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3 }}>
+                  <div className="animate-pulse" style={{ height: '100%', width: '60%', backgroundColor: module.color, borderRadius: 2 }} />
+                </div>
+              )}
+              <div className="flex items-center gap-2 mb-2">
+                <span style={{ fontSize: 20 }}>{module.icon}</span>
+                {isCompleted && (
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ marginLeft: 'auto' }}>
+                    <circle cx="7" cy="7" r="6.5" fill="var(--color-accent)" />
+                    <path d="M4.5 7L6.5 9L9.5 5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </div>
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>{module.label}</p>
+              <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', lineHeight: 1.4 }}>{module.subtitle}</p>
             </button>
           );
         })}

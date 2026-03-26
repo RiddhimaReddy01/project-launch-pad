@@ -99,7 +99,7 @@ function SourceSummaryBar({
       </div>
       {segments.length === 0 && (
         <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-muted)', marginTop: 12, marginBottom: 0, lineHeight: 1.7 }}>
-          Source links are still loading or were not included in this saved result yet. Open an insight card to inspect the evidence list.
+          No source distribution data available yet. Open an insight card to inspect the evidence list.
         </p>
       )}
     </div>
@@ -107,9 +107,8 @@ function SourceSummaryBar({
 }
 
 function hasInteractiveSources(result: DiscoverResult): boolean {
-  return result.insights.some(i =>
-    i.sources?.some(s => s.url && s.url !== '#' && s.url.startsWith('http'))
-  );
+  // Always consider sources ready — don't gate on URL quality
+  return result.insights.length > 0;
 }
 
 function buildEvidenceExplorer(
@@ -189,11 +188,8 @@ export default function DiscoverModule() {
 
   useEffect(() => {
     if (!result || status !== 'done') { setReady(false); return; }
-    if (hasInteractiveSources(result)) {
-      const t = setTimeout(() => setReady(true), 300);
-      return () => clearTimeout(t);
-    }
-    const t = setTimeout(() => setReady(true), 1000);
+    // Show results immediately — no artificial delay
+    const t = setTimeout(() => setReady(true), 150);
     return () => clearTimeout(t);
   }, [result, status]);
 
