@@ -6,7 +6,6 @@ import { toast } from 'sonner';
 import type { AnalyzeContext, SectionKey, OpportunityData, CustomersData, CompetitorsData, RootCauseData, CostsData, RiskData, LocationData, MoatData, SectionData } from '@/lib/analyze';
 import { analyzeSectionsParallel } from '@/lib/analyze';
 import SectionSkeleton from './SectionSkeleton';
-import ModuleRail, { type ModuleInfo } from './ModuleRail';
 
 const OpportunitySizing = lazy(() => import('./OpportunitySizing'));
 const CustomerSegments = lazy(() => import('./CustomerSegments'));
@@ -79,7 +78,6 @@ export default function AnalyzeModule() {
   const [sections, setSections] = useState<SectionResults>(() => initSections(analyzeData));
   const [inputs] = useState<InputSelection>({ ...DEFAULT_INPUTS });
   const [selectedFindings, setSelectedFindings] = useState<Set<string>>(new Set());
-  const [railCollapsed, setRailCollapsed] = useState(false);
   const [exporting, setExporting] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -148,12 +146,6 @@ export default function AnalyzeModule() {
   useEffect(() => {
     const el = containerRef.current;
     if (el) requestAnimationFrame(() => el.classList.add('visible'));
-  }, []);
-
-  // Responsive collapse
-  useEffect(() => {
-    const w = window.innerWidth;
-    if (w < 900) { setRailCollapsed(true); }
   }, []);
 
   const handleSectionData = useCallback((section: SectionKey, data: SectionData) => {
@@ -230,20 +222,12 @@ export default function AnalyzeModule() {
     }
   }, [context, sections, selectedFindings, idea]);
 
-  // Module info for rail
-  const moduleInfos: ModuleInfo[] = MODULE_DEFS.map(m => ({
-    ...m,
-    status: sections[m.key].status,
-    lastRun: sections[m.key].lastRun,
-  }));
-
   const completedSections = new Set(
     Object.entries(sections).filter(([, v]) => v.status === 'completed').map(([k]) => k as SectionKey)
   );
   const completedCount = completedSections.size;
 
   const activeSec = sections[activeModule];
-  const shouldRun = activeSec.status === 'idle' || activeSec.status === 'loading';
 
   // Section-specific key findings
   const [savingFinding, setSavingFinding] = useState<string | null>(null);
@@ -353,41 +337,17 @@ export default function AnalyzeModule() {
   );
 
   return (
-    <div ref={containerRef} className="scroll-reveal flex" style={{ minHeight: 'calc(100vh - 240px)', margin: '0 -24px' }}>
-      {/* Left: Module Rail */}
-      <ModuleRail
-        modules={moduleInfos}
-        activeModule={activeModule}
-        onSelect={handleSelectModule}
-        collapsed={railCollapsed}
-        onToggle={() => setRailCollapsed(!railCollapsed)}
-        completedCount={completedCount}
-      />
+    <div ref={containerRef} className="scroll-reveal">
+      <div className="flex items-start justify-between gap-4 mb-8 flex-wrap">
+        <div>
+          <p className="section-label mb-2" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>ANALYZE</p>
+          <p className="font-heading" style={{ fontSize: 30, fontWeight: 700, marginBottom: 6 }}>Business case</p>
+          <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.7, maxWidth: 700 }}>
+            Shape the evidence into a commercial point of view: where demand exists, what blocks adoption, what it costs, and whether the opportunity is strong enough to pursue.
+          </p>
+        </div>
 
-      {/* Center: Output Panel */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        {/* Top bar */}
-        <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-3" style={{ backgroundColor: 'rgba(8,8,16,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid var(--divider)' }}>
-          <div className="flex items-center gap-3">
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              width: 30, height: 30, borderRadius: 8,
-              fontSize: 12, fontWeight: 700,
-              backgroundColor: 'var(--accent-primary)', color: '#080810',
-            }}>
-              {MODULE_DEFS.find(m => m.key === activeModule)?.mono}
-            </span>
-            <div>
-              <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>
-                {MODULE_DEFS.find(m => m.key === activeModule)?.label}
-              </p>
-              <p style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-muted)' }}>
-                {MODULE_DEFS.find(m => m.key === activeModule)?.subtitle}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
             {/* Run All — parallel */}
             {completedCount < MODULE_DEFS.length && idea && (
               <button
@@ -438,11 +398,44 @@ export default function AnalyzeModule() {
             <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>
               {completedCount}/{MODULE_DEFS.length}
             </span>
-          </div>
         </div>
+      </div>
 
-        {/* Content */}
-        <div className="flex-1 px-6 py-8" style={{ maxWidth: 800, margin: '0 auto', width: '100%' }}>
+      <div className="flex gap-2 mb-8 overflow-x-auto hide-scrollbar pb-1" style={{ borderBottom: '1px solid var(--divider-section)' }}>
+        {MODULE_DEFS.map((module) => {
+          const isActive = activeModule === module.key;
+          const state = sections[module.key];
+          return (
+            <button
+              key={module.key}
+              onClick={() => handleSelectModule(module.key)}
+              className="relative flex items-center gap-2.5 px-5 py-3.5 transition-all duration-200 whitespace-nowrap"
+              style={{
+                fontSize: 14,
+                fontWeight: isActive ? 600 : 500,
+                color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
+                backgroundColor: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: 22, height: 22, borderRadius: 999,
+                fontSize: 10, fontWeight: 700,
+                backgroundColor: isActive ? 'var(--accent-primary)' : state.status === 'completed' ? 'var(--color-accent-soft)' : 'var(--surface-elevated)',
+                color: isActive ? '#fff' : state.status === 'completed' ? 'var(--accent-primary)' : 'var(--text-muted)',
+              }}>
+                {module.mono}
+              </span>
+              {module.label}
+              {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 2, backgroundColor: 'var(--accent-primary)', borderRadius: 1 }} />}
+            </button>
+          );
+        })}
+      </div>
+
+      <div style={{ maxWidth: 820 }}>
           {activeSynthesis && activeSec.status === 'completed' && (
             <div className="grid gap-4 mb-8" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
               <div className="rounded-[14px] p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
@@ -574,9 +567,7 @@ export default function AnalyzeModule() {
               </div>
             </div>
           )}
-        </div>
       </div>
-
     </div>
   );
 }

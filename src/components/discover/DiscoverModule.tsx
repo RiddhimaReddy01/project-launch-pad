@@ -241,7 +241,7 @@ export default function DiscoverModule() {
                         fontSize: 13,
                         fontWeight: isActive ? 600 : 500,
                         backgroundColor: isActive ? 'var(--accent-primary)' : 'var(--surface-card)',
-                        color: isActive ? '#080810' : 'var(--text-secondary)',
+                        color: isActive ? '#fff' : 'var(--text-secondary)',
                         border: isActive ? '1px solid var(--accent-primary)' : '1px solid var(--divider)',
                         cursor: 'pointer',
                       }}>
@@ -249,7 +249,7 @@ export default function DiscoverModule() {
                       <span className="rounded-full px-2 py-0.5" style={{
                         fontSize: 10, fontWeight: 700, minWidth: 20, textAlign: 'center',
                         backgroundColor: isActive ? 'rgba(8,8,16,0.2)' : 'var(--surface-elevated)',
-                        color: isActive ? '#080810' : 'var(--text-muted)',
+                        color: isActive ? '#fff' : 'var(--text-muted)',
                       }}>{count}</span>
                     </button>
                   );

@@ -266,10 +266,10 @@ export default function SetupModule() {
                 onClick={() => setSelectedTier(tier)}
                 className="text-left rounded-xl p-5 transition-all duration-200 active:scale-[0.97]"
                 style={{
-                  backgroundColor: isSelected ? 'rgba(0,212,230,0.04)' : 'var(--surface-card)',
+                  backgroundColor: isSelected ? 'var(--color-accent-soft)' : 'var(--surface-card)',
                   border: isSelected ? '1.5px solid var(--accent-primary)' : '1px solid var(--divider)',
                   cursor: 'pointer',
-                  boxShadow: isSelected ? '0 0 20px rgba(0,212,230,0.08)' : 'none',
+                  boxShadow: isSelected ? 'var(--shadow-sm)' : 'none',
                 }}
               >
                 <div className="flex items-center gap-2.5 mb-3">
@@ -350,11 +350,11 @@ export default function SetupModule() {
               <span style={{
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 width: 22, height: 22, borderRadius: 6, fontSize: 10, fontWeight: 700,
-                backgroundColor: state.status === 'completed' ? 'var(--accent-primary)' : isActive ? 'rgba(0,212,230,0.15)' : 'var(--surface-elevated)',
-                color: state.status === 'completed' ? '#080810' : isActive ? 'var(--accent-primary)' : 'var(--text-muted)',
+                backgroundColor: state.status === 'completed' ? 'var(--accent-primary)' : isActive ? 'var(--color-accent-soft)' : 'var(--surface-elevated)',
+                color: state.status === 'completed' ? '#fff' : isActive ? 'var(--accent-primary)' : 'var(--text-muted)',
               }}>{tab.mono}</span>
               {tab.label}
-              {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 2, background: 'linear-gradient(90deg, var(--accent-primary), var(--accent-purple))', borderRadius: 1 }} />}
+              {isActive && <div style={{ position: 'absolute', bottom: -1, left: 16, right: 16, height: 2, backgroundColor: 'var(--accent-primary)', borderRadius: 1 }} />}
             </button>
           );
         })}

@@ -541,8 +541,8 @@ export default function ValidateModule() {
               style={{ fontSize: 14, fontWeight: isActive ? 600 : 500, color: isActive ? 'var(--text-primary)' : 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
               <span className="mono-badge" style={{
                 width: 22, height: 22, fontSize: 10, fontWeight: 700,
-                backgroundColor: isActive ? 'var(--accent-primary)' : isRelevant ? 'rgba(0,212,230,0.15)' : 'var(--surface-elevated)',
-                color: isActive ? '#080810' : isRelevant ? 'var(--accent-primary)' : 'var(--text-muted)',
+                backgroundColor: isActive ? 'var(--accent-primary)' : isRelevant ? 'var(--color-accent-soft)' : 'var(--surface-elevated)',
+                color: isActive ? '#fff' : isRelevant ? 'var(--accent-primary)' : 'var(--text-muted)',
               }}>{tab.mono}</span>
               {tab.label}
               {isRelevant && !isActive && (
@@ -561,7 +561,7 @@ export default function ValidateModule() {
         if (!currentTab) return null;
         return (
           <div className="rounded-xl mb-8 overflow-hidden" style={{ border: '1px solid var(--divider)' }}>
-            <div className="flex items-center gap-3 px-5 py-3" style={{ backgroundColor: 'rgba(0,212,230,0.04)', borderBottom: '1px solid var(--divider)' }}>
+            <div className="flex items-center gap-3 px-5 py-3" style={{ backgroundColor: 'var(--color-accent-soft)', borderBottom: '1px solid var(--divider)' }}>
               <span className="section-label" style={{ flexShrink: 0, marginBottom: 0, fontWeight: 700 }}>TARGET</span>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{currentTab.target}</span>
             </div>
@@ -643,7 +643,7 @@ function MethodCard({ method, isSelected, isSuggested, onToggle }: { method: Val
       className="transition-all duration-200"
       style={{
         padding: '22px 24px', cursor: 'pointer', borderRadius: 14,
-        backgroundColor: isSelected ? 'rgba(0,212,230,0.04)' : 'var(--surface-card)',
+        backgroundColor: isSelected ? 'var(--color-accent-soft)' : 'var(--surface-card)',
         border: isSelected ? '1.5px solid var(--accent-primary)' : '1px solid var(--divider)',
         transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
         boxShadow: isSelected 
@@ -657,7 +657,7 @@ function MethodCard({ method, isSelected, isSuggested, onToggle }: { method: Val
           {isSuggested && (
             <span className="rounded-full px-2.5 py-0.5" style={{ 
               fontSize: 10, fontWeight: 700, 
-              backgroundColor: 'rgba(0,212,230,0.1)', 
+              backgroundColor: 'var(--color-accent-soft)', 
               color: 'var(--accent-primary)',
               letterSpacing: '0.04em',
             }}>
@@ -672,7 +672,7 @@ function MethodCard({ method, isSelected, isSuggested, onToggle }: { method: Val
         }}>
           {isSelected && (
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M2.5 6L5 8.5L9.5 3.5" stroke="#080810" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M2.5 6L5 8.5L9.5 3.5" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           )}
         </div>
@@ -751,7 +751,7 @@ function SurveySection({ data, onChange }: { data: NonNullable<ValidateResult['s
         {data.map((q, i) => (
           <div key={q.id} className="rounded-xl p-5" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
             <div className="flex items-start gap-4">
-              <span className="mono-badge" style={{ width: 28, height: 28, fontSize: 12, fontWeight: 700, backgroundColor: 'rgba(0,212,230,0.1)', color: 'var(--accent-primary)' }}>{i + 1}</span>
+              <span className="mono-badge" style={{ width: 28, height: 28, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-accent-soft)', color: 'var(--accent-primary)' }}>{i + 1}</span>
               <div className="flex-1">
                 <EditableText value={q.question} onChange={(v) => { const next = [...data]; next[i] = { ...q, question: v }; onChange(next); }}
                   style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.6 }} />
@@ -790,7 +790,7 @@ function WhatsAppSection({ data, onChange }: { data: NonNullable<ValidateResult[
       </div>
       <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}>
         <div className="flex items-center gap-2 mb-5">
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--accent-primary)', padding: '3px 10px', borderRadius: 6, backgroundColor: 'rgba(0,212,230,0.1)' }}>Tone: {data.tone}</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--accent-primary)', padding: '3px 10px', borderRadius: 6, backgroundColor: 'var(--color-accent-soft)' }}>Tone: {data.tone}</span>
         </div>
         <div className="rounded-xl" style={{ padding: '24px 28px', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--divider)' }}>
           <EditableText value={data.message} onChange={(v) => onChange({ ...data, message: v })} multiline

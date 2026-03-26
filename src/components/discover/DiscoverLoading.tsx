@@ -40,7 +40,7 @@ export default function DiscoverLoading() {
 
       <div className="mx-auto mb-10" style={{ maxWidth: 400 }}>
         <div className="rounded-full overflow-hidden" style={{ height: 4, backgroundColor: 'var(--divider)' }}>
-          <div className="rounded-full h-full" style={{ width: `${progress}%`, background: 'linear-gradient(90deg, var(--accent-primary), var(--accent-teal))', transition: 'width 300ms ease-out', boxShadow: '0 0 10px rgba(0,212,230,0.3)' }} />
+          <div className="rounded-full h-full" style={{ width: `${progress}%`, backgroundColor: 'var(--accent-primary)', transition: 'width 300ms ease-out' }} />
         </div>
         <div className="flex justify-between mt-3">
           <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>Analyzing sources</span>

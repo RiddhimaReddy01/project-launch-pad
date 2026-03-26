@@ -21,9 +21,9 @@ const examples = [
 ];
 
 const scoreStats = [
-  { label: 'Ideas researched', value: '2,400+', note: 'Business concepts tested across local and digital categories' },
-  { label: 'Average time to insights', value: '12 min', note: 'From rough idea to demand, market, cost, and validation view' },
-  { label: 'Would use it again', value: '89%', note: 'Founders who said the output clarified their next move' },
+  { label: 'Step 1', value: 'Evidence', note: 'Start with direct customer language and source-backed demand signals.' },
+  { label: 'Step 2', value: 'Decision', note: 'Compress the market into opportunity, risk, costs, and competitive tradeoffs.' },
+  { label: 'Step 3', value: 'Validation', note: 'Leave with a sequence of tests you can run in the real world this week.' },
 ];
 
 const sections = [
@@ -98,7 +98,7 @@ export default function Index() {
         title={<>Don&apos;t build something nobody wants.</>}
         body={
           <p>
-            Describe your idea. Get real customer signals, market gaps, launch costs, and a validation plan in about ten minutes.
+            Describe the business in plain language. We turn it into customer evidence, market structure, operating assumptions, and a practical validation sequence.
           </p>
         }
         aside={
@@ -153,7 +153,7 @@ export default function Index() {
         </div>
       </IdeaInputCard>
 
-      <SectionCard eyebrow="What you get" title="One sentence in. A complete plan out." readingWidth>
+      <SectionCard eyebrow="What you get" title="A clear founder workflow from signal to next step" readingWidth>
         <div style={{ display: 'grid', gap: 'var(--space-12)' }}>
           {sections.map((section) => (
             <div key={section.eyebrow} style={{ display: 'grid', gap: 'var(--space-4)' }}>
@@ -168,7 +168,7 @@ export default function Index() {
         </div>
       </SectionCard>
 
-      <SectionCard eyebrow="Decision lens" title="Built for founders who need signal, not noise" readingWidth>
+      <SectionCard eyebrow="Decision lens" title="Built for founders making real go-or-no-go decisions" readingWidth>
         <EvidenceList
           items={[
             {

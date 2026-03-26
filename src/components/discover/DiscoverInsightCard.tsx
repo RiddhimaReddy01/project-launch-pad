@@ -8,13 +8,13 @@ import ScoreDonut from './ScoreDonut';
 import ScoreMethodology from './ScoreMethodology';
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  pain_point: { label: 'PAIN POINT', color: 'var(--error)', bg: 'rgba(239,68,68,0.08)' },
-  workaround: { label: 'WORKAROUND', color: 'var(--accent-amber)', bg: 'rgba(245,166,35,0.08)' },
-  demand_signal: { label: 'DEMAND SIGNAL', color: 'var(--accent-primary)', bg: 'rgba(0,212,230,0.08)' },
-  expectation: { label: 'EXPECTATION', color: 'var(--accent-blue)', bg: 'rgba(91,141,239,0.08)' },
-  market_gap: { label: 'MARKET GAP', color: 'var(--accent-primary)', bg: 'rgba(0,212,230,0.08)' },
-  opportunity: { label: 'OPPORTUNITY', color: 'var(--accent-blue)', bg: 'rgba(91,141,239,0.08)' },
-  trend: { label: 'TREND', color: 'var(--accent-purple)', bg: 'rgba(168,124,255,0.08)' },
+  pain_point: { label: 'PAIN POINT', color: 'var(--error)', bg: 'rgba(193,72,61,0.08)' },
+  workaround: { label: 'WORKAROUND', color: 'var(--accent-amber)', bg: 'rgba(195,138,46,0.10)' },
+  demand_signal: { label: 'DEMAND SIGNAL', color: 'var(--accent-primary)', bg: 'rgba(224,90,71,0.10)' },
+  expectation: { label: 'EXPECTATION', color: 'var(--accent-blue)', bg: 'rgba(94,126,166,0.10)' },
+  market_gap: { label: 'MARKET GAP', color: 'var(--accent-primary)', bg: 'rgba(224,90,71,0.10)' },
+  opportunity: { label: 'OPPORTUNITY', color: 'var(--accent-blue)', bg: 'rgba(94,126,166,0.10)' },
+  trend: { label: 'TREND', color: 'var(--accent-purple)', bg: 'rgba(125,107,168,0.10)' },
 };
 
 const DEFAULT_TYPE_CONFIG = { label: 'INSIGHT', color: 'var(--text-muted)', bg: 'var(--surface-elevated)' };
@@ -51,7 +51,7 @@ function ScoreBar({ label, value, color, explanation }: { label: string; value: 
         <div className="absolute z-20 rounded-lg p-3" style={{
           bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: 6, width: 220,
           backgroundColor: 'var(--surface-elevated)', border: '1px solid var(--divider)', pointerEvents: 'none',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+          boxShadow: 'var(--shadow-md)',
         }}>
           <p style={{ fontSize: 12, lineHeight: 1.5, fontWeight: 500, color: 'var(--text-secondary)' }}>
             {explanation}
@@ -146,7 +146,7 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
       className="rounded-xl transition-all duration-200 cursor-pointer"
       style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--divider)' }}
       onClick={() => setExpanded(!expanded)}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--divider-section)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.2)'; }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--divider-section)'; e.currentTarget.style.boxShadow = 'var(--shadow-md)'; }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = 'none'; }}
     >
       <div className="p-5">
@@ -277,13 +277,13 @@ export default function DiscoverInsightCard({ insight }: { insight: DiscoverInsi
               Deep dive this opportunity
             </button>
             <button onClick={handlePin} disabled={saving || saved} className="btn-secondary rounded-xl px-4 py-2.5"
-              style={{ fontSize: 13, fontWeight: 600, color: saved ? 'var(--accent-primary)' : undefined, backgroundColor: saved ? 'rgba(0,212,230,0.06)' : undefined, borderColor: saved ? 'var(--accent-primary)' : undefined }}>
+              style={{ fontSize: 13, fontWeight: 600, color: saved ? 'var(--accent-primary)' : undefined, backgroundColor: saved ? 'rgba(224,90,71,0.08)' : undefined, borderColor: saved ? 'var(--accent-primary)' : undefined }}>
               {saved ? 'Pinned' : saving ? 'Pinning...' : 'Pin Insight'}
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); setShowNoteInput(!showNoteInput); }}
               className="btn-secondary rounded-xl px-4 py-2.5"
-              style={{ fontSize: 13, fontWeight: 600, color: noteSaved ? 'var(--accent-primary)' : undefined, backgroundColor: noteSaved ? 'rgba(0,212,230,0.06)' : undefined }}>
+              style={{ fontSize: 13, fontWeight: 600, color: noteSaved ? 'var(--accent-primary)' : undefined, backgroundColor: noteSaved ? 'rgba(224,90,71,0.08)' : undefined }}>
               {noteSaved ? 'Note added' : 'Add Note'}
             </button>
           </div>
